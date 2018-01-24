@@ -7,10 +7,12 @@
                   [pandeiro/boot-http "0.8.3" :scope "test"]
                   [javax.xml.bind/jaxb-api "2.3.0" :scope "test"] ; necessary for Java 9 compatibility
                   ; project deps
+                  [http-kit "2.2.0"]
                   [nightlight "RELEASE" :scope "test"]
                   [onetom/boot-lein-generate "0.1.3" :scope "test"]
                   [org.clojure/clojurescript "1.9.946"]
-                  [play-cljs "1.0.0"]])
+                  [play-cljs "1.0.0"]
+                  ])
 
 ; generate 'project.clj' every time boot task is run
 (require 'boot.lein)
@@ -20,7 +22,9 @@
   '[adzerk.boot-cljs :refer [cljs]]
   '[adzerk.boot-reload :refer [reload]]
   '[pandeiro.boot-http :refer [serve]]
-  '[nightlight.boot :refer [nightlight]])
+  '[nightlight.boot :refer [nightlight]]
+  '[clj.hello-world.core :as core]
+  )
 
 (deftask run []
   (comp
@@ -29,6 +33,8 @@
     (reload)
     (cljs :source-map true :optimizations :none)
     (target)
+    (with-pass-thru _
+      (core/-main))
     (nightlight :port 4000 :url "http://localhost:3000")))
 
 (deftask build []
