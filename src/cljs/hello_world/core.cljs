@@ -30,4 +30,3 @@
 (doto game
   (p/start)
   (p/set-screen main-screen))
-

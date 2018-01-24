@@ -51,4 +51,3 @@
 
 (deftask build []
   (comp (cljs :optimizations :advanced) (target)))
-
