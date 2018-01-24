@@ -17,7 +17,8 @@
         [[:fill {:color "lightblue"}
           [:rect {:x 0 :y 0 :width (.-innerWidth js/window) :height (.-innerHeight js/window)}]]
          [:fill {:color "black"}
-          [:text {:value "Hello, world!" :x (:text-x @state) :y (:text-y @state) :size 16 :font "Georgia" :style :italic}]]]))))
+          [:text {:value "Hello, world!" :x (:text-x @state) :y (:text-y @state)
+                  :size 16 :font "Georgia" :style :italic}]]]))))
 
 (events/listen js/window "mousemove"
   (fn [event]
