@@ -1,4 +1,4 @@
-(ns clj.hello-world.core
+(ns hello-world.core
   (:require [org.httpkit.server :as server]
             ))
 

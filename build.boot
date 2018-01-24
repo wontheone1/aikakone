@@ -1,5 +1,5 @@
 (set-env!
-  :source-paths #{"src"}
+  :source-paths #{"src/clj" "src/cljs"}
   :resource-paths #{"resources"}
   :dependencies '[[org.clojure/clojure "1.9.0" :scope "provided"]
                   [adzerk/boot-cljs "2.1.4" :scope "test"]
@@ -23,7 +23,7 @@
   '[adzerk.boot-reload :refer [reload]]
   '[pandeiro.boot-http :refer [serve]]
   '[nightlight.boot :refer [nightlight]]
-  '[clj.hello-world.core :as core]
+  '[hello-world.core :as core]
   )
 
 (deftask run []
