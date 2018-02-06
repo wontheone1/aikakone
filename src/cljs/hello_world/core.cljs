@@ -7,6 +7,14 @@
 
 (enable-console-print!)
 
+(def image-width 360)
+(def image-height 360)
+(def column-number 6)
+(def row-number 6)
+(def piece-width (/ image-width column-number))
+(def piece-height (/ image-height row-number))
+(def puzzle-image-url "images/puzzle-image.jpg")
+
 (defonce game (p/create-game (.-innerWidth js/window) (.-innerHeight js/window)))
 (defonce state (atom {}))
 
@@ -17,12 +25,19 @@
     (on-hide [this])
     (on-render [this]
       (p/render game
-        [[:fill {:color "lightblue"}
-          [:rect {:x 0 :y 0 :width (.-innerWidth js/window) :height (.-innerHeight js/window)}]]
-         [:fill {:color "black"}
-          [:text {:value "Hello, world!" :x (:text-x @state) :y (:text-y @state)
-                  :size 16 :font "Georgia" :style :italic}]]
-         [:image {:name "images/puzzle-image.jpg" :x 50 :y 50 :width 360 :height 360}]]))))
+                (concat
+                  [[:fill {:color "lightblue"}
+                    [:rect {:x 0 :y 0 :width (.-innerWidth js/window) :height (.-innerHeight js/window)}]]
+                   [:fill {:color "black"}
+                    [:text {:value "Hello, world!" :x (:text-x @state) :y (:text-y @state)
+                            :size  16 :font "Georgia" :style :italic}]]]
+                  (for [col (range column-number)
+                        row (range row-number)
+                        :let [sx (* col piece-width)
+                              sy (* row piece-height)]]
+                    [:image {:name  puzzle-image-url :x (+ sx 50 (* 3 col)) :y (+ sy 50 (* 3 row))
+                             :sx    sx :sy sy :swidth piece-width :sheight piece-height
+                             :width piece-width :height piece-height}]))))))
 
 (events/listen js/window "mousemove"
   (fn [event]
