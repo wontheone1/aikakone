@@ -61,7 +61,8 @@
           [:rect {:x 0 :y 0 :width (.-innerWidth js/window) :height (.-innerHeight js/window)}]]
          [:fill {:color "black"}
           [:text {:value "Hello, world!" :x (:text-x @state) :y (:text-y @state)
-                  :size 16 :font "Georgia" :style :italic}]]]))))
+                  :size 16 :font "Georgia" :style :italic}]]
+         [:image {:name "images/puzzle-image.jpg" :x 50 :y 50 :width 360 :height 360}]]))))
 
 (events/listen js/window "mousemove"
   (fn [event]
