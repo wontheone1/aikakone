@@ -13,7 +13,6 @@
                   [nightlight "RELEASE" :scope "test"]
                   [onetom/boot-lein-generate "0.1.3" :scope "test"]
                   [org.clojure/clojurescript "1.9.946"]
-                  [play-cljs "1.0.0"]
                   [ring/ring-defaults "0.2.0"]
                   [ring-cors "0.1.7"]
                   [tolitius/boot-check "0.1.7"]
