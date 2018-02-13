@@ -1,80 +1,85 @@
 (ns hello-world.core
   (:require [goog.events :as events]
+            [hello-world.web-socket :as web-sck]
             [nightlight.repl-server]
-            [play-cljs.core :as p]
-            [taoensso.sente  :as sente :refer (cb-success?)]
             ))
 
 (enable-console-print!)
 
-(defn get-chsk-url
-  "Connect to a configured server instead of the page host"
-  [protocol chsk-host chsk-path type]
-  (let [protocol (case type :ajax protocol
-                            :ws   (if (= protocol "https:") "wss:" "ws:"))]
-    (str protocol "//" "localhost:2222" chsk-path)))
+(def window-width (atom (.-innerWidth js/window)))
+(def window-height (atom (.-innerHeight js/window)))
+(def puzzle-width (atom nil))
+(def puzzle-height (atom nil))
+(defn- left-margin [window-width]
+  (/ (- @window-width @puzzle-width) 2))
+(defn- top-margin [window-height]
+  (/ (- @window-height @puzzle-height) 2))
+(def row-num 5)
+(def col-num 5)
+(defn- piece-width [puzzle-width]
+  (/ @puzzle-width col-num))
+(defn- piece-height [puzzle-height]
+  (/ @puzzle-height row-num))
 
-(with-redefs
-  [sente/get-chsk-url get-chsk-url]
-  (let [{:keys [ch-recv send-fn]}
-        (sente/make-channel-socket! "/chsk"
-                                    {:type :auto})]
-    (def ch-chsk ch-recv)
-    (def chsk-send! send-fn)))
+(def game (atom nil))
 
-(defonce game (p/create-game (.-innerWidth js/window) (.-innerHeight js/window)))
+(defn- preload []
+  (.spritesheet
+    (.-load @game)
+    "puzzle"
+    "images/puzzle-image.jpg"
+    (piece-width puzzle-width)
+    (piece-height puzzle-height)
+    (* row-num col-num)))
+
+(defn- create []
+  (let [game-object-factory (.-add @game)
+        left-margin (left-margin window-width)
+        top-margin (top-margin window-height)
+        piece-width (piece-width puzzle-width)
+        piece-height (piece-height puzzle-height)]
+    (doseq [row (range row-num)
+            col (range col-num)
+            :let [frame-id (+ (* col-num row) col)
+                  x-pos (+ (* piece-width col) left-margin col)
+                  y-pos (+ (* piece-height row) top-margin row)]]
+      (.sprite
+        game-object-factory
+        x-pos
+        y-pos
+        "puzzle"
+        frame-id))))
+
+(defn- update [])
+
+(defn- start-game! []
+  (println "starting game")
+  (reset! game
+          (js/Phaser.Game.
+            @window-width
+            @window-height
+            js/Phaser.Auto
+            ""
+            ; ^ id of the DOM element to insert canvas. As we've left it blank it will simply be appended to body.
+            (clj->js {:preload preload :create create :update update}))))
+
+
 (defonce state (atom {}))
 
-(defmulti event-msg-handler :id)
+(web-sck/start-router state)
 
-(defmethod event-msg-handler :default [{:keys [event]}]
-  (println "Unhandled event: " event))
-
-(defmethod event-msg-handler :chsk/state [{:keys [?data]}]
-  (if (= ?data {:first-open? true})
-    (println "Channel socket successfully established!")
-    (println "Channel socket state change:" ?data)))
-
-(defmethod event-msg-handler :chsk/recv [{:keys [?data]}]
-  (let [position (second ?data)]
-    (swap! state assoc :text-x (:x position) :text-y (:y position))))
-
-(defn send-uid []
-  (chsk-send! [:aikakone/uid (:uid @state)]))
-
-(defmethod event-msg-handler :chsk/handshake [{:keys [?data]}]
-  (let [[?uid ?csrf-token ?handshake-data] ?data]
-    (println "Handshake:" ?data)
-    (swap! state assoc :uid ?uid)
-    (send-uid)))
-
-(sente/start-chsk-router! ch-chsk event-msg-handler)
-
-(def main-screen
-  (reify p/Screen
-    (on-show [this]
-      (reset! state {:text-x 20 :text-y 30}))
-    (on-hide [this])
-    (on-render [this]
-      (p/render game
-        [[:fill {:color "lightblue"}
-          [:rect {:x 0 :y 0 :width (.-innerWidth js/window) :height (.-innerHeight js/window)}]]
-         [:fill {:color "black"}
-          [:text {:value "Hello, world!" :x (:text-x @state) :y (:text-y @state)
-                  :size 16 :font "Georgia" :style :italic}]]]))))
-
-(events/listen js/window "mousemove"
-  (fn [event]
-    (swap! state assoc :text-x (.-clientX event) :text-y (.-clientY event))
-    (let [{:keys [text-x text-y]} @state]
-      (chsk-send!
-        [:aikakone/mouse-moved {:x text-x :y text-y}]
-        3000))))
-
-(events/listen js/window "resize"
-  (fn [event]
-    (p/set-size game js/window.innerWidth js/window.innerHeight)))
-
-(doto game
-  (p/start)
-  (p/set-screen main-screen))
+; this is the game program's entry point
+(let [img (js/Image.)]
+  ; finding out size of image. https://stackoverflow.com/a/626505/5802173
+  ; image loading is done asynchronously. The way to start the game after image is loaded is
+  ; we start the game in `onload` callback of the image.
+  (set!
+    (.-onload img)
+    (clj->js
+      (fn []
+        (reset! puzzle-width (.-width img))
+        (reset! puzzle-height (.-height img))
+        (println "Puzzle image loaded")
+        (start-game!))))                                    ; start game after loading image
+  (set! (.-src img) "images/puzzle-image.jpg")
+  (println "loading puzzle image"))
