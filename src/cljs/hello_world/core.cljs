@@ -69,17 +69,17 @@
 (web-sck/start-router state)
 
 ; this is the game program's entry point
-(let [img (js/Image.)]
+(let [puzzle-img (js/Image.)]
   ; finding out size of image. https://stackoverflow.com/a/626505/5802173
   ; image loading is done asynchronously. The way to start the game after image is loaded is
   ; we start the game in `onload` callback of the image.
   (set!
-    (.-onload img)
+    (.-onload puzzle-img)
     (clj->js
       (fn []
-        (reset! puzzle-width (.-width img))
-        (reset! puzzle-height (.-height img))
+        (reset! puzzle-width (.-width puzzle-img))
+        (reset! puzzle-height (.-height puzzle-img))
         (println "Puzzle image loaded")
         (start-game!))))                                    ; start game after loading image
-  (set! (.-src img) "images/puzzle-image.jpg")
+  (set! (.-src puzzle-img) "images/puzzle-image.jpg")
   (println "loading puzzle image"))
