@@ -6,14 +6,12 @@
 
 (enable-console-print!)
 
-(def window-width (atom (.-innerWidth js/window)))
-(def window-height (atom (.-innerHeight js/window)))
 (def puzzle-image-width (atom nil))
 (def puzzle-image-height (atom nil))
-(defn- left-margin [window-width puzzle-width]
-  (/ (- @window-width puzzle-width) 2))
-(defn- top-margin [window-height puzzle-height]
-  (/ (- @window-height puzzle-height) 2))
+(defn- left-margin [puzzle-width]
+  (/ (- (.-innerWidth js/window) puzzle-width) 2))
+(defn- top-margin [puzzle-height]
+  (/ (- (.-innerHeight js/window) puzzle-height) 2))
 (def row-num 5)
 (def col-num 5)
 (defn- piece-width [puzzle-width]
@@ -48,8 +46,8 @@
 
 (defn- create []
   (let [game-object-factory (.-add @game)
-        left-margin (left-margin window-width @puzzle-image-width)
-        top-margin (top-margin window-height @puzzle-image-height)
+        left-margin (left-margin @puzzle-image-width)
+        top-margin (top-margin @puzzle-image-height)
         piece-width (piece-width puzzle-image-width)
         piece-height (piece-height puzzle-image-height)
         button-width (button-width button-sprite-sheet-width)
@@ -86,8 +84,8 @@
   (println "starting game")
   (reset! game
           (js/Phaser.Game.
-            @window-width
-            @window-height
+            (.-innerWidth js/window)
+            (.-innerHeight js/window)
             js/Phaser.Auto
             ""
             ; ^ id of the DOM element to insert canvas. As we've left it blank it will simply be appended to body.
