@@ -50,8 +50,8 @@
                                              (.-innerHeight js/window))))
         left-margin (left-margin puzzle-width-height)
         top-margin (top-margin puzzle-width-height)
-        piece-width (get-piece-width @puzzle-image-width)
-        piece-height (get-piece-height @puzzle-image-height)
+        piece-width (get-piece-width puzzle-width-height)
+        piece-height (get-piece-height puzzle-width-height)
         button-width (get-button-width @button-sprite-sheet-width)
         button-height (get-button-height @button-sprite-sheet-height)]
     (doseq [row (range row-num)
