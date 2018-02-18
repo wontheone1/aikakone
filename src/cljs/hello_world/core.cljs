@@ -26,6 +26,7 @@
   (/ @sheet-width 3))
 (defn- button-height [sheet-height]
   (/ @sheet-height 2))
+(def sprites (atom {}))
 
 (def game (atom nil))
 
@@ -58,12 +59,15 @@
             :let [frame-id (+ (* col-num row) col)
                   x-pos (+ (* piece-width col) left-margin col)
                   y-pos (+ (* piece-height row) top-margin row)]]
-      (.sprite
-        game-object-factory
-        x-pos
-        y-pos
-        "puzzle"
-        frame-id))
+      (swap! sprites
+             assoc
+             [x-pos y-pos]
+             (.sprite
+               game-object-factory
+               x-pos
+               y-pos
+               "puzzle"
+               frame-id)))
     (doseq [i (range 6)]
       (.setTo
         (.-scale
