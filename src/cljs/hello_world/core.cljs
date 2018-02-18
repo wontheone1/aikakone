@@ -46,6 +46,8 @@
 
 (defn- create []
   (let [game-object-factory (.-add @game)
+        puzzle-width-height (int (* 0.8 (min (.-innerWidth js/window)
+                                             (.-innerHeight js/window))))
         left-margin (left-margin @puzzle-image-width)
         top-margin (top-margin @puzzle-image-height)
         piece-width (piece-width puzzle-image-width)
@@ -60,12 +62,16 @@
       (swap! sprites
              assoc
              [x-pos y-pos]
-             (.sprite
-               game-object-factory
-               x-pos
-               y-pos
-               "puzzle"
-               frame-id)))
+             (.setTo
+               (.-scale
+                 (.sprite
+                   game-object-factory
+                   x-pos
+                   y-pos
+                   "puzzle"
+                   frame-id))
+               (/ puzzle-width-height @puzzle-image-width)
+               (/ puzzle-width-height @puzzle-image-height))))
     (doseq [i (range 6)]
       (.setTo
         (.-scale
