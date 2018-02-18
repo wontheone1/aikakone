@@ -14,15 +14,15 @@
   (/ (- (.-innerHeight js/window) puzzle-height) 2))
 (def row-num 5)
 (def col-num 5)
-(defn- piece-width [puzzle-width]
+(defn- get-piece-width [puzzle-width]
   (/ @puzzle-width col-num))
-(defn- piece-height [puzzle-height]
+(defn- get-piece-height [puzzle-height]
   (/ @puzzle-height row-num))
 (def button-sprite-sheet-width (atom nil))
 (def button-sprite-sheet-height (atom nil))
-(defn- button-width [sheet-width]
+(defn- get-button-width [sheet-width]
   (/ @sheet-width 3))
-(defn- button-height [sheet-height]
+(defn- get-button-height [sheet-height]
   (/ @sheet-height 2))
 (def sprites (atom {}))
 
@@ -33,15 +33,15 @@
     (.-load @game)
     "puzzle"
     "images/puzzle-image.jpg"
-    (piece-width puzzle-image-width)
-    (piece-height puzzle-image-height)
+    (get-piece-width puzzle-image-width)
+    (get-piece-height puzzle-image-height)
     (* row-num col-num))
   (.spritesheet
     (.-load @game)
     "flip-buttons"
     "images/control-buttons.png"
-    (button-width button-sprite-sheet-width)
-    (button-height button-sprite-sheet-height)
+    (get-button-width button-sprite-sheet-width)
+    (get-button-height button-sprite-sheet-height)
     6))
 
 (defn- create []
@@ -50,10 +50,10 @@
                                              (.-innerHeight js/window))))
         left-margin (left-margin @puzzle-image-width)
         top-margin (top-margin @puzzle-image-height)
-        piece-width (piece-width puzzle-image-width)
-        piece-height (piece-height puzzle-image-height)
-        button-width (button-width button-sprite-sheet-width)
-        button-height (button-height button-sprite-sheet-height)]
+        piece-width (get-piece-width puzzle-image-width)
+        piece-height (get-piece-height puzzle-image-height)
+        button-width (get-button-width button-sprite-sheet-width)
+        button-height (get-button-height button-sprite-sheet-height)]
     (doseq [row (range row-num)
             col (range col-num)
             :let [frame-id (+ (* col-num row) col)
