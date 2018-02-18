@@ -65,13 +65,16 @@
         "puzzle"
         frame-id))
     (doseq [i (range 6)]
-      (println button-width :* button-height)
-      (.sprite
-        game-object-factory
-        (* i button-width)
-        (* i button-height)
-        "flip-buttons"
-        i))))
+      (.setTo
+        (.-scale
+          (.sprite
+            game-object-factory
+            (* i button-width)
+            (* i button-height)
+            "flip-buttons"
+            i))
+        (/ piece-width button-width)
+        (/ piece-height button-height)))))
 
 (defn- update [])
 
