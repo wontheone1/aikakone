@@ -99,7 +99,10 @@
           (make-buttons-same-size-as-puzzle-piece! left-button)
           (set-on-click-callback!
             left-button
-            (fn [] (println (str "left-button row #" row " clicked"))))))
+            (fn []
+              (println (str "left-button row #" row " clicked"))
+              (doseq [col (range row-col-num)]
+                (toggle-visibility! (@sprites [col row])))))))
       (when (= row (dec row-col-num))
         (let [bottom-button (.sprite
                               game-object-factory
