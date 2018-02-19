@@ -80,7 +80,11 @@
           (make-buttons-same-size-as-puzzle-piece! bottom-left-button)
           (set-on-click-callback!
             bottom-left-button
-            (fn [] (println "bottom-left-button clicked")))))
+            (fn []
+              (println "bottom-left-button clicked")
+              (doseq [row (range row-num)
+                      :let [col (- (dec col-num) row)]]
+                (.setTo (.-scale (@sprites [row col])) 0 0))))))
       (when (zero? col)
         (let [left-button (.sprite
                                    game-object-factory
