@@ -82,8 +82,11 @@
             (fn []
               (println "bottom-left-button clicked")
               (doseq [row (range row-col-num)
-                      :let [col (- (dec row-col-num) row)]]
-                (.setTo (.-scale (@sprites [row col])) 0 0))))))
+                      :let [col (- (dec row-col-num) row)
+                            piece-scale (.-scale (@sprites [row col]))]]
+                (if (zero? (.-x piece-scale))
+                  (.setTo piece-scale piece-x-scale piece-y-scale)
+                  (.setTo piece-scale 0 0)))))))
       (when (zero? col)
         (let [left-button (.sprite
                                    game-object-factory
