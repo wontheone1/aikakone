@@ -103,19 +103,17 @@
           (set-on-click-callback!
             bottom-button
             (fn [] (println (str "bottom-button col #" col " clicked"))))))
-      (swap! sprites
-             assoc
-             [col row]
-             (.setTo
-               (.-scale
-                 (.sprite
-                   game-object-factory
-                   x-pos
-                   y-pos
-                   "puzzle"
-                   frame-id))
-               (/ puzzle-width-height @puzzle-image-width)
-               (/ puzzle-width-height @puzzle-image-height))))))
+      (let [piece (.sprite
+                    game-object-factory
+                    x-pos
+                    y-pos
+                    "puzzle"
+                    frame-id)]
+        (swap! sprites assoc [col row] piece)
+        (.setTo
+          (.-scale piece)
+          (/ puzzle-width-height @puzzle-image-width)
+          (/ puzzle-width-height @puzzle-image-height))))))
 
 (defn- update [])
 
