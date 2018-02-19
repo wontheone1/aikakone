@@ -78,13 +78,17 @@
             (.-onInputDown (.-events bottom-left-button))
             (fn [] (println "bottom-left-button clicked")))))
       (when (zero? col)
-        (make-buttons-same-size-as-puzzle-piece!
-          (.sprite
-            game-object-factory
-            (- x-pos piece-width)
-            y-pos
-            "flip-buttons"
-            row)))
+        (let [left-button (.sprite
+                                   game-object-factory
+                                   (- x-pos piece-width)
+                                   y-pos
+                                   "flip-buttons"
+                                   row)]
+          (make-buttons-same-size-as-puzzle-piece! left-button)
+          (set! (.-inputEnabled left-button) true)
+          (.add
+            (.-onInputDown (.-events left-button))
+            (fn [] (println (str "left-button row #" row " clicked"))))))
       (when (= row (dec row-num))
         (make-buttons-same-size-as-puzzle-piece!
           (.sprite
