@@ -64,8 +64,7 @@
             :let [frame-id (+ (* col-num row) col)
                   x-pos (+ (* piece-width col) left-margin col)
                   y-pos (+ (* piece-height row) top-margin row)]]
-      (cond
-        (zero? col)
+      (when (zero? col)
         (make-buttons-same-size-as-puzzle-piece
           (.sprite
             game-object-factory
@@ -73,6 +72,14 @@
             y-pos
             "flip-buttons"
             row)))
+      (when (= row (dec row-num))
+        (make-buttons-same-size-as-puzzle-piece
+          (.sprite
+            game-object-factory
+            x-pos
+            (+ y-pos piece-height)
+            "flip-buttons"
+            col)))
       (swap! sprites
              assoc
              [x-pos y-pos]
