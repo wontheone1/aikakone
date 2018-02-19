@@ -93,13 +93,16 @@
             left-button
             (fn [] (println (str "left-button row #" row " clicked"))))))
       (when (= row (dec row-num))
-        (make-buttons-same-size-as-puzzle-piece!
-          (.sprite
-            game-object-factory
-            x-pos
-            (+ y-pos piece-height)
-            "flip-buttons"
-            col)))
+        (let [bottom-button (.sprite
+                              game-object-factory
+                              x-pos
+                              (+ y-pos piece-height)
+                              "flip-buttons"
+                              col)]
+          (make-buttons-same-size-as-puzzle-piece! bottom-button)
+          (set-on-click-callback!
+            bottom-button
+            (fn [] (println (str "bottom-button col #" col " clicked"))))))
       (swap! sprites
              assoc
              [x-pos y-pos]
