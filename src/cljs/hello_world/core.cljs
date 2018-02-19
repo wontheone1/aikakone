@@ -88,15 +88,19 @@
                                    (- x-pos piece-width)
                                    (+ y-pos piece-height)
                                    "flip-buttons"
-                                   5)]
+                                   5)
+              flip-diagonal-pieces! (fn []
+                                     (doseq [row (range row-col-num)
+                                             :let [col (- (dec row-col-num) row)]]
+                                       (toggle-visibility! (@sprites [row col]))))]
           (make-buttons-same-size-as-puzzle-piece! bottom-left-button)
           (set-on-click-callback!
             bottom-left-button
             (fn []
               (println "bottom-left-button clicked")
-              (doseq [row (range row-col-num)
-                      :let [col (- (dec row-col-num) row)]]
-                (toggle-visibility! (@sprites [row col])))))))
+              (flip-diagonal-pieces!)))
+          (when (< (rand) 0.5)
+            (flip-diagonal-pieces!))))
       (when (zero? col)
         (let [left-button (.sprite
                                    game-object-factory
