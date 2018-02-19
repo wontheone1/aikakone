@@ -107,14 +107,18 @@
                                    (- x-pos piece-width)
                                    y-pos
                                    "flip-buttons"
-                                   row)]
+                                   row)
+              flip-row! (fn []
+                          (doseq [col (range row-col-num)]
+                            (toggle-visibility! (@sprites [col row]))))]
           (make-buttons-same-size-as-puzzle-piece! left-button)
           (set-on-click-callback!
             left-button
             (fn []
               (println (str "left-button row #" row " clicked"))
-              (doseq [col (range row-col-num)]
-                (toggle-visibility! (@sprites [col row])))))))
+              (flip-row!)))
+          (when (< (rand) 0.5)
+            (js/setTimeout flip-row! 200))))
       (when (= row (dec row-col-num))
         (let [bottom-button (.sprite
                               game-object-factory
