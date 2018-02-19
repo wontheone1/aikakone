@@ -105,7 +105,7 @@
             (fn [] (println (str "bottom-button col #" col " clicked"))))))
       (swap! sprites
              assoc
-             [x-pos y-pos]
+             [col row]
              (.setTo
                (.-scale
                  (.sprite
