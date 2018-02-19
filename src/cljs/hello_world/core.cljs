@@ -45,6 +45,8 @@
   (let [game-object-factory (.-add @game)
         puzzle-width-height (int (* 0.7 (min (.-innerWidth js/window)
                                              (.-innerHeight js/window))))
+        piece-x-scale (/ puzzle-width-height @puzzle-image-width)
+        piece-y-scale (/ puzzle-width-height @puzzle-image-height)
         left-margin (left-margin puzzle-width-height)
         top-margin (top-margin puzzle-width-height)
         piece-width (get-piece-width-height puzzle-width-height)
@@ -113,8 +115,8 @@
         (swap! sprites assoc [col row] piece)
         (.setTo
           (.-scale piece)
-          (/ puzzle-width-height @puzzle-image-width)
-          (/ puzzle-width-height @puzzle-image-height))))))
+          piece-x-scale
+          piece-y-scale)))))
 
 (defn- update [])
 
