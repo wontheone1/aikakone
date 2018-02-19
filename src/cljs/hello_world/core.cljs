@@ -66,13 +66,17 @@
                   y-pos (+ (* piece-height row) top-margin row)]]
       (when
         (and (zero? col) (= row (dec row-num)))
-        (make-buttons-same-size-as-puzzle-piece
-          (.sprite
-            game-object-factory
-            (- x-pos piece-width)
-            (+ y-pos piece-height)
-            "flip-buttons"
-            5)))
+        (let [bottom-left-button (.sprite
+                                   game-object-factory
+                                   (- x-pos piece-width)
+                                   (+ y-pos piece-height)
+                                   "flip-buttons"
+                                   5)]
+          (make-buttons-same-size-as-puzzle-piece bottom-left-button)
+          (set! (.-inputEnabled bottom-left-button) true)
+          (.add
+            (.-onInputDown (.-events bottom-left-button))
+            (fn [] (println "bottom-left-button clicked")))))
       (when (zero? col)
         (make-buttons-same-size-as-puzzle-piece
           (.sprite
