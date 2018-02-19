@@ -80,10 +80,7 @@
                     "puzzle"
                     frame-id)]
         (swap! sprites assoc [col row] piece)
-        (.setTo
-          (.-scale piece)
-          piece-x-scale
-          piece-y-scale))
+        (.setTo (.-scale piece) piece-x-scale piece-y-scale))
       (when
         (and (zero? col) (= row (dec row-col-num)))
         (let [bottom-left-button (.sprite
