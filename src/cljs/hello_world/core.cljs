@@ -14,10 +14,8 @@
   (/ (- (.-innerHeight js/window) puzzle-height) 4))
 (def row-num 5)
 (def col-num 5)
-(defn- get-piece-width [puzzle-width]
-  (/ puzzle-width col-num))
-(defn- get-piece-height [puzzle-height]
-  (/ puzzle-height row-num))
+(defn- get-piece-width-height [puzzle-width-height]
+  (/ puzzle-width-height col-num))
 (def button-sprite-sheet-width (atom nil))
 (def button-sprite-sheet-height (atom nil))
 (defn- get-button-width [sheet-width]
@@ -33,8 +31,8 @@
     (.-load @game)
     "puzzle"
     "images/puzzle-image.jpg"
-    (get-piece-width @puzzle-image-width)
-    (get-piece-height @puzzle-image-height)
+    (get-piece-width-height @puzzle-image-width)
+    (get-piece-width-height @puzzle-image-height)
     (* row-num col-num))
   (.spritesheet
     (.-load @game)
@@ -50,8 +48,8 @@
                                              (.-innerHeight js/window))))
         left-margin (left-margin puzzle-width-height)
         top-margin (top-margin puzzle-width-height)
-        piece-width (get-piece-width puzzle-width-height)
-        piece-height (get-piece-height puzzle-width-height)
+        piece-width (get-piece-width-height puzzle-width-height)
+        piece-height (get-piece-width-height puzzle-width-height)
         button-width (get-button-width @button-sprite-sheet-width)
         button-height (get-button-height @button-sprite-sheet-height)
         make-buttons-same-size-as-puzzle-piece! (fn [sprite]
