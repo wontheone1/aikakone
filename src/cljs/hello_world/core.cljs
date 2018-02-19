@@ -53,7 +53,12 @@
         piece-width (get-piece-width puzzle-width-height)
         piece-height (get-piece-height puzzle-width-height)
         button-width (get-button-width @button-sprite-sheet-width)
-        button-height (get-button-height @button-sprite-sheet-height)]
+        button-height (get-button-height @button-sprite-sheet-height)
+        make-buttons-same-size-as-puzzle-piece (fn [sprite]
+                                                 (.setTo
+                                                   (.-scale sprite)
+                                                   (/ piece-width button-width)
+                                                   (/ piece-height button-height)))]
     (doseq [row (range row-num)
             col (range col-num)
             :let [frame-id (+ (* col-num row) col)
@@ -61,16 +66,13 @@
                   y-pos (+ (* piece-height row) top-margin row)]]
       (cond
         (zero? col)
-        (.setTo
-          (.-scale
-            (.sprite
-              game-object-factory
-              (- x-pos piece-width)
-              y-pos
-              "flip-buttons"
-              row))
-          (/ piece-width button-width)
-          (/ piece-height button-height)))
+        (make-buttons-same-size-as-puzzle-piece
+          (.sprite
+            game-object-factory
+            (- x-pos piece-width)
+            y-pos
+            "flip-buttons"
+            row)))
       (swap! sprites
              assoc
              [x-pos y-pos]
