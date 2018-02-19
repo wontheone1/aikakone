@@ -54,11 +54,11 @@
         piece-height (get-piece-height puzzle-width-height)
         button-width (get-button-width @button-sprite-sheet-width)
         button-height (get-button-height @button-sprite-sheet-height)
-        make-buttons-same-size-as-puzzle-piece (fn [sprite]
-                                                 (.setTo
-                                                   (.-scale sprite)
-                                                   (/ piece-width button-width)
-                                                   (/ piece-height button-height)))]
+        make-buttons-same-size-as-puzzle-piece! (fn [sprite]
+                                                  (.setTo
+                                                    (.-scale sprite)
+                                                    (/ piece-width button-width)
+                                                    (/ piece-height button-height)))]
     (doseq [row (range row-num)
             col (range col-num)
             :let [frame-id (+ (* col-num row) col)
@@ -72,13 +72,13 @@
                                    (+ y-pos piece-height)
                                    "flip-buttons"
                                    5)]
-          (make-buttons-same-size-as-puzzle-piece bottom-left-button)
+          (make-buttons-same-size-as-puzzle-piece! bottom-left-button)
           (set! (.-inputEnabled bottom-left-button) true)
           (.add
             (.-onInputDown (.-events bottom-left-button))
             (fn [] (println "bottom-left-button clicked")))))
       (when (zero? col)
-        (make-buttons-same-size-as-puzzle-piece
+        (make-buttons-same-size-as-puzzle-piece!
           (.sprite
             game-object-factory
             (- x-pos piece-width)
@@ -86,7 +86,7 @@
             "flip-buttons"
             row)))
       (when (= row (dec row-num))
-        (make-buttons-same-size-as-puzzle-piece
+        (make-buttons-same-size-as-puzzle-piece!
           (.sprite
             game-object-factory
             x-pos
