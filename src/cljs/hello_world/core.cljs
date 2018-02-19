@@ -58,7 +58,12 @@
                                                   (.setTo
                                                     (.-scale sprite)
                                                     (/ piece-width button-width)
-                                                    (/ piece-height button-height)))]
+                                                    (/ piece-height button-height)))
+        set-on-click-callback! (fn [sprite callback-fn]
+                                 (set! (.-inputEnabled sprite) true)
+                                 (.add
+                                   (.-onInputDown (.-events sprite))
+                                   callback-fn))]
     (doseq [row (range row-num)
             col (range col-num)
             :let [frame-id (+ (* col-num row) col)
@@ -73,9 +78,8 @@
                                    "flip-buttons"
                                    5)]
           (make-buttons-same-size-as-puzzle-piece! bottom-left-button)
-          (set! (.-inputEnabled bottom-left-button) true)
-          (.add
-            (.-onInputDown (.-events bottom-left-button))
+          (set-on-click-callback!
+            bottom-left-button
             (fn [] (println "bottom-left-button clicked")))))
       (when (zero? col)
         (let [left-button (.sprite
@@ -85,9 +89,8 @@
                                    "flip-buttons"
                                    row)]
           (make-buttons-same-size-as-puzzle-piece! left-button)
-          (set! (.-inputEnabled left-button) true)
-          (.add
-            (.-onInputDown (.-events left-button))
+          (set-on-click-callback!
+            left-button
             (fn [] (println (str "left-button row #" row " clicked"))))))
       (when (= row (dec row-num))
         (make-buttons-same-size-as-puzzle-piece!
