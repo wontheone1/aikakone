@@ -12,10 +12,9 @@
   (/ (- (.-innerWidth js/window) puzzle-width) 2))
 (defn- top-margin [puzzle-height]
   (/ (- (.-innerHeight js/window) puzzle-height) 4))
-(def row-num 5)
-(def col-num 5)
+(def row-col-num 5)
 (defn- get-piece-width-height [puzzle-width-height]
-  (/ puzzle-width-height col-num))
+  (/ puzzle-width-height row-col-num))
 (def button-sprite-sheet-width (atom nil))
 (def button-sprite-sheet-height (atom nil))
 (defn- get-button-width [sheet-width]
@@ -33,7 +32,7 @@
     "images/puzzle-image.jpg"
     (get-piece-width-height @puzzle-image-width)
     (get-piece-width-height @puzzle-image-height)
-    (* row-num col-num))
+    (* row-col-num row-col-num))
   (.spritesheet
     (.-load @game)
     "flip-buttons"
@@ -62,13 +61,13 @@
                                  (.add
                                    (.-onInputDown (.-events sprite))
                                    callback-fn))]
-    (doseq [row (range row-num)
-            col (range col-num)
-            :let [frame-id (+ (* col-num row) col)
+    (doseq [row (range row-col-num)
+            col (range row-col-num)
+            :let [frame-id (+ (* row-col-num row) col)
                   x-pos (+ (* piece-width col) left-margin col)
                   y-pos (+ (* piece-height row) top-margin row)]]
       (when
-        (and (zero? col) (= row (dec row-num)))
+        (and (zero? col) (= row (dec row-col-num)))
         (let [bottom-left-button (.sprite
                                    game-object-factory
                                    (- x-pos piece-width)
@@ -80,8 +79,8 @@
             bottom-left-button
             (fn []
               (println "bottom-left-button clicked")
-              (doseq [row (range row-num)
-                      :let [col (- (dec col-num) row)]]
+              (doseq [row (range row-col-num)
+                      :let [col (- (dec row-col-num) row)]]
                 (.setTo (.-scale (@sprites [row col])) 0 0))))))
       (when (zero? col)
         (let [left-button (.sprite
@@ -94,7 +93,7 @@
           (set-on-click-callback!
             left-button
             (fn [] (println (str "left-button row #" row " clicked"))))))
-      (when (= row (dec row-num))
+      (when (= row (dec row-col-num))
         (let [bottom-button (.sprite
                               game-object-factory
                               x-pos
