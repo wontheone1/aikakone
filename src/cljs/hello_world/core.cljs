@@ -11,7 +11,7 @@
 (defn- left-margin [puzzle-width]
   (/ (- (.-innerWidth js/window) puzzle-width) 2))
 (defn- top-margin [puzzle-height]
-  (/ (- (.-innerHeight js/window) puzzle-height) 2))
+  (/ (- (.-innerHeight js/window) puzzle-height) 4))
 (def row-num 5)
 (def col-num 5)
 (defn- get-piece-width [puzzle-width]
@@ -46,7 +46,7 @@
 
 (defn- create []
   (let [game-object-factory (.-add @game)
-        puzzle-width-height (int (* 0.8 (min (.-innerWidth js/window)
+        puzzle-width-height (int (* 0.7 (min (.-innerWidth js/window)
                                              (.-innerHeight js/window))))
         left-margin (left-margin puzzle-width-height)
         top-margin (top-margin puzzle-width-height)
