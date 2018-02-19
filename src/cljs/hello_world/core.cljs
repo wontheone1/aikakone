@@ -67,7 +67,9 @@
                              (let [piece-scale (.-scale sprite)]
                                (if (zero? (.-x piece-scale))
                                  (.setTo piece-scale piece-x-scale piece-y-scale)
-                                 (.setTo piece-scale 0 0))))]
+                                 (.setTo piece-scale 0 0))))
+        randomly-execute-a-fn (fn [f]
+                                (when (< (rand) 0.5) (f)))]
     (doseq [row (range row-col-num)
             col (range row-col-num)
             :let [frame-id (+ (* row-col-num row) col)
@@ -99,8 +101,7 @@
             (fn []
               (println "bottom-left-button clicked")
               (flip-diagonal-pieces!)))
-          (when (< (rand) 0.5)
-            (flip-diagonal-pieces!))))
+          (randomly-execute-a-fn flip-diagonal-pieces!)))
       (when (zero? col)
         (let [left-button (.sprite
                                    game-object-factory
@@ -117,8 +118,7 @@
             (fn []
               (println (str "left-button row #" row " clicked"))
               (flip-row!)))
-          (when (< (rand) 0.5)
-            (js/setTimeout flip-row! 200))))
+          (randomly-execute-a-fn (fn [] (js/setTimeout flip-row! 200)))))
       (when (= row (dec row-col-num))
         (let [bottom-button (.sprite
                               game-object-factory
