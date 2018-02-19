@@ -64,6 +64,15 @@
             :let [frame-id (+ (* col-num row) col)
                   x-pos (+ (* piece-width col) left-margin col)
                   y-pos (+ (* piece-height row) top-margin row)]]
+      (when
+        (and (zero? col) (= row (dec row-num)))
+        (make-buttons-same-size-as-puzzle-piece
+          (.sprite
+            game-object-factory
+            (- x-pos piece-width)
+            (+ y-pos piece-height)
+            "flip-buttons"
+            5)))
       (when (zero? col)
         (make-buttons-same-size-as-puzzle-piece
           (.sprite
