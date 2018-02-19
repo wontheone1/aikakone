@@ -62,7 +62,12 @@
                                  (set! (.-inputEnabled sprite) true)
                                  (.add
                                    (.-onInputDown (.-events sprite))
-                                   callback-fn))]
+                                   callback-fn))
+        toggle-visibility! (fn [sprite]
+                             (let [piece-scale (.-scale sprite)]
+                               (if (zero? (.-x piece-scale))
+                                 (.setTo piece-scale piece-x-scale piece-y-scale)
+                                 (.setTo piece-scale 0 0))))]
     (doseq [row (range row-col-num)
             col (range row-col-num)
             :let [frame-id (+ (* row-col-num row) col)
@@ -82,11 +87,8 @@
             (fn []
               (println "bottom-left-button clicked")
               (doseq [row (range row-col-num)
-                      :let [col (- (dec row-col-num) row)
-                            piece-scale (.-scale (@sprites [row col]))]]
-                (if (zero? (.-x piece-scale))
-                  (.setTo piece-scale piece-x-scale piece-y-scale)
-                  (.setTo piece-scale 0 0)))))))
+                      :let [col (- (dec row-col-num) row)]]
+                (toggle-visibility! (@sprites [row col])))))))
       (when (zero? col)
         (let [left-button (.sprite
                                    game-object-factory
