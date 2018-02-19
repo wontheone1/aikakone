@@ -59,6 +59,18 @@
             :let [frame-id (+ (* col-num row) col)
                   x-pos (+ (* piece-width col) left-margin col)
                   y-pos (+ (* piece-height row) top-margin row)]]
+      (cond
+        (zero? col)
+        (.setTo
+          (.-scale
+            (.sprite
+              game-object-factory
+              (- x-pos piece-width)
+              y-pos
+              "flip-buttons"
+              row))
+          (/ piece-width button-width)
+          (/ piece-height button-height)))
       (swap! sprites
              assoc
              [x-pos y-pos]
@@ -71,18 +83,7 @@
                    "puzzle"
                    frame-id))
                (/ puzzle-width-height @puzzle-image-width)
-               (/ puzzle-width-height @puzzle-image-height))))
-    (doseq [i (range 6)]
-      (.setTo
-        (.-scale
-          (.sprite
-            game-object-factory
-            (* i button-width)
-            (* i button-height)
-            "flip-buttons"
-            i))
-        (/ piece-width button-width)
-        (/ piece-height button-height)))))
+               (/ puzzle-width-height @puzzle-image-height))))))
 
 (defn- update [])
 
