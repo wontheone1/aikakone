@@ -113,7 +113,10 @@
           (make-buttons-same-size-as-puzzle-piece! bottom-button)
           (set-on-click-callback!
             bottom-button
-            (fn [] (println (str "bottom-button col #" col " clicked"))))))
+            (fn []
+              (println (str "bottom-button col #" col " clicked"))
+              (doseq [row (range row-col-num)]
+                (toggle-visibility! (@sprites [col row])))))))
       (let [piece (.sprite
                     game-object-factory
                     x-pos
