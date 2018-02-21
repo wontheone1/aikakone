@@ -94,7 +94,7 @@
               flip-diagonal-pieces! (fn []
                                      (doseq [row (range row-col-num)
                                              :let [col (- (dec row-col-num) row)]]
-                                       (toggle-visibility! (@sprites [row col]))))]
+                                       (toggle-visibility! (@sprites [col row]))))]
           (make-buttons-same-size-as-puzzle-piece! bottom-left-button)
           (set-on-click-callback!
             bottom-left-button
