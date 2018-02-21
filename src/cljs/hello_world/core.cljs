@@ -21,7 +21,7 @@
   (/ sheet-width 3))
 (defn- get-button-height [sheet-height]
   (/ sheet-height 2))
-(def sprites (atom {}))
+(defonce sprites (atom {}))
 
 (def game (atom nil))
 
