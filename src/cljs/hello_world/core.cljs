@@ -21,7 +21,7 @@
   (/ sheet-width 3))
 (defn- get-button-height [sheet-height]
   (/ sheet-height 2))
-(defonce sprites (atom {}))
+(defonce game-state (atom {:sprites {}}))
 
 (def game (atom nil))
 
@@ -81,7 +81,7 @@
                     y-pos
                     "puzzle"
                     frame-id)]
-        (swap! sprites assoc [col row] piece)
+        (swap! game-state update :sprites assoc [col row] piece)
         (.setTo (.-scale piece) piece-x-scale piece-y-scale))
       (when
         (and (zero? col) (= row (dec row-col-num)))
@@ -94,7 +94,7 @@
               flip-diagonal-pieces! (fn []
                                      (doseq [row (range row-col-num)
                                              :let [col (- (dec row-col-num) row)]]
-                                       (toggle-visibility! (@sprites [col row]))))]
+                                       (toggle-visibility! ((:sprites @game-state) [col row]))))]
           (make-buttons-same-size-as-puzzle-piece! bottom-left-button)
           (set-on-click-callback!
             bottom-left-button
@@ -111,7 +111,7 @@
                                    row)
               flip-row! (fn []
                           (doseq [col (range row-col-num)]
-                            (toggle-visibility! (@sprites [col row]))))]
+                            (toggle-visibility! ((:sprites @game-state) [col row]))))]
           (make-buttons-same-size-as-puzzle-piece! left-button)
           (set-on-click-callback!
             left-button
@@ -128,7 +128,7 @@
                               col)
               flip-col! (fn []
                           (doseq [row (range row-col-num)]
-                            (toggle-visibility! (@sprites [col row]))))]
+                            (toggle-visibility! ((:sprites @game-state) [col row]))))]
           (make-buttons-same-size-as-puzzle-piece! bottom-button)
           (set-on-click-callback!
             bottom-button
