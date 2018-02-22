@@ -5,8 +5,6 @@
             [hello-world.util :as util]
             ))
 
-(enable-console-print!)
-
 (def puzzle-image-width (atom nil))
 (def puzzle-image-height (atom nil))
 (defn- left-margin [puzzle-width]
