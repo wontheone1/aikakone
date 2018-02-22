@@ -2,6 +2,7 @@
   (:require [goog.events :as events]
             [hello-world.web-socket :as web-sck]
             [nightlight.repl-server]
+            [hello-world.util :as util]
             ))
 
 (enable-console-print!)
@@ -27,13 +28,11 @@
                            :piece-x-scale       0
                            :piece-y-scale       0
                            :stage-clear-text    nil}))
-(def flipped-state "FLIPPED")
-(def non-flipped-state "NON-FLIPPED")
 
 (def game (atom nil))
 
 (defn show-puzzle-is-cleared-if-puzzle-is-complete []
-  (when (and (every? #(= non-flipped-state (val %)) (:sprites-state @game-state))
+  (when (and (every? #(= util/non-flipped-state (val %)) (:sprites-state @game-state))
              (not (:stage-clear-text @game-state)))
     (swap!
       game-state
@@ -91,7 +90,7 @@
                                                        :sprites-state
                                                        assoc
                                                        [col row]
-                                                       non-flipped-state)
+                                                       util/non-flipped-state)
                                                      (.setTo
                                                        piece-scale
                                                        (:piece-x-scale @game-state)
@@ -103,7 +102,7 @@
                                                        :sprites-state
                                                        assoc
                                                        [col row]
-                                                       flipped-state)
+                                                       util/flipped-state)
                                                      (.setTo piece-scale 0 0)))))
         randomly-execute-a-fn (fn [f]
                                 (when (< (rand) 0.5) (f)))]
@@ -119,7 +118,7 @@
                     "puzzle"
                     frame-id)]
         (swap! game-state update :sprites assoc [col row] piece)
-        (swap! game-state update :sprites-state assoc [col row] non-flipped-state)
+        (swap! game-state update :sprites-state assoc [col row] util/non-flipped-state)
         (.setTo (.-scale piece) (:piece-x-scale @game-state) (:piece-y-scale @game-state)))
       (when
         (and (zero? col) (= row (dec row-col-num)))

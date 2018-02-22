@@ -1,8 +1,7 @@
 (ns hello-world.web-socket
-  (:require [taoensso.sente  :as sente :refer (cb-success?)]))
-
-(def flipped-state "FLIPPED")
-(def non-flipped-state "NON-FLIPPED")
+  (:require [taoensso.sente  :as sente :refer (cb-success?)]
+            [hello-world.util :as util]
+            ))
 
 (defn get-chsk-url
   "Connect to a configured server instead of the page host"
@@ -30,7 +29,7 @@
         sprites (:sprites derefed-state)]
     (doseq [[[col row] sprite-flipped-state] sprites-state]
       (let [piece-scale (.-scale (sprites [col row]))]
-        (if (= non-flipped-state sprite-flipped-state)
+        (if (= util/non-flipped-state sprite-flipped-state)
           (do
             (swap!
               state
@@ -38,7 +37,7 @@
               :sprites-state
               assoc
               [col row]
-              non-flipped-state)
+              util/non-flipped-state)
             (.setTo piece-scale piece-x-scale piece-y-scale))
           (do
             (swap!
@@ -47,7 +46,7 @@
               :sprites-state
               assoc
               [col row]
-              flipped-state)
+              util/flipped-state)
             (.setTo piece-scale 0 0)))))))
 
 (defn- define-event-msg-handler [state]
