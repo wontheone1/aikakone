@@ -22,8 +22,8 @@
   (println "sending " (:sprites-state @state))
   (chsk-send! [:aikakone/sprites-state (:sprites-state @state)]))
 
-(defn- syncronize-puzzle-board [state sprites-state]
-  (let [derefed-state @state
+(defn- syncronize-puzzle-board [sprites-state]
+  (let [derefed-state @util/game-state
         piece-x-scale (:piece-x-scale derefed-state)
         piece-y-scale (:piece-y-scale derefed-state)
         sprites (:sprites derefed-state)]
@@ -32,7 +32,7 @@
         (if (= util/non-flipped-state sprite-flipped-state)
           (do
             (swap!
-              state
+              util/game-state
               update
               :sprites-state
               assoc
@@ -41,7 +41,7 @@
             (.setTo piece-scale piece-x-scale piece-y-scale))
           (do
             (swap!
-              state
+              util/game-state
               update
               :sprites-state
               assoc
@@ -64,7 +64,7 @@
     (println "received " [event-id event-data])
     (case event-id
       :aikakone/sprites-state (do
-                                (syncronize-puzzle-board util/game-state event-data)
+                                (syncronize-puzzle-board event-data)
                                 (util/show-puzzle-is-cleared-if-puzzle-is-complete))
       (println event-id " is unknown event type"))))
 
