@@ -49,33 +49,32 @@
               util/flipped-state)
             (.setTo piece-scale 0 0)))))))
 
-(defn- define-event-msg-handler []
-  (defmulti event-msg-handler :id)
+(defmulti event-msg-handler :id)
 
-  (defmethod event-msg-handler :default [{:keys [event]}]
-    (println "Unhandled event: " event))
+(defmethod event-msg-handler :default [{:keys [event]}]
+  (println "Unhandled event: " event))
 
-  (defmethod event-msg-handler :chsk/state [{:keys [?data]}]
-    (if (= ?data {:first-open? true})
-      (println "Channel socket successfully established!")
-      (println "Channel socket state change:" ?data)))
+(defmethod event-msg-handler :chsk/state [{:keys [?data]}]
+  (if (= ?data {:first-open? true})
+    (println "Channel socket successfully established!")
+    (println "Channel socket state change:" ?data)))
 
-  (defmethod event-msg-handler :chsk/recv [{:keys [?data]}]
-    (let [[event-id event-data] ?data]
-      (println "received " [event-id event-data])
-      (case event-id
-        :aikakone/sprites-state (do
-                                  (syncronize-puzzle-board util/game-state event-data)
-                                  (util/show-puzzle-is-cleared-if-puzzle-is-complete))
-        (println event-id " is unknown event type"))))
+(defmethod event-msg-handler :chsk/recv [{:keys [?data]}]
+  (let [[event-id event-data] ?data]
+    (println "received " [event-id event-data])
+    (case event-id
+      :aikakone/sprites-state (do
+                                (syncronize-puzzle-board util/game-state event-data)
+                                (util/show-puzzle-is-cleared-if-puzzle-is-complete))
+      (println event-id " is unknown event type"))))
 
-  (defn send-uid []
-    (chsk-send! [:aikakone/uid (:uid @util/game-state)]))
+(defn send-uid []
+  (chsk-send! [:aikakone/uid (:uid @util/game-state)]))
 
-  (defmethod event-msg-handler :chsk/handshake [{:keys [?data]}]
-    (let [[?uid ?csrf-token ?handshake-data] ?data]
-      (println "Handshake:" ?data)
-      (swap! util/game-state assoc :uid ?uid)
-      (send-uid))))
+(defmethod event-msg-handler :chsk/handshake [{:keys [?data]}]
+  (let [[?uid ?csrf-token ?handshake-data] ?data]
+    (println "Handshake:" ?data)
+    (swap! util/game-state assoc :uid ?uid)
+    (send-uid)))
 
-(sente/start-chsk-router! ch-chsk (define-event-msg-handler))
+(sente/start-chsk-router! ch-chsk event-msg-handler)
