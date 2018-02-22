@@ -31,6 +31,10 @@
 
 (def game (atom nil))
 
+(defn show-puzzle-is-cleared-if-puzzle-is-complete []
+  (when (every? #(= non-flipped-state (val %)) (:sprites-state @game-state))
+    (println "Congrats! Puzzle is complete!")))
+
 (defn- preload []
   (.spritesheet
     (.-load @game)
@@ -123,7 +127,8 @@
             (fn []
               (println "bottom-left-button clicked")
               (flip-diagonal-pieces!)
-              (web-sck/send-sprites-state! game-state)))
+              (web-sck/send-sprites-state! game-state)
+              (show-puzzle-is-cleared-if-puzzle-is-complete)))
           (randomly-execute-a-fn flip-diagonal-pieces!)))
       (when (zero? col)
         (let [left-button (.sprite
@@ -141,7 +146,8 @@
             (fn []
               (println (str "left-button row #" row " clicked"))
               (flip-row!)
-              (web-sck/send-sprites-state! game-state)))
+              (web-sck/send-sprites-state! game-state)
+              (show-puzzle-is-cleared-if-puzzle-is-complete)))
           (randomly-execute-a-fn (fn [] (js/setTimeout flip-row! 200)))))
       (when (= row (dec row-col-num))
         (let [bottom-button (.sprite
@@ -159,7 +165,8 @@
             (fn []
               (println (str "bottom-button col #" col " clicked"))
               (flip-col!)
-              (web-sck/send-sprites-state! game-state)))
+              (web-sck/send-sprites-state! game-state)
+              (show-puzzle-is-cleared-if-puzzle-is-complete)))
           (randomly-execute-a-fn (fn [] (js/setTimeout flip-col! 200))))))))
 
 (defn- update [])
