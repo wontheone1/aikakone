@@ -49,7 +49,7 @@
               util/flipped-state)
             (.setTo piece-scale 0 0)))))))
 
-(defn- define-event-msg-handler [state]
+(defn- define-event-msg-handler []
   (defmulti event-msg-handler :id)
 
   (defmethod event-msg-handler :default [{:keys [event]}]
@@ -65,18 +65,18 @@
       (println "received " [event-id event-data])
       (case event-id
         :aikakone/sprites-state (do
-                                  (syncronize-puzzle-board state event-data)
+                                  (syncronize-puzzle-board util/game-state event-data)
                                   (util/show-puzzle-is-cleared-if-puzzle-is-complete))
         (println event-id " is unknown event type"))))
 
   (defn send-uid []
-    (chsk-send! [:aikakone/uid (:uid @state)]))
+    (chsk-send! [:aikakone/uid (:uid @util/game-state)]))
 
   (defmethod event-msg-handler :chsk/handshake [{:keys [?data]}]
     (let [[?uid ?csrf-token ?handshake-data] ?data]
       (println "Handshake:" ?data)
-      (swap! state assoc :uid ?uid)
+      (swap! util/game-state assoc :uid ?uid)
       (send-uid))))
 
-(defn start-router [state]
-  (sente/start-chsk-router! ch-chsk (define-event-msg-handler state)))
+(defn start-router []
+  (sente/start-chsk-router! ch-chsk (define-event-msg-handler)))
