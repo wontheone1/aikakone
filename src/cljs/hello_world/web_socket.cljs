@@ -78,5 +78,4 @@
       (swap! util/game-state assoc :uid ?uid)
       (send-uid))))
 
-(defn start-router []
-  (sente/start-chsk-router! ch-chsk (define-event-msg-handler)))
+(sente/start-chsk-router! ch-chsk (define-event-msg-handler))

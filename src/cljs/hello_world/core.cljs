@@ -170,8 +170,6 @@
             ; ^ id of the DOM element to insert canvas. As we've left it blank it will simply be appended to body.
             (clj->js {:preload preload :create create :update update}))))
 
-(web-sck/start-router)
-
 ; this is the game program's entry point
 (let [puzzle-img (js/Image.)
       buttons-img (js/Image.)]
