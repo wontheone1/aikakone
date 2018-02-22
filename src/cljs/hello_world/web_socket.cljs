@@ -21,7 +21,10 @@
   (chsk-send! [:aikakone/sprites-state (:sprites-state @state)]))
 
 (defn- syncronize-puzzle-board [state sprites-state]
-  (let [sprites (:sprites @state)]
+  (let [derefed-state @state
+        piece-x-scale (:piece-x-scale derefed-state)
+        piece-y-scale (:piece-y-scale derefed-state)
+        sprites (:sprites derefed-state)]
     (doseq [[[col row] flipped-state] sprites-state]
       (let [piece-scale (.-scale (sprites [col row]))]
         (if (= "NON-FLIPPED" flipped-state)
@@ -33,7 +36,7 @@
               assoc
               [col row]
               "NON-FLIPPED")
-            (.setTo piece-scale 1 1))
+            (.setTo piece-scale piece-x-scale piece-y-scale))
           (do
             (swap!
               state
