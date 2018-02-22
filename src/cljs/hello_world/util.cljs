@@ -1,5 +1,14 @@
 (ns hello-world.util)
 
+(def game (atom nil))
+
+(defonce game-state (atom {:sprites             {}
+                           :sprites-state       {}
+                           :puzzle-width-height 0
+                           :piece-x-scale       0
+                           :piece-y-scale       0
+                           :stage-clear-text    nil}))
+
 (def flipped-state "FLIPPED")
 (def non-flipped-state "NON-FLIPPED")
 
