@@ -18,9 +18,9 @@
     (def ch-chsk ch-recv)
     (def chsk-send! send-fn)))
 
-(defn send-sprites-state! [state]
-  (println "sending " (:sprites-state @state))
-  (chsk-send! [:aikakone/sprites-state (:sprites-state @state)]))
+(defn send-sprites-state! []
+  (println "sending " (:sprites-state @util/game-state))
+  (chsk-send! [:aikakone/sprites-state (:sprites-state @util/game-state)]))
 
 (defn- syncronize-puzzle-board [sprites-state]
   (let [derefed-state @util/game-state
