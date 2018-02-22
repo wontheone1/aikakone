@@ -116,7 +116,7 @@
               (println "bottom-left-button clicked")
               (flip-diagonal-pieces!)
               (web-sck/send-sprites-state! util/game-state)
-              (util/show-puzzle-is-cleared-if-puzzle-is-complete util/game util/game-state)))
+              (util/show-puzzle-is-cleared-if-puzzle-is-complete)))
           (randomly-execute-a-fn flip-diagonal-pieces!)))
       (when (zero? col)
         (let [left-button (.sprite
@@ -135,7 +135,7 @@
               (println (str "left-button row #" row " clicked"))
               (flip-row!)
               (web-sck/send-sprites-state! util/game-state)
-              (util/show-puzzle-is-cleared-if-puzzle-is-complete util/game util/game-state)))
+              (util/show-puzzle-is-cleared-if-puzzle-is-complete)))
           (randomly-execute-a-fn (fn [] (js/setTimeout flip-row! 200)))))
       (when (= row (dec row-col-num))
         (let [bottom-button (.sprite
@@ -154,7 +154,7 @@
               (println (str "bottom-button col #" col " clicked"))
               (flip-col!)
               (web-sck/send-sprites-state! util/game-state)
-              (util/show-puzzle-is-cleared-if-puzzle-is-complete util/game util/game-state)))
+              (util/show-puzzle-is-cleared-if-puzzle-is-complete)))
           (randomly-execute-a-fn (fn [] (js/setTimeout flip-col! 200))))))))
 
 (defn- update [])

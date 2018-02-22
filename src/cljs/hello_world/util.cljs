@@ -12,7 +12,7 @@
 (def flipped-state "FLIPPED")
 (def non-flipped-state "NON-FLIPPED")
 
-(defn show-puzzle-is-cleared-if-puzzle-is-complete [game game-state]
+(defn show-puzzle-is-cleared-if-puzzle-is-complete []
   (when (and (every? #(= non-flipped-state (val %)) (:sprites-state @game-state))
              (not (:stage-clear-text @game-state)))
     (swap!
