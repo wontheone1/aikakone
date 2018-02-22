@@ -25,9 +25,9 @@
         piece-x-scale (:piece-x-scale derefed-state)
         piece-y-scale (:piece-y-scale derefed-state)
         sprites (:sprites derefed-state)]
-    (doseq [[[col row] flipped-state] sprites-state]
+    (doseq [[[col row] sprite-flipped-state] sprites-state]
       (let [piece-scale (.-scale (sprites [col row]))]
-        (if (= "NON-FLIPPED" flipped-state)
+        (if (= "NON-FLIPPED" sprite-flipped-state)
           (do
             (swap!
               state
