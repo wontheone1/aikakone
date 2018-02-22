@@ -16,6 +16,10 @@
     (def ch-chsk ch-recv)
     (def chsk-send! send-fn)))
 
+(defn send-sprites-state! [state]
+  (println "sending " (:sprites-state @state))
+  (chsk-send! [:aikakone/sprites-state (:sprites-state @state)]))
+
 (defn- syncronize-puzzle-board [state sprites-state]
   (let [sprites (:sprites @state)]
     (doseq [[[col row] flipped-state] sprites-state]
@@ -60,10 +64,6 @@
 
   (defn send-uid []
     (chsk-send! [:aikakone/uid (:uid @state)]))
-
-  (defn send-sprites-state! []
-    (println "sending " (:sprites-state @state))
-    (chsk-send! [:aikakone/sprites-state (:sprites-state @state)]))
 
   (defmethod event-msg-handler :chsk/handshake [{:keys [?data]}]
     (let [[?uid ?csrf-token ?handshake-data] ?data]
