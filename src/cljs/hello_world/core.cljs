@@ -25,15 +25,27 @@
                            :sprites-state       {}
                            :puzzle-width-height 0
                            :piece-x-scale       0
-                           :piece-y-scale       0}))
+                           :piece-y-scale       0
+                           :stage-clear-text    nil}))
 (def flipped-state "FLIPPED")
 (def non-flipped-state "NON-FLIPPED")
 
 (def game (atom nil))
 
 (defn show-puzzle-is-cleared-if-puzzle-is-complete []
-  (when (every? #(= non-flipped-state (val %)) (:sprites-state @game-state))
-    (println "Congrats! Puzzle is complete!")))
+  (when (and (every? #(= non-flipped-state (val %)) (:sprites-state @game-state))
+             (not (:stage-clear-text @game-state)))
+    (swap!
+      game-state
+      assoc
+      :stage-clear-text
+      (.text (.-add @game)
+             (/ (.-innerWidth js/window) 5)
+             (/ (.-innerHeight js/window) 20)
+             "Congrats!\n You cleared the puzzle!"
+             (clj->js {:font  "60px Arial"
+                       :fill  "#ffffff"
+                       :align "center"})))))
 
 (defn- preload []
   (.spritesheet
