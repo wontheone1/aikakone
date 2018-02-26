@@ -67,7 +67,9 @@
                              (let [piece-scale (.-scale sprite)]
                                (if (zero? (.-x piece-scale))
                                  (.setTo piece-scale piece-x-scale piece-y-scale)
-                                 (.setTo piece-scale 0 0))))]
+                                 (.setTo piece-scale 0 0))))
+        randomly-execute-a-fn (fn [f]
+                                (when (< (rand) 0.5) (f)))]
     (doseq [row (range row-col-num)
             col (range row-col-num)
             :let [frame-id (+ (* row-col-num row) col)
@@ -88,43 +90,52 @@
                                    (- x-pos piece-width)
                                    (+ y-pos piece-height)
                                    "flip-buttons"
-                                   5)]
+                                   5)
+              flip-diagonal-pieces! (fn []
+                                     (doseq [row (range row-col-num)
+                                             :let [col (- (dec row-col-num) row)]]
+                                       (toggle-visibility! (@sprites [col row]))))]
           (make-buttons-same-size-as-puzzle-piece! bottom-left-button)
           (set-on-click-callback!
             bottom-left-button
             (fn []
               (println "bottom-left-button clicked")
-              (doseq [row (range row-col-num)
-                      :let [col (- (dec row-col-num) row)]]
-                (toggle-visibility! (@sprites [row col])))))))
+              (flip-diagonal-pieces!)))
+          (randomly-execute-a-fn flip-diagonal-pieces!)))
       (when (zero? col)
         (let [left-button (.sprite
                                    game-object-factory
                                    (- x-pos piece-width)
                                    y-pos
                                    "flip-buttons"
-                                   row)]
+                                   row)
+              flip-row! (fn []
+                          (doseq [col (range row-col-num)]
+                            (toggle-visibility! (@sprites [col row]))))]
           (make-buttons-same-size-as-puzzle-piece! left-button)
           (set-on-click-callback!
             left-button
             (fn []
               (println (str "left-button row #" row " clicked"))
-              (doseq [col (range row-col-num)]
-                (toggle-visibility! (@sprites [col row])))))))
+              (flip-row!)))
+          (randomly-execute-a-fn (fn [] (js/setTimeout flip-row! 200)))))
       (when (= row (dec row-col-num))
         (let [bottom-button (.sprite
                               game-object-factory
                               x-pos
                               (+ y-pos piece-height)
                               "flip-buttons"
-                              col)]
+                              col)
+              flip-col! (fn []
+                          (doseq [row (range row-col-num)]
+                            (toggle-visibility! (@sprites [col row]))))]
           (make-buttons-same-size-as-puzzle-piece! bottom-button)
           (set-on-click-callback!
             bottom-button
             (fn []
               (println (str "bottom-button col #" col " clicked"))
-              (doseq [row (range row-col-num)]
-                (toggle-visibility! (@sprites [col row]))))))))))
+              (flip-col!)))
+          (randomly-execute-a-fn (fn [] (js/setTimeout flip-col! 200))))))))
 
 (defn- update [])
 
