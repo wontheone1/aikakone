@@ -40,18 +40,18 @@
     (get-button-height @button-sprite-sheet-height)
     6))
 
+(defn- make-buttons-same-size-as-puzzle-piece! [sprite]
+  (let [piece-width-height (get-piece-width-height (:puzzle-width-height @util/game-state))]
+    (.setTo
+      (.-scale sprite)
+      (/ piece-width-height (get-button-width @button-sprite-sheet-width))
+      (/ piece-width-height (get-button-height @button-sprite-sheet-height)))))
+
 (defn- create []
   (let [game-object-factory (.-add @util/game)
         left-margin (left-margin (:puzzle-width-height @util/game-state))
         top-margin (top-margin (:puzzle-width-height @util/game-state))
         piece-width-height (get-piece-width-height (:puzzle-width-height @util/game-state))
-        button-width (get-button-width @button-sprite-sheet-width)
-        button-height (get-button-height @button-sprite-sheet-height)
-        make-buttons-same-size-as-puzzle-piece! (fn [sprite]
-                                                  (.setTo
-                                                    (.-scale sprite)
-                                                    (/ piece-width-height button-width)
-                                                    (/ piece-width-height button-height)))
         set-on-click-callback! (fn [sprite callback-fn]
                                  (set! (.-inputEnabled sprite) true)
                                  (.add
