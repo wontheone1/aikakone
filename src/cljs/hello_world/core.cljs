@@ -1,6 +1,5 @@
 (ns hello-world.core
   (:require [goog.events :as events]
-            [hello-world.game :as game]
             [hello-world.web-socket :as web-sck]
             [nightlight.repl-server]
             [hello-world.util :as util]
@@ -34,6 +33,6 @@
         (swap! util/game-state assoc :piece-y-scale (/ (:puzzle-width-height @util/game-state)
                                                        @util/puzzle-image-height))
         (println "Puzzle image loaded")
-        (game/start-game!))))                                    ; start game after loading image
+        (web-sck/start-web-socket!))))                                    ; start game after loading image
   (set! (.-src buttons-img) "images/control-buttons.png")
   (println "loading images"))

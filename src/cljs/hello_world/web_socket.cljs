@@ -1,7 +1,7 @@
 (ns hello-world.web-socket
-  (:require [taoensso.sente  :as sente :refer (cb-success?)]
+  (:require [taoensso.sente :as sente :refer (cb-success?)]
             [hello-world.util :as util]
-            ))
+            [hello-world.game :as game]))
 
 (defn get-chsk-url
   "Connect to a configured server instead of the page host"
@@ -65,7 +65,8 @@
                                 (util/show-congrat-message-when-puzzle-is-complete!))
 
       :aikakone/game-start (do
-                             (println "Start game with initial state " event-data))
+                             (println "Start game with initial state " event-data)
+                             (game/start-game! send-sprites-state!))
       (println event-id " is unknown event type"))))
 
 (defn send-uid []
@@ -78,4 +79,5 @@
     (chsk-send! [:aikakone/game-start])
     (send-uid)))
 
-(sente/start-chsk-router! ch-chsk event-msg-handler)
+(defn start-web-socket! []
+  (sente/start-chsk-router! ch-chsk event-msg-handler))
