@@ -23,6 +23,7 @@
   (chsk-send! [:aikakone/sprites-state (:sprites-state @util/game-state)]))
 
 (defn- synchronize-puzzle-board [sprites-state]
+  (println "synchronizing")
   (let [derefed-state @util/game-state
         piece-x-scale (:piece-x-scale derefed-state)
         piece-y-scale (:piece-y-scale derefed-state)
