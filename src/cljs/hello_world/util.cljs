@@ -12,7 +12,22 @@
                            :stage-clear-text    nil}))
 
 (def flipped-state "FLIPPED")
+
 (def non-flipped-state "NON-FLIPPED")
+
+(def puzzle-image-width (atom nil))
+
+(def puzzle-image-height (atom nil))
+
+(def button-sprite-sheet-width (atom nil))
+
+(def button-sprite-sheet-height (atom nil))
+
+(defn- get-button-width []
+  (/ @button-sprite-sheet-width 3))
+
+(defn- get-button-height []
+  (/ @button-sprite-sheet-height 2))
 
 (defn show-congrat-message-when-puzzle-is-complete! []
   (when (and (every? #(= non-flipped-state (val %)) (:sprites-state @game-state))
