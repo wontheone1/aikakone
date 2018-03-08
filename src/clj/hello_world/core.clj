@@ -32,7 +32,10 @@
       (doseq [uid (:any @connected-uids)]
         (println :uid uid)
         (when (not= client-id uid)
-          (chsk-send! uid [:aikakone/sprites-state ?data]))))))
+          (chsk-send! uid [:aikakone/sprites-state ?data]))))
+
+    :aikakone/game-start
+    (chsk-send! client-id [:aikakone/game-start @sprites-state])))
 
 (sente/start-chsk-router! ch-chsk handle-message!)
 
