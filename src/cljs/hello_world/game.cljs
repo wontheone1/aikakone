@@ -76,7 +76,7 @@
     (randomly-execute-a-fn (fn [] (js/setTimeout (fn [] (flip-row! row-or-col)) 200)))
     (randomly-execute-a-fn (fn [] (js/setTimeout (fn [] (flip-col! row-or-col)) 200)))))
 
-(defn- create-create [send-sprites-state-fn!]
+(defn- create-create [send-sprites-state-fn! initial-sprites-state]
   (fn []
     (let [game-object-factory (.-add @util/game)
           left-margin (util/left-margin)
@@ -147,12 +147,15 @@
                 (flip-col! col)
                 (send-sprites-state-fn!)
                 (util/show-congrat-message-when-puzzle-is-complete!))))))
-      (randomize-puzzle))
-    (js/setTimeout send-sprites-state-fn! 300)))
+      (if (nil? initial-sprites-state)
+        (do
+          (randomize-puzzle)
+          (js/setTimeout send-sprites-state-fn! 300))
+        (util/synchronize-puzzle-board initial-sprites-state)))))
 
 (defn- update [])
 
-(defn- start-game! [send-sprites-state-fn!]
+(defn- start-game! [send-sprites-state-fn! initial-sprites-state]
   (println "starting game")
   (reset! util/game
           (js/Phaser.Game.
@@ -161,4 +164,6 @@
             js/Phaser.Auto
             ""
             ; ^ id of the DOM element to insert canvas. As we've left it blank it will simply be appended to body.
-            (clj->js {:preload preload :create (create-create send-sprites-state-fn!) :update update}))))
+            (clj->js {:preload preload
+                      :create  (create-create send-sprites-state-fn! initial-sprites-state)
+                      :update  update}))))
