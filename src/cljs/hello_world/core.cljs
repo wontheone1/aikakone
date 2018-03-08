@@ -2,9 +2,8 @@
   (:require [goog.events :as events]
             [hello-world.web-socket :as web-sck]
             [nightlight.repl-server]
+            [hello-world.util :as util]
             ))
-
-(enable-console-print!)
 
 (def puzzle-image-width (atom nil))
 (def puzzle-image-height (atom nil))
@@ -21,26 +20,17 @@
   (/ sheet-width 3))
 (defn- get-button-height [sheet-height]
   (/ sheet-height 2))
-(defonce game-state (atom {:sprites             {}
-                           :sprites-state       {}
-                           :puzzle-width-height 0
-                           :piece-x-scale       0
-                           :piece-y-scale       0}))
-(def flipped-state "FLIPPED")
-(def non-flipped-state "NON-FLIPPED")
-
-(def game (atom nil))
 
 (defn- preload []
   (.spritesheet
-    (.-load @game)
+    (.-load @util/game)
     "puzzle"
     "images/puzzle-image.jpg"
     (get-piece-width-height @puzzle-image-width)
     (get-piece-width-height @puzzle-image-height)
     (* row-col-num row-col-num))
   (.spritesheet
-    (.-load @game)
+    (.-load @util/game)
     "flip-buttons"
     "images/control-buttons.png"
     (get-button-width @button-sprite-sheet-width)
@@ -48,11 +38,11 @@
     6))
 
 (defn- create []
-  (let [game-object-factory (.-add @game)
-        left-margin (left-margin (:puzzle-width-height @game-state))
-        top-margin (top-margin (:puzzle-width-height @game-state))
-        piece-width (get-piece-width-height (:puzzle-width-height @game-state))
-        piece-height (get-piece-width-height (:puzzle-width-height @game-state))
+  (let [game-object-factory (.-add @util/game)
+        left-margin (left-margin (:puzzle-width-height @util/game-state))
+        top-margin (top-margin (:puzzle-width-height @util/game-state))
+        piece-width (get-piece-width-height (:puzzle-width-height @util/game-state))
+        piece-height (get-piece-width-height (:puzzle-width-height @util/game-state))
         button-width (get-button-width @button-sprite-sheet-width)
         button-height (get-button-height @button-sprite-sheet-height)
         make-buttons-same-size-as-puzzle-piece! (fn [sprite]
@@ -66,28 +56,28 @@
                                    (.-onInputDown (.-events sprite))
                                    callback-fn))
         toggle-visibility-and-flipped-state! (fn [col row]
-                                               (let [piece-scale (.-scale ((:sprites @game-state) [col row]))]
+                                               (let [piece-scale (.-scale ((:sprites @util/game-state) [col row]))]
                                                  (if (zero? (.-x piece-scale))
                                                    (do
                                                      (swap!
-                                                       game-state
+                                                       util/game-state
                                                        update
                                                        :sprites-state
                                                        assoc
                                                        [col row]
-                                                       non-flipped-state)
+                                                       util/non-flipped-state)
                                                      (.setTo
                                                        piece-scale
-                                                       (:piece-x-scale @game-state)
-                                                       (:piece-y-scale @game-state)))
+                                                       (:piece-x-scale @util/game-state)
+                                                       (:piece-y-scale @util/game-state)))
                                                    (do
                                                      (swap!
-                                                       game-state
+                                                       util/game-state
                                                        update
                                                        :sprites-state
                                                        assoc
                                                        [col row]
-                                                       flipped-state)
+                                                       util/flipped-state)
                                                      (.setTo piece-scale 0 0)))))
         randomly-execute-a-fn (fn [f]
                                 (when (< (rand) 0.5) (f)))]
@@ -102,9 +92,9 @@
                     y-pos
                     "puzzle"
                     frame-id)]
-        (swap! game-state update :sprites assoc [col row] piece)
-        (swap! game-state update :sprites-state assoc [col row] non-flipped-state)
-        (.setTo (.-scale piece) (:piece-x-scale @game-state) (:piece-y-scale @game-state)))
+        (swap! util/game-state update :sprites assoc [col row] piece)
+        (swap! util/game-state update :sprites-state assoc [col row] util/non-flipped-state)
+        (.setTo (.-scale piece) (:piece-x-scale @util/game-state) (:piece-y-scale @util/game-state)))
       (when
         (and (zero? col) (= row (dec row-col-num)))
         (let [bottom-left-button (.sprite
@@ -123,7 +113,8 @@
             (fn []
               (println "bottom-left-button clicked")
               (flip-diagonal-pieces!)
-              (web-sck/send-sprites-state! game-state)))
+              (web-sck/send-sprites-state!)
+              (util/show-congrat-message-when-puzzle-is-complete!)))
           (randomly-execute-a-fn flip-diagonal-pieces!)))
       (when (zero? col)
         (let [left-button (.sprite
@@ -141,7 +132,8 @@
             (fn []
               (println (str "left-button row #" row " clicked"))
               (flip-row!)
-              (web-sck/send-sprites-state! game-state)))
+              (web-sck/send-sprites-state!)
+              (util/show-congrat-message-when-puzzle-is-complete!)))
           (randomly-execute-a-fn (fn [] (js/setTimeout flip-row! 200)))))
       (when (= row (dec row-col-num))
         (let [bottom-button (.sprite
@@ -159,14 +151,15 @@
             (fn []
               (println (str "bottom-button col #" col " clicked"))
               (flip-col!)
-              (web-sck/send-sprites-state! game-state)))
+              (web-sck/send-sprites-state!)
+              (util/show-congrat-message-when-puzzle-is-complete!)))
           (randomly-execute-a-fn (fn [] (js/setTimeout flip-col! 200))))))))
 
 (defn- update [])
 
 (defn- start-game! []
   (println "starting game")
-  (reset! game
+  (reset! util/game
           (js/Phaser.Game.
             (.-innerWidth js/window)
             (.-innerHeight js/window)
@@ -174,8 +167,6 @@
             ""
             ; ^ id of the DOM element to insert canvas. As we've left it blank it will simply be appended to body.
             (clj->js {:preload preload :create create :update update}))))
-
-(web-sck/start-router game-state)
 
 ; this is the game program's entry point
 (let [puzzle-img (js/Image.)
@@ -198,12 +189,12 @@
       (fn []
         (reset! puzzle-image-width (.-width puzzle-img))
         (reset! puzzle-image-height (.-height puzzle-img))
-        (swap! game-state assoc :puzzle-width-height (int (* 0.7 (min (.-innerWidth js/window)
-                                                                      (.-innerHeight js/window)))))
-        (swap! game-state assoc :piece-x-scale (/ (:puzzle-width-height @game-state)
-                                                  @puzzle-image-width))
-        (swap! game-state assoc :piece-y-scale (/ (:puzzle-width-height @game-state)
-                                                  @puzzle-image-height))
+        (swap! util/game-state assoc :puzzle-width-height (int (* 0.7 (min (.-innerWidth js/window)
+                                                                           (.-innerHeight js/window)))))
+        (swap! util/game-state assoc :piece-x-scale (/ (:puzzle-width-height @util/game-state)
+                                                       @puzzle-image-width))
+        (swap! util/game-state assoc :piece-y-scale (/ (:puzzle-width-height @util/game-state)
+                                                       @puzzle-image-height))
         (println "Puzzle image loaded")
         (start-game!))))                                    ; start game after loading image
   (set! (.-src buttons-img) "images/control-buttons.png")

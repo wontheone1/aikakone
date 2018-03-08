@@ -25,7 +25,9 @@
 
   (when (= id :aikakone/sprites-state)
     (doseq [uid (:any @connected-uids)]
-      (chsk-send! uid [:aikakone/sprites-state ?data]))))
+      (println :uid uid)
+      (when (not= client-id uid)
+        (chsk-send! uid [:aikakone/sprites-state ?data])))))
 
 (sente/start-chsk-router! ch-chsk handle-message!)
 
