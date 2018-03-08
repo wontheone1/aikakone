@@ -29,6 +29,12 @@
 (defn- get-button-height []
   (/ @button-sprite-sheet-height 2))
 
+(defn- left-margin []
+  (/ (- (.-innerWidth js/window) (:puzzle-width-height @game-state)) 2))
+
+(defn- top-margin []
+  (/ (- (.-innerHeight js/window) (:puzzle-width-height @game-state)) 4))
+
 (defn show-congrat-message-when-puzzle-is-complete! []
   (when (and (every? #(= non-flipped-state (val %)) (:sprites-state @game-state))
              (not (:stage-clear-text @game-state)))
