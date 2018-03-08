@@ -22,7 +22,7 @@
   (println "sending " (:sprites-state @util/game-state))
   (chsk-send! [:aikakone/sprites-state (:sprites-state @util/game-state)]))
 
-(defn- syncronize-puzzle-board [sprites-state]
+(defn- synchronize-puzzle-board [sprites-state]
   (let [derefed-state @util/game-state
         piece-x-scale (:piece-x-scale derefed-state)
         piece-y-scale (:piece-y-scale derefed-state)
@@ -60,7 +60,7 @@
     (println "received " [event-id event-data])
     (case event-id
       :aikakone/sprites-state (do
-                                (syncronize-puzzle-board event-data)
+                                (synchronize-puzzle-board event-data)
                                 (util/show-congrat-message-when-puzzle-is-complete!))
 
       :aikakone/game-start (do
