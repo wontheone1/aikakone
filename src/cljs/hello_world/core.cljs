@@ -21,6 +21,9 @@
 (defn- get-button-height [sheet-height]
   (/ sheet-height 2))
 
+(defn- randomly-execute-a-fn [f]
+  (when (< (rand) 0.5) (f)))
+
 (defn- preload []
   (.spritesheet
     (.-load @util/game)
@@ -78,9 +81,7 @@
                                                        assoc
                                                        [col row]
                                                        util/flipped-state)
-                                                     (.setTo piece-scale 0 0)))))
-        randomly-execute-a-fn (fn [f]
-                                (when (< (rand) 0.5) (f)))]
+                                                     (.setTo piece-scale 0 0)))))]
     (doseq [row (range row-col-num)
             col (range row-col-num)
             :let [frame-id (+ (* row-col-num row) col)
