@@ -70,6 +70,12 @@
           :let [col (- (dec row-col-num) row)]]
     (toggle-visibility-and-flipped-state! col row)))
 
+(defn- randomize-puzzle []
+  (randomly-execute-a-fn flip-diagonal-pieces!)
+  (doseq [row-or-col (range row-col-num)]
+    (randomly-execute-a-fn (fn [] (js/setTimeout (fn [] (flip-row! row-or-col)) 200)))
+    (randomly-execute-a-fn (fn [] (js/setTimeout (fn [] (flip-col! row-or-col)) 200)))))
+
 (defn- create-create [send-sprites-state-fn!]
   (fn []
     (let [game-object-factory (.-add @util/game)
@@ -141,10 +147,7 @@
                 (flip-col! col)
                 (send-sprites-state-fn!)
                 (util/show-congrat-message-when-puzzle-is-complete!))))))
-      (randomly-execute-a-fn flip-diagonal-pieces!)
-      (doseq [row-or-col (range row-col-num)]
-        (randomly-execute-a-fn (fn [] (js/setTimeout (fn [] (flip-row! row-or-col)) 200)))
-        (randomly-execute-a-fn (fn [] (js/setTimeout (fn [] (flip-col! row-or-col)) 200)))))
+      (randomize-puzzle))
     (js/setTimeout send-sprites-state-fn! 300)))
 
 (defn- update [])
