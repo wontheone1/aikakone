@@ -153,7 +153,8 @@
               (flip-col!)
               (web-sck/send-sprites-state!)
               (util/show-congrat-message-when-puzzle-is-complete!)))
-          (randomly-execute-a-fn (fn [] (js/setTimeout flip-col! 200))))))))
+          (randomly-execute-a-fn (fn [] (js/setTimeout flip-col! 200)))))))
+  (web-sck/send-sprites-state!))
 
 (defn- update [])
 
