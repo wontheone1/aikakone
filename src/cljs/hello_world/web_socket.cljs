@@ -16,6 +16,37 @@
     (def ch-chsk ch-recv)
     (def chsk-send! send-fn)))
 
+(defn send-sprites-state! [state]
+  (println "sending " (:sprites-state @state))
+  (chsk-send! [:aikakone/sprites-state (:sprites-state @state)]))
+
+(defn- syncronize-puzzle-board [state sprites-state]
+  (let [derefed-state @state
+        piece-x-scale (:piece-x-scale derefed-state)
+        piece-y-scale (:piece-y-scale derefed-state)
+        sprites (:sprites derefed-state)]
+    (doseq [[[col row] flipped-state] sprites-state]
+      (let [piece-scale (.-scale (sprites [col row]))]
+        (if (= "NON-FLIPPED" flipped-state)
+          (do
+            (swap!
+              state
+              update
+              :sprites-state
+              assoc
+              [col row]
+              "NON-FLIPPED")
+            (.setTo piece-scale piece-x-scale piece-y-scale))
+          (do
+            (swap!
+              state
+              update
+              :sprites-state
+              assoc
+              [col row]
+              "FLIPPED")
+            (.setTo piece-scale 0 0)))))))
+
 (defn- define-event-msg-handler [state]
   (defmulti event-msg-handler :id)
 
@@ -28,8 +59,11 @@
       (println "Channel socket state change:" ?data)))
 
   (defmethod event-msg-handler :chsk/recv [{:keys [?data]}]
-    (let [position (second ?data)]
-      (swap! state assoc :text-x (:x position) :text-y (:y position))))
+    (let [[event-id event-data] ?data]
+      (println "received " [event-id event-data])
+      (case event-id
+        :aikakone/sprites-state (syncronize-puzzle-board state event-data)
+        (println event-id " is unknown event type"))))
 
   (defn send-uid []
     (chsk-send! [:aikakone/uid (:uid @state)]))
