@@ -16,10 +16,10 @@
   (/ puzzle-width-height row-col-num))
 (def button-sprite-sheet-width (atom nil))
 (def button-sprite-sheet-height (atom nil))
-(defn- get-button-width [sheet-width]
-  (/ sheet-width 3))
-(defn- get-button-height [sheet-height]
-  (/ sheet-height 2))
+(defn- get-button-width []
+  (/ @button-sprite-sheet-width 3))
+(defn- get-button-height []
+  (/ @button-sprite-sheet-height 2))
 
 (defn- randomly-execute-a-fn [f]
   (when (< (rand) 0.5) (f)))
@@ -36,16 +36,16 @@
     (.-load @util/game)
     "flip-buttons"
     "images/control-buttons.png"
-    (get-button-width @button-sprite-sheet-width)
-    (get-button-height @button-sprite-sheet-height)
+    (get-button-width)
+    (get-button-height)
     6))
 
 (defn- make-buttons-same-size-as-puzzle-piece! [sprite]
   (let [piece-width-height (get-piece-width-height (:puzzle-width-height @util/game-state))]
     (.setTo
       (.-scale sprite)
-      (/ piece-width-height (get-button-width @button-sprite-sheet-width))
-      (/ piece-width-height (get-button-height @button-sprite-sheet-height)))))
+      (/ piece-width-height (get-button-width))
+      (/ piece-width-height (get-button-height)))))
 
 (defn- create []
   (let [game-object-factory (.-add @util/game)
