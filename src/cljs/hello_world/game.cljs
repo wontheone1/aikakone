@@ -81,6 +81,7 @@
     (randomly-execute-a-fn (fn [] (js/setTimeout (fn [] (flip-col! row-or-col)) 200)))))
 
 (defn- create-puzzle-board [send-sprites-state-fn! initial-sprites-state]
+  (.setTo (.-scale (:play-button @util/game-state)) 0 0)
   (let [game-object-factory (.-add @util/game)
         left-margin (util/left-margin)
         top-margin (util/top-margin)
@@ -167,7 +168,8 @@
                           "play-button"
                           (fn []
                             (create-puzzle-board send-sprites-state-fn! initial-sprites-state))
-                          this))])))
+                          this))]
+      (swap! util/game-state assoc :play-button play-button))))
 
 (defn- update [])
 
