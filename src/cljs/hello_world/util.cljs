@@ -42,7 +42,8 @@
          (nil? (:stage-clear-text dereffed-game-state)))))
 
 (defn show-congrat-message-and-play-button-when-puzzle-is-complete! []
-  (when (and (every? #(= non-flipped-state (val %)) (:sprites-state @game-state))
+  (when (and (currently-playing-game?)
+             (every? #(= non-flipped-state (val %)) (:sprites-state @game-state))
              (not (:stage-clear-text @game-state)))
     (.setTo (.-scale (:play-button @game-state)) 1 1)
     (swap!
