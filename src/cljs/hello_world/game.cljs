@@ -118,7 +118,6 @@
             (set-on-click-callback!
               bottom-left-button
               (fn []
-                (println "bottom-left-button clicked")
                 (flip-diagonal-pieces!)
                 (send-sprites-state-fn!)
                 (util/show-congrat-message-and-play-button-when-puzzle-is-complete!)))))
@@ -133,7 +132,6 @@
             (set-on-click-callback!
               left-button
               (fn []
-                (println (str "left-button row #" row " clicked"))
                 (flip-row! row)
                 (send-sprites-state-fn!)
                 (util/show-congrat-message-and-play-button-when-puzzle-is-complete!)))))
@@ -148,7 +146,6 @@
             (set-on-click-callback!
               bottom-button
               (fn []
-                (println (str "bottom-button col #" col " clicked"))
                 (flip-col! col)
                 (send-sprites-state-fn!)
                 (util/show-congrat-message-and-play-button-when-puzzle-is-complete!))))))))

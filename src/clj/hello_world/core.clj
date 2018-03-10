@@ -27,10 +27,6 @@
       (chsk-send! uid [message-type data]))))
 
 (defn- handle-message! [{:keys [id client-id ?data]}]
-  (println :id id)
-  (println :cl-id client-id)
-  (println :data? ?data)
-
   (case id
     :aikakone/sprites-state
     (do
