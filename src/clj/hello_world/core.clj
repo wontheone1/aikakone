@@ -35,7 +35,9 @@
           (chsk-send! uid [:aikakone/sprites-state ?data]))))
 
     :aikakone/game-start
-    (chsk-send! client-id [:aikakone/game-start @sprites-state])))
+    (chsk-send! client-id [:aikakone/game-start @sprites-state])
+
+    nil))
 
 (sente/start-chsk-router! ch-chsk handle-message!)
 
