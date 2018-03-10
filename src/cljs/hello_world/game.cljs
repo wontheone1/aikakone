@@ -118,9 +118,10 @@
             (set-on-click-callback!
               bottom-left-button
               (fn []
-                (flip-diagonal-pieces!)
-                (send-sprites-state-fn!)
-                (util/show-congrat-message-and-play-button-when-puzzle-is-complete!)))))
+                (when (util/currently-playing-game?)
+                  (flip-diagonal-pieces!)
+                  (send-sprites-state-fn!)
+                  (util/show-congrat-message-and-play-button-when-puzzle-is-complete!))))))
         (when (zero? col)
           (let [left-button (.sprite
                               game-object-factory
@@ -132,9 +133,10 @@
             (set-on-click-callback!
               left-button
               (fn []
-                (flip-row! row)
-                (send-sprites-state-fn!)
-                (util/show-congrat-message-and-play-button-when-puzzle-is-complete!)))))
+                (when (util/currently-playing-game?)
+                  (flip-row! row)
+                  (send-sprites-state-fn!)
+                  (util/show-congrat-message-and-play-button-when-puzzle-is-complete!))))))
         (when (= row (dec row-col-num))
           (let [bottom-button (.sprite
                                 game-object-factory
@@ -146,9 +148,10 @@
             (set-on-click-callback!
               bottom-button
               (fn []
-                (flip-col! col)
-                (send-sprites-state-fn!)
-                (util/show-congrat-message-and-play-button-when-puzzle-is-complete!))))))))
+                (when (util/currently-playing-game?)
+                  (flip-col! col)
+                  (send-sprites-state-fn!)
+                  (util/show-congrat-message-and-play-button-when-puzzle-is-complete!)))))))))
   (when (not (empty? initial-sprites-state))
     (util/synchronize-puzzle-board initial-sprites-state)))
 
