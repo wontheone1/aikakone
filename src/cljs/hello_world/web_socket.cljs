@@ -40,6 +40,7 @@
 
       :aikakone/game-start (game/start-game! {:send-sprites-state-fn! send-sprites-state!}
                                              event-data)
+
       (println event-id " is unknown event type"))))
 
 (defn send-uid []
