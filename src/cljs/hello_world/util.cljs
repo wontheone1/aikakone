@@ -75,3 +75,8 @@
               [:sprites-state [col row]]
               flipped-state)
             (.setTo piece-scale 0 0)))))))
+
+(defn destroy-stage-clear-text! []
+  (when-let [stage-clear-text (:stage-clear-text @game-state)]
+    (.destroy stage-clear-text))
+  (swap! game-state assoc :stage-clear-text nil))

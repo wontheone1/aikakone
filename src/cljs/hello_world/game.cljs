@@ -165,9 +165,7 @@
                           10
                           "play-button"
                           (fn []
-                            (when-let [stage-clear-text (:stage-clear-text @util/game-state)]
-                              (.destroy stage-clear-text))
-                            (swap! util/game-state assoc :stage-clear-text nil)
+                            (util/destroy-stage-clear-text!)
                             (create-puzzle-board send-sprites-state-fn! initial-sprites-state)
                             (randomize-puzzle)
                             (js/setTimeout send-sprites-state-fn! 300))
