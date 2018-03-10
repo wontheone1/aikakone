@@ -120,7 +120,7 @@
               (println "bottom-left-button clicked")
               (flip-diagonal-pieces!)
               (send-sprites-state-fn!)
-              (util/show-congrat-message-when-puzzle-is-complete!)))))
+              (util/show-congrat-message-and-play-button-when-puzzle-is-complete!)))))
       (when (zero? col)
         (let [left-button (.sprite
                             game-object-factory
@@ -135,7 +135,7 @@
               (println (str "left-button row #" row " clicked"))
               (flip-row! row)
               (send-sprites-state-fn!)
-              (util/show-congrat-message-when-puzzle-is-complete!)))))
+              (util/show-congrat-message-and-play-button-when-puzzle-is-complete!)))))
       (when (= row (dec row-col-num))
         (let [bottom-button (.sprite
                               game-object-factory
@@ -150,7 +150,7 @@
               (println (str "bottom-button col #" col " clicked"))
               (flip-col! col)
               (send-sprites-state-fn!)
-              (util/show-congrat-message-when-puzzle-is-complete!))))))
+              (util/show-congrat-message-and-play-button-when-puzzle-is-complete!))))))
     (if (nil? initial-sprites-state)
       (do
         (randomize-puzzle)

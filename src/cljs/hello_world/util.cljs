@@ -36,9 +36,10 @@
 (defn- top-margin []
   (/ (- (.-innerHeight js/window) (:puzzle-width-height @game-state)) 4))
 
-(defn show-congrat-message-when-puzzle-is-complete! []
+(defn show-congrat-message-and-play-button-when-puzzle-is-complete! []
   (when (and (every? #(= non-flipped-state (val %)) (:sprites-state @game-state))
              (not (:stage-clear-text @game-state)))
+    (.setTo (.-scale (:play-button @game-state)) 1 1)
     (swap!
       game-state
       assoc
