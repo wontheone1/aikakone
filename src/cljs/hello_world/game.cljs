@@ -168,6 +168,9 @@
                           10
                           "play-button"
                           (fn []
+                            (when-let [stage-clear-text (:stage-clear-text @util/game-state)]
+                              (.destroy stage-clear-text))
+                            (swap! util/game-state assoc :stage-clear-text nil)
                             (create-puzzle-board send-sprites-state-fn! initial-sprites-state))
                           this))]
       (swap! util/game-state assoc :play-button play-button))))
