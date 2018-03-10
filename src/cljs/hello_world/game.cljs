@@ -10,6 +10,10 @@
   (when (< (rand) 0.5) (f)))
 
 (defn- preload []
+  (.image
+    (.-load @util/game)
+    "play-button"
+    "images/play-button.png")
   (.spritesheet
     (.-load @util/game)
     "puzzle"
@@ -86,7 +90,12 @@
                                    (set! (.-inputEnabled sprite) true)
                                    (.add
                                      (.-onInputDown (.-events sprite))
-                                     callback-fn))]
+                                     callback-fn))
+          play-button (.sprite
+                            game-object-factory
+                            10
+                            10
+                            "play-button")]
       (doseq [row (range row-col-num)
               col (range row-col-num)
               :let [frame-id (+ (* row-col-num row) col)
