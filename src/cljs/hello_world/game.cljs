@@ -173,7 +173,12 @@
                             (swap! util/game-state assoc :stage-clear-text nil)
                             (create-puzzle-board send-sprites-state-fn! initial-sprites-state))
                           this))]
-      (swap! util/game-state assoc :play-button play-button))))
+      (swap! util/game-state assoc :play-button play-button))
+    (if (nil? initial-sprites-state)
+      (do
+        (randomize-puzzle)
+        (js/setTimeout send-sprites-state-fn! 300))
+      (util/synchronize-puzzle-board initial-sprites-state))))
 
 (defn- update [])
 
