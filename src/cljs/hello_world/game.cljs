@@ -152,10 +152,7 @@
                 (flip-col! col)
                 (send-sprites-state-fn!)
                 (util/show-congrat-message-and-play-button-when-puzzle-is-complete!))))))))
-  (if (nil? initial-sprites-state)
-    (do
-      (randomize-puzzle)
-      (js/setTimeout send-sprites-state-fn! 300))
+  (when (not (empty? initial-sprites-state))
     (util/synchronize-puzzle-board initial-sprites-state)))
 
 (defn- create-create [send-sprites-state-fn! initial-sprites-state]
@@ -171,14 +168,13 @@
                             (when-let [stage-clear-text (:stage-clear-text @util/game-state)]
                               (.destroy stage-clear-text))
                             (swap! util/game-state assoc :stage-clear-text nil)
-                            (create-puzzle-board send-sprites-state-fn! initial-sprites-state))
+                            (create-puzzle-board send-sprites-state-fn! initial-sprites-state)
+                            (randomize-puzzle)
+                            (js/setTimeout send-sprites-state-fn! 300))
                           this))]
-      (swap! util/game-state assoc :play-button play-button))
-    (if (nil? initial-sprites-state)
-      (do
-        (randomize-puzzle)
-        (js/setTimeout send-sprites-state-fn! 300))
-      (util/synchronize-puzzle-board initial-sprites-state))))
+      (swap! util/game-state assoc :play-button play-button)
+      (when (not (empty? initial-sprites-state))
+        (create-puzzle-board send-sprites-state-fn! initial-sprites-state)))))
 
 (defn- update [])
 
