@@ -20,6 +20,12 @@
 
 (def sprites-state (atom nil))
 
+(defn- send-data-to-all-except-message-sender [client-id message-type data]
+  (doseq [uid (:any @connected-uids)]
+    (println :uid uid)
+    (when (not= client-id uid)
+      (chsk-send! uid [message-type data]))))
+
 (defn- handle-message! [{:keys [id client-id ?data]}]
   (println :id id)
   (println :cl-id client-id)
@@ -29,10 +35,7 @@
     :aikakone/sprites-state
     (do
       (reset! sprites-state ?data)
-      (doseq [uid (:any @connected-uids)]
-        (println :uid uid)
-        (when (not= client-id uid)
-          (chsk-send! uid [:aikakone/sprites-state ?data]))))
+      (send-data-to-all-except-message-sender client-id :aikakone/sprites-state ?data))
 
     :aikakone/game-start
     (chsk-send! client-id [:aikakone/game-start @sprites-state])
