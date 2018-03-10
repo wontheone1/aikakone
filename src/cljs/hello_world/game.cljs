@@ -155,7 +155,7 @@
   (when (not (empty? initial-sprites-state))
     (util/synchronize-puzzle-board initial-sprites-state)))
 
-(defn- create-create [send-sprites-state-fn! initial-sprites-state]
+(defn- create-create [{:keys [send-sprites-state-fn!]} initial-sprites-state]
   (fn []
     (let [game-object-factory (.-add @util/game)
           play-button (this-as this
@@ -178,7 +178,7 @@
 
 (defn- update [])
 
-(defn- start-game! [send-sprites-state-fn! initial-sprites-state]
+(defn- start-game! [websocket-message-send-functions initial-sprites-state]
   (println "starting game")
   (reset! util/game
           (js/Phaser.Game.
@@ -188,5 +188,5 @@
             ""
             ; ^ id of the DOM element to insert canvas. As we've left it blank it will simply be appended to body.
             (clj->js {:preload preload
-                      :create  (create-create send-sprites-state-fn! initial-sprites-state)
+                      :create  (create-create websocket-message-send-functions initial-sprites-state)
                       :update  update}))))
