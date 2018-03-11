@@ -4,8 +4,7 @@
 
 (def game (atom nil))
 
-(defonce game-state (atom {:game-start-time     nil
-                           :sprites             {}
+(defonce game-state (atom {:sprites             {}
                            :sprites-state       {}
                            :play-button         nil
                            :play-time-text      nil
@@ -89,10 +88,6 @@
     (.destroy stage-clear-text))
   (swap! game-state assoc :stage-clear-text nil))
 
-
-(defn mark-start-time! []
-  (swap! game-state assoc :game-start-time (js/Date.)))
-
 (defn show-play-time! []
   (when-not (:play-time-text @game-state)
     (swap! game-state
@@ -106,9 +101,8 @@
                             :fill  "#ffffff"
                             :align "center"})))))
 
-(defn update-play-time-to-current-time []
+(defn update-play-time-to-current-time [play-time]
   (let [derefed-state @game-state]
     (.setText
       (:play-time-text derefed-state)
-      (str (/ (- (js/Date.) (:game-start-time derefed-state))
-              1000)))))
+      (str (/ play-time 1000)))))
