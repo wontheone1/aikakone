@@ -154,19 +154,20 @@
 
 (defn- create-create [{:keys [send-sprites-state-fn!]}]
   (fn []
-    (let [game-object-factory (.-add @util/game)
-          play-button (this-as this
-                        (.button
-                          game-object-factory
-                          10
-                          10
-                          "play-button"
-                          (fn []
-                            (util/destroy-stage-clear-text!)
-                            (create-puzzle-board send-sprites-state-fn!)
-                            (js/setTimeout send-sprites-state-fn! 300))
-                          this))]
-      (swap! util/game-state assoc :play-button play-button))))
+    (when-not (:play-button @util/game-state)
+      (let [game-object-factory (.-add @util/game)
+            play-button (this-as this
+                          (.button
+                            game-object-factory
+                            10
+                            10
+                            "play-button"
+                            (fn []
+                              (util/destroy-stage-clear-text!)
+                              (create-puzzle-board send-sprites-state-fn!)
+                              (js/setTimeout send-sprites-state-fn! 300))
+                            this))]
+        (swap! util/game-state assoc :play-button play-button)))))
 
 (defn- update [])
 
