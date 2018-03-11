@@ -100,7 +100,7 @@
                       "puzzle"
                       frame-id)]
           (swap! util/game-state assoc-in [:sprites [col row]] piece)
-          (.setTo (.-scale piece) (:piece-x-scale @util/game-state) (:piece-y-scale @util/game-state)))
+          (.setTo (.-scale piece) 0 0))
         (when
           (and (zero? col) (= row (dec row-col-num)))
           (let [bottom-left-button (.sprite
