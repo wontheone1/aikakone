@@ -41,22 +41,31 @@
     (and (not (empty? (:sprites dereffed-game-state)))
          (nil? (:stage-clear-text dereffed-game-state)))))
 
+(defn- puzzle-solved? []
+  (every? #(= non-flipped-state (val %)) (:sprites-state @game-state)))
+
+(defn- show-play-button! []
+  (.setTo (.-scale (:play-button @game-state)) 1 1))
+
+(defn- show-congrat-message! []
+  (swap!
+    game-state
+    assoc
+    :stage-clear-text
+    (.text (.-add @game)
+           (/ (.-innerWidth js/window) 5)
+           (/ (.-innerHeight js/window) 20)
+           "Congrats!\n You cleared the puzzle!"
+           (clj->js {:font  "60px Arial"
+                     :fill  "#ffffff"
+                     :align "center"}))))
+
 (defn show-congrat-message-and-play-button-when-puzzle-is-complete! []
   (when (and (currently-playing-game?)
-             (every? #(= non-flipped-state (val %)) (:sprites-state @game-state))
+             (puzzle-solved?)
              (not (:stage-clear-text @game-state)))
-    (.setTo (.-scale (:play-button @game-state)) 1 1)
-    (swap!
-      game-state
-      assoc
-      :stage-clear-text
-      (.text (.-add @game)
-             (/ (.-innerWidth js/window) 5)
-             (/ (.-innerHeight js/window) 20)
-             "Congrats!\n You cleared the puzzle!"
-             (clj->js {:font  "60px Arial"
-                       :fill  "#ffffff"
-                       :align "center"})))))
+    (show-play-button!)
+    (show-congrat-message!)))
 
 (defn- synchronize-puzzle-board [sprites-state]
   (swap! game-state assoc :sprites-state sprites-state)
