@@ -104,3 +104,10 @@
                 (clj->js {:font  "60px Arial"
                           :fill  "#ffffff"
                           :align "center"}))))
+
+(defn update-play-time-to-current-time []
+  (let [derefed-state @game-state]
+    (.setText
+      (:play-time-text derefed-state)
+      (str (/ (- (js/Date.) (:game-start-time derefed-state))
+              1000)))))
