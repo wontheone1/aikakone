@@ -116,7 +116,7 @@
                 (when (util/currently-playing-game?)
                   (flip-diagonal-pieces!)
                   (send-sprites-state-fn!)
-                  (util/show-congrat-message-and-play-button-and-send-puzzle-complete-msg-when-puzzle-is-complete!
+                  (util/finish-game-when-puzzle-is-complete!
                     send-puzzle-complete-fn!))))))
         (when (zero? col)
           (let [left-button (.sprite
@@ -132,7 +132,7 @@
                 (when (util/currently-playing-game?)
                   (flip-row! row)
                   (send-sprites-state-fn!)
-                  (util/show-congrat-message-and-play-button-and-send-puzzle-complete-msg-when-puzzle-is-complete!
+                  (util/finish-game-when-puzzle-is-complete!
                     send-puzzle-complete-fn!))))))
         (when (= row (dec row-col-num))
           (let [bottom-button (.sprite
@@ -148,7 +148,7 @@
                 (when (util/currently-playing-game?)
                   (flip-col! col)
                   (send-sprites-state-fn!)
-                  (util/show-congrat-message-and-play-button-and-send-puzzle-complete-msg-when-puzzle-is-complete!
+                  (util/finish-game-when-puzzle-is-complete!
                     send-puzzle-complete-fn!)))))))))
   (let [initial-sprites-state (:sprites-state @util/game-state)]
     (if (not (empty? initial-sprites-state))

@@ -60,8 +60,7 @@
                      :fill  "#ffffff"
                      :align "center"}))))
 
-(defn show-congrat-message-and-play-button-and-send-puzzle-complete-msg-when-puzzle-is-complete!
-  [send-puzzle-complete-fn!]
+(defn finish-game-when-puzzle-is-complete! [send-puzzle-complete-fn!]
   (when (and (currently-playing-game?)
              (puzzle-solved?)
              (not (:stage-clear-text @game-state)))

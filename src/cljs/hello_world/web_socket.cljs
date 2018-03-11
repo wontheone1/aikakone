@@ -39,7 +39,7 @@
     (case event-id
       :aikakone/sprites-state (do
                                 (util/synchronize-puzzle-board event-data)
-                                (util/show-congrat-message-and-play-button-and-send-puzzle-complete-msg-when-puzzle-is-complete!
+                                (util/finish-game-when-puzzle-is-complete!
                                   send-puzzle-complete!))
 
       :aikakone/game-start (do
