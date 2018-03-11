@@ -170,9 +170,7 @@
                             (create-puzzle-board send-sprites-state-fn!)
                             (js/setTimeout send-sprites-state-fn! 300))
                           this))]
-      (swap! util/game-state assoc :play-button play-button)
-      (when (not (empty? (:sprites-state @util/game-state)))
-        (create-puzzle-board send-sprites-state-fn!)))))
+      (swap! util/game-state assoc :play-button play-button))))
 
 (defn- update [])
 
