@@ -38,8 +38,9 @@
                                 (util/synchronize-puzzle-board event-data)
                                 (util/show-congrat-message-and-play-button-when-puzzle-is-complete!))
 
-      :aikakone/game-start (game/start-game! {:send-sprites-state-fn! send-sprites-state!}
-                                             event-data)
+      :aikakone/game-start (do
+                             (swap! util/game-state assoc :sprites-state event-data)
+                             (game/start-game! {:send-sprites-state-fn! send-sprites-state!}))
 
       (println event-id " is unknown event type"))))
 

@@ -59,6 +59,7 @@
                        :align "center"})))))
 
 (defn- synchronize-puzzle-board [sprites-state]
+  (swap! game-state assoc :sprites-state sprites-state)
   (when (currently-playing-game?)
     (let [derefed-state @game-state
           piece-x-scale (:piece-x-scale derefed-state)
@@ -67,20 +68,8 @@
       (doseq [[[col row] sprite-flipped-state] sprites-state]
         (let [piece-scale (.-scale (sprites [col row]))]
           (if (= non-flipped-state sprite-flipped-state)
-            (do
-              (swap!
-                game-state
-                assoc-in
-                [:sprites-state [col row]]
-                non-flipped-state)
-              (.setTo piece-scale piece-x-scale piece-y-scale))
-            (do
-              (swap!
-                game-state
-                assoc-in
-                [:sprites-state [col row]]
-                flipped-state)
-              (.setTo piece-scale 0 0))))))))
+            (.setTo piece-scale piece-x-scale piece-y-scale)
+            (.setTo piece-scale 0 0)))))))
 
 (defn destroy-stage-clear-text! []
   (when-let [stage-clear-text (:stage-clear-text @game-state)]
