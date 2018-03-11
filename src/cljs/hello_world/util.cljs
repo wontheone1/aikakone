@@ -4,9 +4,11 @@
 
 (def game (atom nil))
 
-(defonce game-state (atom {:sprites             {}
+(defonce game-state (atom {:game-start-time     nil
+                           :sprites             {}
                            :sprites-state       {}
                            :play-button         nil
+                           :play-time-text      nil
                            :puzzle-width-height 0
                            :piece-x-scale       0
                            :piece-y-scale       0
@@ -86,3 +88,19 @@
   (when-let [stage-clear-text (:stage-clear-text @game-state)]
     (.destroy stage-clear-text))
   (swap! game-state assoc :stage-clear-text nil))
+
+
+(defn mark-start-time! []
+  (swap! game-state assoc :game-start-time (js/Date.)))
+
+(defn show-play-time! []
+  (swap! game-state
+         assoc
+         :play-time-text
+         (.text (.-add @game)
+                (* (.-innerWidth js/window) 0.8)
+                (/ (.-innerHeight js/window) 20)
+                "0.000"
+                (clj->js {:font  "60px Arial"
+                          :fill  "#ffffff"
+                          :align "center"}))))

@@ -153,7 +153,9 @@
   (let [initial-sprites-state (:sprites-state @util/game-state)]
     (if (not (empty? initial-sprites-state))
       (util/synchronize-puzzle-board initial-sprites-state)
-      (randomize-puzzle))))
+      (randomize-puzzle)))
+  (util/mark-start-time!)
+  (util/show-play-time!))
 
 (defn- create-create [websocket-message-send-functions]
   (fn []
