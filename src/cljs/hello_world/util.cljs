@@ -60,12 +60,15 @@
                      :fill  "#ffffff"
                      :align "center"}))))
 
-(defn show-congrat-message-and-play-button-when-puzzle-is-complete! []
+(defn show-congrat-message-and-play-button-and-send-puzzle-complete-msg-when-puzzle-is-complete!
+  [send-puzzle-complete-fn!]
   (when (and (currently-playing-game?)
              (puzzle-solved?)
              (not (:stage-clear-text @game-state)))
     (show-play-button!)
-    (show-congrat-message!)))
+    (show-congrat-message!)
+    (send-puzzle-complete-fn!)
+    (swap! game-state assoc :sprites-state {})))
 
 (defn- synchronize-puzzle-board [sprites-state]
   (swap! game-state assoc :sprites-state sprites-state)

@@ -76,7 +76,7 @@
     (randomly-execute-a-fn (fn [] (js/setTimeout (fn [] (flip-row! row-or-col)) 200)))
     (randomly-execute-a-fn (fn [] (js/setTimeout (fn [] (flip-col! row-or-col)) 200)))))
 
-(defn- create-puzzle-board [send-sprites-state-fn!]
+(defn- create-puzzle-board [{:keys [send-sprites-state-fn! send-puzzle-complete-fn!]}]
   (.setTo (.-scale (:play-button @util/game-state)) 0 0)
   (when (empty? (:sprites @util/game-state))
     (let [game-object-factory (.-add @util/game)
@@ -116,7 +116,8 @@
                 (when (util/currently-playing-game?)
                   (flip-diagonal-pieces!)
                   (send-sprites-state-fn!)
-                  (util/show-congrat-message-and-play-button-when-puzzle-is-complete!))))))
+                  (util/show-congrat-message-and-play-button-and-send-puzzle-complete-msg-when-puzzle-is-complete!
+                    send-puzzle-complete-fn!))))))
         (when (zero? col)
           (let [left-button (.sprite
                               game-object-factory
@@ -131,7 +132,8 @@
                 (when (util/currently-playing-game?)
                   (flip-row! row)
                   (send-sprites-state-fn!)
-                  (util/show-congrat-message-and-play-button-when-puzzle-is-complete!))))))
+                  (util/show-congrat-message-and-play-button-and-send-puzzle-complete-msg-when-puzzle-is-complete!
+                    send-puzzle-complete-fn!))))))
         (when (= row (dec row-col-num))
           (let [bottom-button (.sprite
                                 game-object-factory
@@ -146,13 +148,14 @@
                 (when (util/currently-playing-game?)
                   (flip-col! col)
                   (send-sprites-state-fn!)
-                  (util/show-congrat-message-and-play-button-when-puzzle-is-complete!)))))))))
+                  (util/show-congrat-message-and-play-button-and-send-puzzle-complete-msg-when-puzzle-is-complete!
+                    send-puzzle-complete-fn!)))))))))
   (let [initial-sprites-state (:sprites-state @util/game-state)]
     (if (not (empty? initial-sprites-state))
       (util/synchronize-puzzle-board initial-sprites-state)
       (randomize-puzzle))))
 
-(defn- create-create [{:keys [send-sprites-state-fn!]}]
+(defn- create-create [websocket-message-send-functions]
   (fn []
     (when-not (:play-button @util/game-state)
       (let [game-object-factory (.-add @util/game)
@@ -164,8 +167,8 @@
                             "play-button"
                             (fn []
                               (util/destroy-stage-clear-text!)
-                              (create-puzzle-board send-sprites-state-fn!)
-                              (js/setTimeout send-sprites-state-fn! 300))
+                              (create-puzzle-board websocket-message-send-functions)
+                              (js/setTimeout (:send-sprites-state-fn! websocket-message-send-functions) 300))
                             this))]
         (swap! util/game-state assoc :play-button play-button)))))
 

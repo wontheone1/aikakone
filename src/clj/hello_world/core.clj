@@ -36,6 +36,11 @@
     :aikakone/game-start
     (chsk-send! client-id [:aikakone/game-start @sprites-state])
 
+    :aikakone/puzzle-complete!
+    (do
+      (reset! sprites-state nil)
+      (send-data-to-all-except-message-sender client-id :aikakone/sprites-state {}))
+
     nil))
 
 (sente/start-chsk-router! ch-chsk handle-message!)

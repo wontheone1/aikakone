@@ -21,6 +21,9 @@
 (defn send-sprites-state! []
   (chsk-send! [:aikakone/sprites-state (:sprites-state @util/game-state)]))
 
+(defn send-puzzle-complete! []
+  (chsk-send! [:aikakone/puzzle-complete! nil]))
+
 (defmulti event-msg-handler :id)
 
 (defmethod event-msg-handler :default [{:keys [event]}]
@@ -36,11 +39,13 @@
     (case event-id
       :aikakone/sprites-state (do
                                 (util/synchronize-puzzle-board event-data)
-                                (util/show-congrat-message-and-play-button-when-puzzle-is-complete!))
+                                (util/show-congrat-message-and-play-button-and-send-puzzle-complete-msg-when-puzzle-is-complete!
+                                  send-puzzle-complete!))
 
       :aikakone/game-start (do
                              (swap! util/game-state assoc :sprites-state event-data)
-                             (game/start-game! {:send-sprites-state-fn! send-sprites-state!}))
+                             (game/start-game! {:send-sprites-state-fn!   send-sprites-state!
+                                                :send-puzzle-complete-fn! send-puzzle-complete!}))
 
       (println event-id " is unknown event type"))))
 
