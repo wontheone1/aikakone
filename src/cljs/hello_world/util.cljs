@@ -11,6 +11,7 @@
                            :puzzle-width-height 0
                            :piece-x-scale       0
                            :piece-y-scale       0
+                           :see-ranking-button  nil
                            :stage-clear-text    nil}))
 
 (def flipped-state "FLIPPED")
@@ -61,11 +62,28 @@
                      :fill  "#ffffff"
                      :align "center"}))))
 
+(defn- show-see-ranking-button! []
+  (swap!
+    game-state
+    assoc
+    :see-ranking-button
+    (this-as this
+      (.button
+        (.-add @game)
+        (* 0.75 (.-innerWidth js/window))
+        (* 0.2 (.-innerHeight js/window))
+        "see-ranking-button"
+        (fn []
+          (println "See ranking"))
+        this)))
+  (.setTo (.-scale (:see-ranking-button @game-state)) 0.5 0.5))
+
 (defn finish-game-when-puzzle-is-complete! [send-puzzle-complete-fn!]
   (when (and (currently-playing-game?)
              (puzzle-solved?)
              (not (:stage-clear-text @game-state)))
     (show-play-button!)
+    (show-see-ranking-button!)
     (show-congrat-message!)
     (send-puzzle-complete-fn!)
     (swap! game-state assoc :sprites-state {})))

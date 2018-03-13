@@ -14,6 +14,10 @@
     (.-load @util/game)
     "play-button"
     "images/play-button.png")
+  (.image
+    (.-load @util/game)
+    "see-ranking-button"
+    "images/ranking.png")
   (.spritesheet
     (.-load @util/game)
     "puzzle"
