@@ -84,6 +84,7 @@
                                     send-puzzle-complete-fn!
                                     send-start-timer-fn!]}]
   (.setTo (.-scale (:play-button @util/game-state)) 0 0)
+  (.setTo (.-scale (:see-ranking-button @util/game-state)) 0 0)
   (when (empty? (:sprites @util/game-state))
     (let [game-object-factory (.-add @util/game)
           left-margin (util/left-margin)
@@ -179,7 +180,22 @@
                               (create-puzzle-board websocket-message-send-functions)
                               (js/setTimeout (:send-sprites-state-fn! websocket-message-send-functions) 300))
                             this))]
-        (swap! util/game-state assoc :play-button play-button)))))
+        (swap! util/game-state assoc :play-button play-button)
+        (swap!
+          util/game-state
+          assoc
+          :see-ranking-button
+          (this-as this
+            (.button
+              (.-add @util/game)
+              (* 0.75 (.-innerWidth js/window))
+              (* 0.2 (.-innerHeight js/window))
+              "see-ranking-button"
+              (fn []
+                (let [canvas (.getElementById js/document "canvas")]
+                  (set! (.-display (.-style canvas)) "none")))
+              this)))
+        (util/show-see-ranking-button!)))))
 
 (defn- update [] )
 
