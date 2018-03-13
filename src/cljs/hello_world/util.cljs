@@ -7,6 +7,7 @@
 (defonce game-state (atom {:sprites             {}
                            :sprites-state       {}
                            :play-button         nil
+                           :play-time           0.0
                            :play-time-text      nil
                            :puzzle-width-height 0
                            :piece-x-scale       0
@@ -85,7 +86,7 @@
     (show-play-button!)
     (show-see-ranking-button!)
     (show-congrat-message!)
-    (send-puzzle-complete-fn!)
+    (send-puzzle-complete-fn! (:play-time @game-state))
     (swap! game-state assoc :sprites-state {})))
 
 (defn- synchronize-puzzle-board [sprites-state]
@@ -120,7 +121,9 @@
                             :align "center"})))))
 
 (defn update-play-time-to-current-time [play-time]
-  (let [derefed-state @game-state]
+  (let [derefed-state @game-state
+        play-time-in-sec (/ play-time 1000)]
     (.setText
       (:play-time-text derefed-state)
-      (str (/ play-time 1000)))))
+      (str play-time-in-sec))
+    (swap! game-state assoc :play-time play-time-in-sec)))

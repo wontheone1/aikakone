@@ -22,6 +22,8 @@
 
 (def sprites-state (atom nil))
 
+(def ranking (atom []))
+
 (def game-start-time (atom nil))
 
 (def sending-time-future (atom nil))
@@ -61,6 +63,9 @@
     (do
       (reset! game-start-time nil)
       (reset! sprites-state nil)
+      (swap! ranking (fn [ranking]
+                       (sort (conj ranking ?data))))
+      (println @ranking)
       (send-data-to-all-except-message-sender client-id :aikakone/sprites-state {}))
 
     nil))

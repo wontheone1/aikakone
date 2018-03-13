@@ -21,8 +21,8 @@
 (defn send-sprites-state! []
   (chsk-send! [:aikakone/sprites-state (:sprites-state @util/game-state)]))
 
-(defn send-puzzle-complete! []
-  (chsk-send! [:aikakone/puzzle-complete! nil]))
+(defn send-puzzle-complete! [play-time]
+  (chsk-send! [:aikakone/puzzle-complete! play-time]))
 
 (defn send-start-timer! []
   (chsk-send! [:aikakone/start-timer nil]))
