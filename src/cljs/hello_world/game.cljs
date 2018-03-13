@@ -190,7 +190,7 @@
             (.-innerWidth js/window)
             (.-innerHeight js/window)
             js/Phaser.Auto
-            ""
+            "canvas"
             ; ^ id of the DOM element to insert canvas. As we've left it blank it will simply be appended to body.
             (clj->js {:preload preload
                       :create  (create-create websocket-message-send-functions)
