@@ -18,16 +18,24 @@
   (def chsk-send!                    send-fn)
   (def connected-uids                connected-uids))
 
+(def sprites-state (atom nil))
+
 (defn- handle-message! [{:keys [id client-id ?data]}]
   (println :id id)
   (println :cl-id client-id)
   (println :data? ?data)
 
-  (when (= id :aikakone/sprites-state)
-    (doseq [uid (:any @connected-uids)]
-      (println :uid uid)
-      (when (not= client-id uid)
-        (chsk-send! uid [:aikakone/sprites-state ?data])))))
+  (case id
+    :aikakone/sprites-state
+    (do
+      (reset! sprites-state ?data)
+      (doseq [uid (:any @connected-uids)]
+        (println :uid uid)
+        (when (not= client-id uid)
+          (chsk-send! uid [:aikakone/sprites-state ?data]))))
+
+    :aikakone/game-start
+    (chsk-send! client-id [:aikakone/game-start @sprites-state])))
 
 (sente/start-chsk-router! ch-chsk handle-message!)
 
