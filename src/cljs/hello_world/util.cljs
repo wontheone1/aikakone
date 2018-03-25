@@ -66,6 +66,12 @@
                      :fill  "#ffffff"
                      :align "center"}))))
 
+(defn- show-see-ranking-button! []
+  (.setTo (.-scale (:see-ranking-button @game-state)) 0.5 0.5))
+
+(defn hide-see-ranking-button! []
+  (.setTo (.-scale (:see-ranking-button @game-state)) 0 0))
+
 (defn make-see-ranking-button! []
   (swap!
     game-state
@@ -80,13 +86,8 @@
         (fn []
           (let [canvas (.getElementById js/document "canvas")]
             (set! (.-display (.-style canvas)) "none")))
-        this))))
-
-(defn- show-see-ranking-button! []
-  (.setTo (.-scale (:see-ranking-button @game-state)) 0.5 0.5))
-
-(defn hide-see-ranking-button! []
-  (.setTo (.-scale (:see-ranking-button @game-state)) 0 0))
+        this)))
+  (show-see-ranking-button!))
 
 (defn finish-game-when-puzzle-is-complete! [send-puzzle-complete-fn!]
   (when (and (currently-playing-game?)

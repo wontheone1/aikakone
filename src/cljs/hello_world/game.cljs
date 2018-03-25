@@ -188,8 +188,7 @@
   (fn []
     (when-not (:play-button @util/game-state)
       (make-play-button! websocket-message-send-functions)
-      (util/make-see-ranking-button!)
-      (util/show-see-ranking-button!))))
+      (util/make-see-ranking-button!))))
 
 (defn- update [] )
 
