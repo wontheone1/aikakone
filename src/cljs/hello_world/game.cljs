@@ -80,6 +80,25 @@
     (randomly-execute-a-fn (fn [] (js/setTimeout (fn [] (flip-row! row-or-col)) 200)))
     (randomly-execute-a-fn (fn [] (js/setTimeout (fn [] (flip-col! row-or-col)) 200)))))
 
+(declare create-puzzle-board)
+
+(defn make-play-button! [websocket-message-send-functions]
+  (swap!
+    util/game-state
+    assoc
+    :play-button
+    (this-as this
+      (.button
+        (.-add @util/game)
+        10
+        10
+        "play-button"
+        (fn []
+          (util/destroy-stage-clear-text!)
+          (create-puzzle-board websocket-message-send-functions)
+          (js/setTimeout (:send-sprites-state-fn! websocket-message-send-functions) 300))
+        this))))
+
 (defn- create-puzzle-board [{:keys [send-sprites-state-fn!
                                     send-puzzle-complete-fn!
                                     send-start-timer-fn!]}]
@@ -168,37 +187,9 @@
 (defn- create-create [websocket-message-send-functions]
   (fn []
     (when-not (:play-button @util/game-state)
-      (let [game-object-factory (.-add @util/game)]
-        (swap!
-          util/game-state
-          assoc
-          :play-button
-          (this-as this
-            (.button
-              game-object-factory
-              10
-              10
-              "play-button"
-              (fn []
-                (util/destroy-stage-clear-text!)
-                (create-puzzle-board websocket-message-send-functions)
-                (js/setTimeout (:send-sprites-state-fn! websocket-message-send-functions) 300))
-              this)))
-        (swap!
-          util/game-state
-          assoc
-          :see-ranking-button
-          (this-as this
-            (.button
-              (.-add @util/game)
-              (* 0.75 (.-innerWidth js/window))
-              (* 0.2 (.-innerHeight js/window))
-              "see-ranking-button"
-              (fn []
-                (let [canvas (.getElementById js/document "canvas")]
-                  (set! (.-display (.-style canvas)) "none")))
-              this)))
-        (util/show-see-ranking-button!)))))
+      (make-play-button! websocket-message-send-functions)
+      (util/make-see-ranking-button!)
+      (util/show-see-ranking-button!))))
 
 (defn- update [] )
 
