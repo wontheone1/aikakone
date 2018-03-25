@@ -1,6 +1,9 @@
-(ns hello-world.util)
+(ns hello-world.util
+  (:require [reagent.core :as r]))
 
 (enable-console-print!)
+
+(defonce showing-game? (r/atom true))
 
 (def game (atom nil))
 
@@ -85,7 +88,8 @@
         "see-ranking-button"
         (fn []
           (let [canvas (.getElementById js/document "canvas")]
-            (set! (.-display (.-style canvas)) "none")))
+            (set! (.-display (.-style canvas)) "none"))
+          (reset! showing-game? false))
         this)))
   (show-see-ranking-button!))
 
