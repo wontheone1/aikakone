@@ -168,19 +168,22 @@
 (defn- create-create [websocket-message-send-functions]
   (fn []
     (when-not (:play-button @util/game-state)
-      (let [game-object-factory (.-add @util/game)
-            play-button (this-as this
-                          (.button
-                            game-object-factory
-                            10
-                            10
-                            "play-button"
-                            (fn []
-                              (util/destroy-stage-clear-text!)
-                              (create-puzzle-board websocket-message-send-functions)
-                              (js/setTimeout (:send-sprites-state-fn! websocket-message-send-functions) 300))
-                            this))]
-        (swap! util/game-state assoc :play-button play-button)
+      (let [game-object-factory (.-add @util/game)]
+        (swap!
+          util/game-state
+          assoc
+          :play-button
+          (this-as this
+            (.button
+              game-object-factory
+              10
+              10
+              "play-button"
+              (fn []
+                (util/destroy-stage-clear-text!)
+                (create-puzzle-board websocket-message-send-functions)
+                (js/setTimeout (:send-sprites-state-fn! websocket-message-send-functions) 300))
+              this)))
         (swap!
           util/game-state
           assoc
