@@ -50,6 +50,9 @@
 (defn- show-play-button! []
   (.setTo (.-scale (:play-button @game-state)) 1 1))
 
+(defn hide-play-button! []
+  (.setTo (.-scale (:play-button @game-state)) 0 0))
+
 (defn- show-congrat-message! []
   (swap!
     game-state
@@ -65,6 +68,9 @@
 
 (defn- show-see-ranking-button! []
   (.setTo (.-scale (:see-ranking-button @game-state)) 0.5 0.5))
+
+(defn hide-see-ranking-button! []
+  (.setTo (.-scale (:see-ranking-button @game-state)) 0 0))
 
 (defn finish-game-when-puzzle-is-complete! [send-puzzle-complete-fn!]
   (when (and (currently-playing-game?)

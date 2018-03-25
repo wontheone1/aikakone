@@ -83,8 +83,8 @@
 (defn- create-puzzle-board [{:keys [send-sprites-state-fn!
                                     send-puzzle-complete-fn!
                                     send-start-timer-fn!]}]
-  (.setTo (.-scale (:play-button @util/game-state)) 0 0)
-  (.setTo (.-scale (:see-ranking-button @util/game-state)) 0 0)
+  (util/hide-play-button!)
+  (util/hide-see-ranking-button!)
   (when (empty? (:sprites @util/game-state))
     (let [game-object-factory (.-add @util/game)
           left-margin (util/left-margin)
