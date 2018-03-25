@@ -1,5 +1,6 @@
 (ns hello-world.core
-  (:require [clj-time.core :as t]
+  (:require [cheshire.core :as json]
+            [clj-time.core :as t]
             [clj-time.local :as l]
             [compojure.core :refer :all]
             [org.httpkit.server :as server]
@@ -73,6 +74,7 @@
 (sente/start-chsk-router! ch-chsk handle-message!)
 
 (defroutes app
+           (GET  "/rankings" req (json/generate-string @ranking))
            (GET  "/chsk" req (ring-ajax-get-or-ws-handshake req))
            (POST "/chsk" req (ring-ajax-post                req)))
 

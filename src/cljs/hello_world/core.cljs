@@ -1,5 +1,8 @@
 (ns hello-world.core
-  (:require [goog.events :as events]
+  (:require-macros [cljs.core.async.macros :refer [go]])
+  (:require [cljs-http.client :as http]
+            [cljs.core.async :refer [<!]]
+            [goog.events :as events]
             [hello-world.web-socket :as web-sck]
             [nightlight.repl-server]
             [hello-world.util :as util]
@@ -7,15 +10,23 @@
             ))
 
 (defn go-back-to-game-button []
+  [:div
+   [:input {:type     "button" :value "Go back to play game"
+            :on-click #(do
+                         (reset! util/showing-game? true)
+                         (util/show-game!))}]])
+
+(defn ranking-dashboard []
   (when-not @util/showing-game?
+    (go (let [response (<! (http/get "http://localhost:2222/rankings"))
+              ranking (:body response)]
+          (reset! util/ranking ranking)))
     [:div
-     [:input {:type     "button" :value "Go back to play game"
-              :on-click #(do
-                           (reset! util/showing-game? true)
-                           (util/show-game!))}]]))
+     [go-back-to-game-button]
+     [:p (str "Ranking is: " @util/ranking)]]))
 
 ; render go-back-to-game-button
-(r/render [go-back-to-game-button]
+(r/render [ranking-dashboard]
           (.getElementById js/document "ranking-board"))
 
 ; this is the game program's entry point
