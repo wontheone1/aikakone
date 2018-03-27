@@ -10,6 +10,10 @@
   (when (< (rand) 0.5) (f)))
 
 (defn- preload []
+  (.image
+    (.-load @util/game)
+    "play-button"
+    "images/play-button.png")
   (.spritesheet
     (.-load @util/game)
     "puzzle"
@@ -38,10 +42,8 @@
       (do
         (swap!
           util/game-state
-          update
-          :sprites-state
-          assoc
-          [col row]
+          assoc-in
+          [:sprites-state [col row]]
           util/non-flipped-state)
         (.setTo
           piece-scale
@@ -50,10 +52,8 @@
       (do
         (swap!
           util/game-state
-          update
-          :sprites-state
-          assoc
-          [col row]
+          assoc-in
+          [:sprites-state [col row]]
           util/flipped-state)
         (.setTo piece-scale 0 0)))))
 
@@ -76,8 +76,9 @@
     (randomly-execute-a-fn (fn [] (js/setTimeout (fn [] (flip-row! row-or-col)) 200)))
     (randomly-execute-a-fn (fn [] (js/setTimeout (fn [] (flip-col! row-or-col)) 200)))))
 
-(defn- create-create [send-sprites-state-fn! initial-sprites-state]
-  (fn []
+(defn- create-puzzle-board [{:keys [send-sprites-state-fn! send-puzzle-complete-fn!]}]
+  (.setTo (.-scale (:play-button @util/game-state)) 0 0)
+  (when (empty? (:sprites @util/game-state))
     (let [game-object-factory (.-add @util/game)
           left-margin (util/left-margin)
           top-margin (util/top-margin)
@@ -98,9 +99,8 @@
                       y-pos
                       "puzzle"
                       frame-id)]
-          (swap! util/game-state update :sprites assoc [col row] piece)
-          (swap! util/game-state update :sprites-state assoc [col row] util/non-flipped-state)
-          (.setTo (.-scale piece) (:piece-x-scale @util/game-state) (:piece-y-scale @util/game-state)))
+          (swap! util/game-state assoc-in [:sprites [col row]] piece)
+          (.setTo (.-scale piece) 0 0))
         (when
           (and (zero? col) (= row (dec row-col-num)))
           (let [bottom-left-button (.sprite
@@ -113,10 +113,11 @@
             (set-on-click-callback!
               bottom-left-button
               (fn []
-                (println "bottom-left-button clicked")
-                (flip-diagonal-pieces!)
-                (send-sprites-state-fn!)
-                (util/show-congrat-message-when-puzzle-is-complete!)))))
+                (when (util/currently-playing-game?)
+                  (flip-diagonal-pieces!)
+                  (send-sprites-state-fn!)
+                  (util/finish-game-when-puzzle-is-complete!
+                    send-puzzle-complete-fn!))))))
         (when (zero? col)
           (let [left-button (.sprite
                               game-object-factory
@@ -128,10 +129,11 @@
             (set-on-click-callback!
               left-button
               (fn []
-                (println (str "left-button row #" row " clicked"))
-                (flip-row! row)
-                (send-sprites-state-fn!)
-                (util/show-congrat-message-when-puzzle-is-complete!)))))
+                (when (util/currently-playing-game?)
+                  (flip-row! row)
+                  (send-sprites-state-fn!)
+                  (util/finish-game-when-puzzle-is-complete!
+                    send-puzzle-complete-fn!))))))
         (when (= row (dec row-col-num))
           (let [bottom-button (.sprite
                                 game-object-factory
@@ -143,19 +145,36 @@
             (set-on-click-callback!
               bottom-button
               (fn []
-                (println (str "bottom-button col #" col " clicked"))
-                (flip-col! col)
-                (send-sprites-state-fn!)
-                (util/show-congrat-message-when-puzzle-is-complete!))))))
-      (if (nil? initial-sprites-state)
-        (do
-          (randomize-puzzle)
-          (js/setTimeout send-sprites-state-fn! 300))
-        (util/synchronize-puzzle-board initial-sprites-state)))))
+                (when (util/currently-playing-game?)
+                  (flip-col! col)
+                  (send-sprites-state-fn!)
+                  (util/finish-game-when-puzzle-is-complete!
+                    send-puzzle-complete-fn!)))))))))
+  (let [initial-sprites-state (:sprites-state @util/game-state)]
+    (if (not (empty? initial-sprites-state))
+      (util/synchronize-puzzle-board initial-sprites-state)
+      (randomize-puzzle))))
+
+(defn- create-create [websocket-message-send-functions]
+  (fn []
+    (when-not (:play-button @util/game-state)
+      (let [game-object-factory (.-add @util/game)
+            play-button (this-as this
+                          (.button
+                            game-object-factory
+                            10
+                            10
+                            "play-button"
+                            (fn []
+                              (util/destroy-stage-clear-text!)
+                              (create-puzzle-board websocket-message-send-functions)
+                              (js/setTimeout (:send-sprites-state-fn! websocket-message-send-functions) 300))
+                            this))]
+        (swap! util/game-state assoc :play-button play-button)))))
 
 (defn- update [])
 
-(defn- start-game! [send-sprites-state-fn! initial-sprites-state]
+(defn- start-game! [websocket-message-send-functions]
   (println "starting game")
   (reset! util/game
           (js/Phaser.Game.
@@ -165,5 +184,5 @@
             ""
             ; ^ id of the DOM element to insert canvas. As we've left it blank it will simply be appended to body.
             (clj->js {:preload preload
-                      :create  (create-create send-sprites-state-fn! initial-sprites-state)
+                      :create  (create-create websocket-message-send-functions)
                       :update  update}))))
