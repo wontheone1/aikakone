@@ -120,8 +120,8 @@
     (this-as this
       (.button
         (.-add @game)
-        (* 0.4 (.-innerWidth js/window))
-        (* 0.1 (.-innerHeight js/window))
+        (* 0.85 (.-innerWidth js/window))
+        (* 0.3 (.-innerHeight js/window))
         "reset-button"
         (fn []
           (println "Reset clicked"))
