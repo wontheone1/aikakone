@@ -41,7 +41,6 @@
 
 (defn- send-data-to-all-except-message-sender [client-id message-type data]
   (doseq [uid (:any @connected-uids)]
-    (println :uid uid)
     (when (not= client-id uid)
       (chsk-send! uid [message-type data]))))
 
