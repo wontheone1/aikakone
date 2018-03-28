@@ -72,10 +72,12 @@
                      :align "center"}))))
 
 (defn show-game! []
+  (reset! showing-game? true)
   (let [canvas (.getElementById js/document "canvas")]
     (set! (.-display (.-style canvas)) "block")))
 
 (defn- hide-game! []
+  (reset! showing-game? false)
   (let [canvas (.getElementById js/document "canvas")]
     (set! (.-display (.-style canvas)) "none")))
 
@@ -97,8 +99,7 @@
         (* 0.2 (.-innerHeight js/window))
         "see-ranking-button"
         (fn []
-          (hide-game!)
-          (reset! showing-game? false))
+          (hide-game!))
         this)))
   (show-see-ranking-button!))
 
