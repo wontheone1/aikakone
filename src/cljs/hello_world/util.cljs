@@ -106,6 +106,12 @@
         this)))
   (show-see-ranking-button!))
 
+(defn show-reset-button! []
+  (.setTo (.-scale (:reset-button @game-state)) 0.1 0.1))
+
+(defn hide-reset-button! []
+  (.setTo (.-scale (:reset-button @game-state)) 0 0))
+
 (defn make-reset-button! []
   (swap!
     game-state
@@ -119,12 +125,14 @@
         "reset-button"
         (fn []
           (println "Reset clicked"))
-        this))))
+        this)))
+  (hide-reset-button!))
 
 (defn finish-game-when-puzzle-is-complete! [send-puzzle-complete-fn!]
   (when (and (currently-playing-game?)
              (puzzle-solved?)
              (not (:stage-clear-text @game-state)))
+    (hide-reset-button!)
     (show-play-button!)
     (show-see-ranking-button!)
     (show-congrat-message!)

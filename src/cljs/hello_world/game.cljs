@@ -106,6 +106,7 @@
 (defn- create-puzzle-board [{:keys [send-sprites-state-fn!
                                     send-puzzle-complete-fn!
                                     send-start-timer-fn!]}]
+  (util/show-reset-button!)
   (util/hide-play-button!)
   (util/hide-see-ranking-button!)
   (when (empty? (:sprites @util/game-state))
