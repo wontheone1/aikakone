@@ -13,6 +13,8 @@
             [reagent.core :as r]
             ))
 
+(enable-console-print!)
+
 (defn go-back-to-game-button []
   [ui/mui-theme-provider
    {:muiTheme (get-mui-theme {:palette {:textColor (color :blue200)}})}
