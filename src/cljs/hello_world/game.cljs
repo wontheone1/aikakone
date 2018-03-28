@@ -12,6 +12,10 @@
 (defn- preload []
   (.image
     (.-load @util/game)
+    "reset-button"
+    "images/reset-button.jpg")
+  (.image
+    (.-load @util/game)
     "play-button"
     "images/play-button.png")
   (.image
@@ -188,7 +192,8 @@
   (fn []
     (when-not (:play-button @util/game-state)
       (make-play-button! websocket-message-send-functions)
-      (util/make-see-ranking-button!))))
+      (util/make-see-ranking-button!)
+      (util/make-reset-button!))))
 
 (defn- update [] )
 

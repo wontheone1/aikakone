@@ -106,6 +106,21 @@
         this)))
   (show-see-ranking-button!))
 
+(defn make-reset-button! []
+  (swap!
+    game-state
+    assoc
+    :reset-button
+    (this-as this
+      (.button
+        (.-add @game)
+        (* 0.4 (.-innerWidth js/window))
+        (* 0.1 (.-innerHeight js/window))
+        "reset-button"
+        (fn []
+          (println "Reset clicked"))
+        this))))
+
 (defn finish-game-when-puzzle-is-complete! [send-puzzle-complete-fn!]
   (when (and (currently-playing-game?)
              (puzzle-solved?)
