@@ -69,6 +69,8 @@
       (println @ranking)
       (send-data-to-all-except-message-sender client-id :aikakone/sprites-state {}))
 
+    :aikakone/reset
+    (println "reset message received.")
     nil))
 
 (sente/start-chsk-router! ch-chsk handle-message!)
