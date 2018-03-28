@@ -27,9 +27,22 @@
     (go (let [response (<! (http/get "http://localhost:2222/rankings"))
               ranking (:body response)]
           (reset! util/ranking (util/parse-json ranking))))
-    [:div
-     [go-back-to-game-button]
-     [:p (str "Ranking is: " @util/ranking)]]))
+    (let [ranking @util/ranking]
+      [:div
+       [go-back-to-game-button]
+       [ui/mui-theme-provider
+        {:muiTheme (get-mui-theme {:palette {:textColor (color :blue200)}})}
+        [ui/table
+         [ui/table-header {:displaySelectAll false :adjustForCheckbox false}
+          [ui/table-row
+           [ui/table-header-column "Ranking"]
+           [ui/table-header-column "Time Record"]]]
+         (apply conj
+                [ui/table-body {:displayRowCheckbox false}]
+                (for [rank (range (count ranking))]
+                  [ui/table-row
+                   [ui/table-row-column (inc rank)]
+                   [ui/table-row-column (ranking rank)]]))]]])))
 
 ; render go-back-to-game-button
 (r/render [ranking-dashboard]
