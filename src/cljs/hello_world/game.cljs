@@ -1,9 +1,6 @@
 (ns hello-world.game
   (:require [hello-world.util :as util]))
 
-(defn- get-piece-width-height [puzzle-width-height]
-  (/ puzzle-width-height util/row-col-num))
-
 (defn- randomly-execute-a-fn [f]
   (when (< (rand) 0.5) (f)))
 
@@ -24,8 +21,8 @@
     (.-load @util/game)
     "puzzle"
     "images/puzzle-image.jpg"
-    (get-piece-width-height @util/puzzle-image-width)
-    (get-piece-width-height @util/puzzle-image-height)
+    (util/get-piece-width-height @util/puzzle-image-width)
+    (util/get-piece-width-height @util/puzzle-image-height)
     (* util/row-col-num util/row-col-num))
   (.spritesheet
     (.-load @util/game)
@@ -34,13 +31,6 @@
     (util/get-button-width)
     (util/get-button-height)
     6))
-
-(defn- make-buttons-same-size-as-puzzle-piece! [sprite]
-  (let [piece-width-height (get-piece-width-height (:puzzle-width-height @util/game-state))]
-    (.setTo
-      (.-scale sprite)
-      (/ piece-width-height (util/get-button-width))
-      (/ piece-width-height (util/get-button-height)))))
 
 (defn- toggle-visibility-and-flipped-state! [col row]
   (let [piece-scale (.-scale ((:sprites @util/game-state) [col row]))]
@@ -111,7 +101,7 @@
     (let [game-object-factory (.-add @util/game)
           left-margin (util/left-margin)
           top-margin (util/top-margin)
-          piece-width-height (get-piece-width-height (:puzzle-width-height @util/game-state))
+          piece-width-height (util/get-piece-width-height (:puzzle-width-height @util/game-state))
           set-on-click-callback! (fn [sprite callback-fn]
                                    (set! (.-inputEnabled sprite) true)
                                    (.add
@@ -138,7 +128,7 @@
                                      (+ y-pos piece-width-height)
                                      "flip-buttons"
                                      5)]
-            (make-buttons-same-size-as-puzzle-piece! bottom-left-button)
+            (util/make-buttons-same-size-as-puzzle-piece! bottom-left-button)
             (set-on-click-callback!
               bottom-left-button
               (fn []
@@ -154,7 +144,7 @@
                               y-pos
                               "flip-buttons"
                               row)]
-            (make-buttons-same-size-as-puzzle-piece! left-button)
+            (util/make-buttons-same-size-as-puzzle-piece! left-button)
             (set-on-click-callback!
               left-button
               (fn []
@@ -170,7 +160,7 @@
                                 (+ y-pos piece-width-height)
                                 "flip-buttons"
                                 col)]
-            (make-buttons-same-size-as-puzzle-piece! bottom-button)
+            (util/make-buttons-same-size-as-puzzle-piece! bottom-button)
             (set-on-click-callback!
               bottom-button
               (fn []

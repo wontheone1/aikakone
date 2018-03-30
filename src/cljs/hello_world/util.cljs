@@ -49,6 +49,16 @@
 (defn- top-margin []
   (/ (- (.-innerHeight js/window) (:puzzle-width-height @game-state)) 4))
 
+(defn get-piece-width-height [puzzle-width-height]
+  (/ puzzle-width-height row-col-num))
+
+(defn make-buttons-same-size-as-puzzle-piece! [control-button]
+  (let [piece-width-height (get-piece-width-height (:puzzle-width-height @game-state))]
+    (.setTo
+      (.-scale control-button)
+      (/ piece-width-height (get-button-width))
+      (/ piece-width-height (get-button-height)))))
+
 (defn- currently-playing-game? []
   (let [dereffed-game-state @game-state]
     (and (not (empty? (:sprites dereffed-game-state)))
