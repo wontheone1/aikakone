@@ -91,6 +91,10 @@
           (js/setTimeout (:send-sprites-state-fn! websocket-message-send-functions) 300))
         this))))
 
+(defn- store-control-button-and-return-it [control-button]
+  (swap! util/game-state update :control-buttons conj control-button)
+  control-button)
+
 (defn- create-puzzle-board [{:keys [send-sprites-state-fn!
                                     send-puzzle-complete-fn!
                                     send-start-timer-fn!]}]
@@ -122,12 +126,13 @@
           (.setTo (.-scale piece) 0 0))
         (when
           (and (zero? col) (= row (dec util/row-col-num)))
-          (let [bottom-left-button (.sprite
-                                     game-object-factory
-                                     (- x-pos piece-width-height)
-                                     (+ y-pos piece-width-height)
-                                     "flip-buttons"
-                                     5)]
+          (let [bottom-left-button (store-control-button-and-return-it
+                                     (.sprite
+                                       game-object-factory
+                                       (- x-pos piece-width-height)
+                                       (+ y-pos piece-width-height)
+                                       "flip-buttons"
+                                       5))]
             (util/make-buttons-same-size-as-puzzle-piece! bottom-left-button)
             (set-on-click-callback!
               bottom-left-button
@@ -138,12 +143,13 @@
                   (util/finish-game-when-puzzle-is-complete!
                     send-puzzle-complete-fn!))))))
         (when (zero? col)
-          (let [left-button (.sprite
-                              game-object-factory
-                              (- x-pos piece-width-height)
-                              y-pos
-                              "flip-buttons"
-                              row)]
+          (let [left-button (store-control-button-and-return-it
+                              (.sprite
+                                game-object-factory
+                                (- x-pos piece-width-height)
+                                y-pos
+                                "flip-buttons"
+                                row))]
             (util/make-buttons-same-size-as-puzzle-piece! left-button)
             (set-on-click-callback!
               left-button
@@ -154,12 +160,13 @@
                   (util/finish-game-when-puzzle-is-complete!
                     send-puzzle-complete-fn!))))))
         (when (= row (dec util/row-col-num))
-          (let [bottom-button (.sprite
-                                game-object-factory
-                                x-pos
-                                (+ y-pos piece-width-height)
-                                "flip-buttons"
-                                col)]
+          (let [bottom-button (store-control-button-and-return-it
+                                (.sprite
+                                  game-object-factory
+                                  x-pos
+                                  (+ y-pos piece-width-height)
+                                  "flip-buttons"
+                                  col))]
             (util/make-buttons-same-size-as-puzzle-piece! bottom-button)
             (set-on-click-callback!
               bottom-button

@@ -17,6 +17,7 @@
 (defonce game-state (atom {:sprites             {}
                            :sprites-state       {}
                            :play-button         nil
+                           :control-buttons     []
                            :play-time           0.0
                            :play-time-text      nil
                            :puzzle-width-height 0
