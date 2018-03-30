@@ -65,7 +65,6 @@
       (reset! sprites-state nil)
       (swap! ranking (fn [ranking]
                        (sort (conj ranking ?data))))
-      (println @ranking)
       (send-data-to-all-except-message-sender client-id :aikakone/sprites-state {}))
 
     :aikakone/reset
