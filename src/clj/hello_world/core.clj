@@ -70,6 +70,7 @@
 
     :aikakone/reset
     (println "reset message received.")
+
     nil))
 
 (sente/start-chsk-router! ch-chsk handle-message!)
