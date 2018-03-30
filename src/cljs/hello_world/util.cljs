@@ -170,6 +170,13 @@
     (.destroy play-time-text))
   (swap! game-state assoc :play-time-text nil))
 
+(defn reset-game! []
+  (hide-all-puzzle-pieces!)
+  (hide-control-buttons!)
+  (hide-play-time!)
+  (show-play-button!)
+  (show-see-ranking-button!))
+
 (defn make-reset-button! [send-reset-fn]
   (swap!
     game-state
@@ -182,11 +189,7 @@
         (* 0.3 (.-innerHeight js/window))
         "reset-button"
         (fn []
-          (hide-all-puzzle-pieces!)
-          (hide-control-buttons!)
-          (hide-play-time!)
-          (show-play-button!)
-          (show-see-ranking-button!)
+          (reset-game!)
           (send-reset-fn))
         this)))
   (hide-reset-button!))
