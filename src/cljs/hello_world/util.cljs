@@ -62,7 +62,7 @@
 
 (defn- currently-playing-game? []
   (let [dereffed-game-state @game-state]
-    (and (not (empty? (:sprites dereffed-game-state)))
+    (and (not (empty? (:sprites-state dereffed-game-state)))
          (nil? (:stage-clear-text dereffed-game-state)))))
 
 (defn- puzzle-solved? []
