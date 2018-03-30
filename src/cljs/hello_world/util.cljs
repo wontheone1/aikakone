@@ -3,6 +3,8 @@
 
 (enable-console-print!)
 
+(def row-col-num 5)
+
 (defn parse-json [json-string]
   (js->clj (.parse js/JSON json-string)))
 
