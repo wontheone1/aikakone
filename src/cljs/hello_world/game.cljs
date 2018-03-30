@@ -99,6 +99,7 @@
                                     send-puzzle-complete-fn!
                                     send-start-timer-fn!]}]
   (util/show-reset-button!)
+  (util/show-control-buttons!)
   (util/hide-play-button!)
   (util/hide-see-ranking-button!)
   (when (empty? (:sprites @util/game-state))

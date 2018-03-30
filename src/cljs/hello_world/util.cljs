@@ -139,12 +139,20 @@
         send-reset-fn
         this)))
   (hide-reset-button!))
+(defn- hide-control-buttons! []
+  (doseq [control-button (:control-buttons @game-state)]
+    (.setTo (.-scale control-button) 0 0)))
+
+(defn- show-control-buttons! []
+  (doseq [control-button (:control-buttons @game-state)]
+    (make-buttons-same-size-as-puzzle-piece! control-button)))
 
 (defn finish-game-when-puzzle-is-complete! [send-puzzle-complete-fn!]
   (when (and (currently-playing-game?)
              (puzzle-solved?)
              (not (:stage-clear-text @game-state)))
     (hide-reset-button!)
+    (hide-control-buttons!)
     (show-play-button!)
     (show-see-ranking-button!)
     (show-congrat-message!)
