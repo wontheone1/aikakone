@@ -74,7 +74,7 @@
 
 (declare create-puzzle-board)
 
-(defn make-play-button! [websocket-message-send-functions]
+(defn make-play-button! [{:keys [chsk-send-fn!]}]
   (swap!
     util/game-state
     assoc
@@ -86,9 +86,8 @@
         10
         "play-button"
         (fn []
-          (util/destroy-stage-clear-text!)
-          (create-puzzle-board websocket-message-send-functions)
-          (js/setTimeout (:send-sprites-state-fn! websocket-message-send-functions) 300))
+          (chsk-send-fn! [:aikakone/game-start])
+          (util/destroy-stage-clear-text!))
         this))))
 
 (defn- store-control-button-and-return-it [control-button]
