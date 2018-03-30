@@ -59,6 +59,8 @@
                                         (util/currently-playing-game?))
                                (util/update-play-time-to-current-time event-data))
 
+      :aikakone/reset (util/reset-game!)
+
       (println event-id " is unknown event type"))))
 
 (defn send-uid []

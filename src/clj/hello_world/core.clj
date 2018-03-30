@@ -69,7 +69,10 @@
       (send-data-to-all-except-message-sender client-id :aikakone/sprites-state {}))
 
     :aikakone/reset
-    (println "reset message received.")
+    (do
+      (reset! game-start-time nil)
+      (reset! sprites-state nil)
+      (send-data-to-all-except-message-sender client-id :aikakone/reset nil))
 
     nil))
 
