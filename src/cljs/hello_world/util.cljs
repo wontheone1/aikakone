@@ -146,8 +146,8 @@
     (swap! game-state assoc :sprites-state {})))
 
 (defn- synchronize-puzzle-board [sprites-state]
-  (swap! game-state assoc :sprites-state sprites-state)
   (when (currently-playing-game?)
+    (swap! game-state assoc :sprites-state sprites-state)
     (let [derefed-state @game-state
           piece-x-scale (:piece-x-scale derefed-state)
           piece-y-scale (:piece-y-scale derefed-state)
