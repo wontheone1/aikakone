@@ -125,20 +125,6 @@
 (defn hide-reset-button! []
   (.setTo (.-scale (:reset-button @game-state)) 0 0))
 
-(defn make-reset-button! [send-reset-fn]
-  (swap!
-    game-state
-    assoc
-    :reset-button
-    (this-as this
-      (.button
-        (.-add @game)
-        (* 0.85 (.-innerWidth js/window))
-        (* 0.3 (.-innerHeight js/window))
-        "reset-button"
-        send-reset-fn
-        this)))
-  (hide-reset-button!))
 (defn- hide-control-buttons! []
   (doseq [control-button (:control-buttons @game-state)]
     (.setTo (.-scale control-button) 0 0)))
@@ -171,6 +157,39 @@
           (if (= non-flipped-state sprite-flipped-state)
             (.setTo piece-scale piece-x-scale piece-y-scale)
             (.setTo piece-scale 0 0)))))))
+
+(defn hide-all-puzzle-pieces! []
+  (synchronize-puzzle-board
+    (for [row (range row-col-num)
+          col (range row-col-num)]
+      [[col row] flipped-state]))
+  (swap! game-state assoc :sprites-state nil))
+
+(defn hide-play-time! []
+  (when-let [play-time-text (:play-time-text @game-state)]
+    (.destroy play-time-text))
+  (swap! game-state assoc :play-time-text nil))
+
+(defn make-reset-button! [send-reset-fn]
+  (swap!
+    game-state
+    assoc
+    :reset-button
+    (this-as this
+      (.button
+        (.-add @game)
+        (* 0.85 (.-innerWidth js/window))
+        (* 0.3 (.-innerHeight js/window))
+        "reset-button"
+        (fn []
+          (hide-all-puzzle-pieces!)
+          (hide-control-buttons!)
+          (hide-play-time!)
+          (show-play-button!)
+          (show-see-ranking-button!)
+          (send-reset-fn))
+        this)))
+  (hide-reset-button!))
 
 (defn destroy-stage-clear-text! []
   (when-let [stage-clear-text (:stage-clear-text @game-state)]
