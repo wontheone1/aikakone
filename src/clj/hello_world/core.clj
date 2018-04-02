@@ -1,8 +1,7 @@
 (ns hello-world.core
   (:require [cheshire.core :as json]
-            [clj-time.core :as t]
-            [clj-time.local :as l]
             [compojure.core :refer :all]
+            [java-time :as t]
             [org.httpkit.server :as server]
             [ring.middleware.defaults :as defaults]
             [ring.middleware.cors :as cors]
@@ -29,15 +28,20 @@
 
 (def sending-time-future (atom nil))
 
+(defn- convert-to-millis [seconds nanos]
+  (+ (* 1000 seconds) (/ nanos 1000000)))
+
 (defn- start-sending-current-playtime! []
   (future (loop []
             (Thread/sleep 200)
             (when-let [uids (seq (:any @connected-uids))]
               (when-let [start-time @game-start-time]
-                (doseq [uid uids]
-                  (chsk-send! uid [:aikakone/current-time
-                                   (t/in-millis (t/interval start-time (l/local-now)))]))
-                (recur))))))
+                (let [duration (t/duration start-time (t/local-date-time))
+                      seconds (t/value (t/property duration :seconds))
+                      nanos (t/value (t/property duration :nanos))]
+                  (doseq [uid uids]
+                    (chsk-send! uid [:aikakone/current-time (convert-to-millis seconds nanos)]))
+                  (recur)))))))
 
 (defn- send-data-to-all-except-message-sender [client-id message-type data]
   (doseq [uid (:any @connected-uids)]
@@ -56,7 +60,7 @@
 
     :aikakone/start-timer
     (do
-      (reset! game-start-time (l/local-now))
+      (reset! game-start-time (t/local-date-time))
       (reset! sending-time-future (start-sending-current-playtime!)))
 
     :aikakone/puzzle-complete!
