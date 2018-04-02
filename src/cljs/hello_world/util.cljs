@@ -7,6 +7,7 @@
 (defonce game-state (atom {:sprites             {}
                            :sprites-state       {}
                            :play-button         nil
+                           :play-time-text      nil
                            :puzzle-width-height 0
                            :piece-x-scale       0
                            :piece-y-scale       0
@@ -86,3 +87,22 @@
   (when-let [stage-clear-text (:stage-clear-text @game-state)]
     (.destroy stage-clear-text))
   (swap! game-state assoc :stage-clear-text nil))
+
+(defn show-play-time! []
+  (when-not (:play-time-text @game-state)
+    (swap! game-state
+           assoc
+           :play-time-text
+           (.text (.-add @game)
+                  (* (.-innerWidth js/window) 0.8)
+                  (/ (.-innerHeight js/window) 20)
+                  "0.000"
+                  (clj->js {:font  "60px Arial"
+                            :fill  "#ffffff"
+                            :align "center"})))))
+
+(defn update-play-time-to-current-time [play-time]
+  (let [derefed-state @game-state]
+    (.setText
+      (:play-time-text derefed-state)
+      (str (/ play-time 1000)))))

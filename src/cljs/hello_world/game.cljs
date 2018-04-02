@@ -76,7 +76,9 @@
     (randomly-execute-a-fn (fn [] (js/setTimeout (fn [] (flip-row! row-or-col)) 200)))
     (randomly-execute-a-fn (fn [] (js/setTimeout (fn [] (flip-col! row-or-col)) 200)))))
 
-(defn- create-puzzle-board [{:keys [send-sprites-state-fn! send-puzzle-complete-fn!]}]
+(defn- create-puzzle-board [{:keys [send-sprites-state-fn!
+                                    send-puzzle-complete-fn!
+                                    send-start-timer-fn!]}]
   (.setTo (.-scale (:play-button @util/game-state)) 0 0)
   (when (empty? (:sprites @util/game-state))
     (let [game-object-factory (.-add @util/game)
@@ -153,7 +155,10 @@
   (let [initial-sprites-state (:sprites-state @util/game-state)]
     (if (not (empty? initial-sprites-state))
       (util/synchronize-puzzle-board initial-sprites-state)
-      (randomize-puzzle))))
+      (do
+        (randomize-puzzle)
+        (send-start-timer-fn!))))
+  (util/show-play-time!))
 
 (defn- create-create [websocket-message-send-functions]
   (fn []
@@ -172,7 +177,7 @@
                             this))]
         (swap! util/game-state assoc :play-button play-button)))))
 
-(defn- update [])
+(defn- update [] )
 
 (defn- start-game! [websocket-message-send-functions]
   (println "starting game")

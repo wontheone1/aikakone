@@ -1,5 +1,7 @@
 (ns hello-world.core
-  (:require [compojure.core :refer :all]
+  (:require [clj-time.core :as t]
+            [clj-time.local :as l]
+            [compojure.core :refer :all]
             [org.httpkit.server :as server]
             [ring.middleware.defaults :as defaults]
             [ring.middleware.cors :as cors]
@@ -20,6 +22,20 @@
 
 (def sprites-state (atom nil))
 
+(def game-start-time (atom nil))
+
+(def sending-time-future (atom nil))
+
+(defn- start-sending-current-playtime! []
+  (future (loop []
+            (Thread/sleep 200)
+            (when-let [uids (seq (:any @connected-uids))]
+              (when-let [start-time @game-start-time]
+                (doseq [uid uids]
+                  (chsk-send! uid [:aikakone/current-time
+                                   (t/in-millis (t/interval start-time (l/local-now)))]))
+                (recur))))))
+
 (defn- send-data-to-all-except-message-sender [client-id message-type data]
   (doseq [uid (:any @connected-uids)]
     (println :uid uid)
@@ -36,8 +52,14 @@
     :aikakone/game-start
     (chsk-send! client-id [:aikakone/game-start @sprites-state])
 
+    :aikakone/start-timer
+    (do
+      (reset! game-start-time (l/local-now))
+      (reset! sending-time-future (start-sending-current-playtime!)))
+
     :aikakone/puzzle-complete!
     (do
+      (reset! game-start-time nil)
       (reset! sprites-state nil)
       (send-data-to-all-except-message-sender client-id :aikakone/sprites-state {}))
 
