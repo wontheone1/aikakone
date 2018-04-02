@@ -68,7 +68,7 @@
       (when @game-start-time
         (ref-set game-start-time nil)
         (alter ranking (fn [ranking]
-                         (sort (conj ranking ?data)))))
+                         (take 10 (sort (conj ranking ?data))))))
       (send-data-to-all-except-message-sender client-id :aikakone/sprites-state {}))
 
     :aikakone/reset
