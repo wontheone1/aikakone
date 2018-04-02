@@ -1,5 +1,7 @@
 (ns hello-world.game
-  (:require [hello-world.util :as util]))
+  (:require [hello-world.sound-effect :as sound]
+            [hello-world.util :as util]
+            ))
 
 (defn- randomly-execute-a-fn [f]
   (when (< (rand) 0.5) (f)))
@@ -138,6 +140,7 @@
               bottom-left-button
               (fn []
                 (when (util/currently-playing-game?)
+                  (sound/play-beep! 100)
                   (flip-diagonal-pieces!)
                   (send-sprites-state-fn!)
                   (util/finish-game-when-puzzle-is-complete!
@@ -155,6 +158,7 @@
               left-button
               (fn []
                 (when (util/currently-playing-game?)
+                  (sound/play-beep! 200)
                   (flip-row! row)
                   (send-sprites-state-fn!)
                   (util/finish-game-when-puzzle-is-complete!
@@ -172,6 +176,7 @@
               bottom-button
               (fn []
                 (when (util/currently-playing-game?)
+                  (sound/play-beep! 300)
                   (flip-col! col)
                   (send-sprites-state-fn!)
                   (util/finish-game-when-puzzle-is-complete!
