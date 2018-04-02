@@ -140,7 +140,7 @@
               bottom-left-button
               (fn []
                 (when (util/currently-playing-game?)
-                  (sound/play-beep! 100)
+                  (sound/play-beep! (sound/frequencies-in-major-scale-4th-octave util/row-col-num))
                   (flip-diagonal-pieces!)
                   (send-sprites-state-fn!)
                   (util/finish-game-when-puzzle-is-complete!
@@ -158,7 +158,7 @@
               left-button
               (fn []
                 (when (util/currently-playing-game?)
-                  (sound/play-beep! 200)
+                  (sound/play-beep! (sound/frequencies-in-major-scale-4th-octave row))
                   (flip-row! row)
                   (send-sprites-state-fn!)
                   (util/finish-game-when-puzzle-is-complete!
@@ -176,7 +176,9 @@
               bottom-button
               (fn []
                 (when (util/currently-playing-game?)
-                  (sound/play-beep! 300)
+                  (sound/play-beep! (sound/frequencies-in-major-scale-4th-octave
+                                      (mod (+ 1 util/row-col-num col)
+                                           (count sound/frequencies-in-major-scale-4th-octave))))
                   (flip-col! col)
                   (send-sprites-state-fn!)
                   (util/finish-game-when-puzzle-is-complete!
