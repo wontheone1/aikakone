@@ -2,6 +2,7 @@
   (:require [cljs-bach.synthesis
              :refer [add audio-context connect connect-> current-time destination
                      percussive gain sine square run-with]]
+            [hello-world.util :as util]
             [leipzig.melody :as melody]
             ))
 
@@ -29,15 +30,16 @@
 (defonce context (audio-context))
 
 (defn play-beep! [frequency]
-  (run-with
-    (connect->
-      (square frequency)
-      (percussive 0.01 0.6)
-      (gain 0.1)
-      destination)
-    context
-    (current-time context)
-    1.0))
+  (when (:audio-on? @util/game-state)
+    (run-with
+      (connect->
+        (square frequency)
+        (percussive 0.01 0.6)
+        (gain 0.1)
+        destination)
+      context
+      (current-time context)
+      1.0)))
 
 (def melody
   (melody/phrase [1 1 0.67 0.33 1 0.67 0.33 0.67 0.33 1]
@@ -73,9 +75,10 @@
   (play-from! audiocontext (current-time audiocontext) notes))
 
 (defn play-row-row-row-your-boat []
-  (->> melody
-       (melody/wherever (comp not :instrument) :instrument (melody/is bell))
-       (play! context))
+  (when (:audio-on? @util/game-state)
+    (->> melody
+         (melody/wherever (comp not :instrument) :instrument (melody/is bell))
+         (play! context)))
   (js/setTimeout play-row-row-row-your-boat 8000))
 
 (play-row-row-row-your-boat)
