@@ -44,7 +44,6 @@
                    [ui/table-row-column (inc rank)]
                    [ui/table-row-column (ranking rank)]]))]]])))
 
-; render go-back-to-game-button
 (r/render [ranking-dashboard]
           (.getElementById js/document "app"))
 
