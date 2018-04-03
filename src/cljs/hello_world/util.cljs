@@ -14,7 +14,7 @@
 
 (def game (atom nil))
 
-(defonce game-state (atom {:audio-on?           true
+(defonce game-state (atom {:audio-on?           false
                            :sprites             {}
                            :sprites-state       {}
                            :play-button         nil
