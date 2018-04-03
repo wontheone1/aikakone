@@ -23,7 +23,7 @@
                                    (util/show-game!))}]])
 
 (defn ranking-dashboard []
-  (when-not @util/showing-game?
+  (when @util/showing-ranking?
     (go (let [response (<! (http/get "http://localhost:2222/rankings"))
               ranking (:body response)]
           (reset! util/ranking (util/parse-json ranking))))
