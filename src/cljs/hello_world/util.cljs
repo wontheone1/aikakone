@@ -1,16 +1,26 @@
-(ns hello-world.util)
+(ns hello-world.util
+  (:require [reagent.core :as r]))
 
 (enable-console-print!)
+
+(defn parse-json [json-string]
+  (js->clj (.parse js/JSON json-string)))
+
+(defonce ranking (r/atom []))
+
+(defonce showing-game? (r/atom true))
 
 (def game (atom nil))
 
 (defonce game-state (atom {:sprites             {}
                            :sprites-state       {}
                            :play-button         nil
+                           :play-time           0.0
                            :play-time-text      nil
                            :puzzle-width-height 0
                            :piece-x-scale       0
                            :piece-y-scale       0
+                           :see-ranking-button  nil
                            :stage-clear-text    nil}))
 
 (def flipped-state "FLIPPED")
@@ -48,6 +58,9 @@
 (defn- show-play-button! []
   (.setTo (.-scale (:play-button @game-state)) 1 1))
 
+(defn hide-play-button! []
+  (.setTo (.-scale (:play-button @game-state)) 0 0))
+
 (defn- show-congrat-message! []
   (swap!
     game-state
@@ -61,13 +74,46 @@
                      :fill  "#ffffff"
                      :align "center"}))))
 
+(defn show-game! []
+  (reset! showing-game? true)
+  (let [canvas (.getElementById js/document "canvas")]
+    (set! (.-display (.-style canvas)) "block")))
+
+(defn- hide-game! []
+  (reset! showing-game? false)
+  (let [canvas (.getElementById js/document "canvas")]
+    (set! (.-display (.-style canvas)) "none")))
+
+(defn- show-see-ranking-button! []
+  (.setTo (.-scale (:see-ranking-button @game-state)) 0.5 0.5))
+
+(defn hide-see-ranking-button! []
+  (.setTo (.-scale (:see-ranking-button @game-state)) 0 0))
+
+(defn make-see-ranking-button! []
+  (swap!
+    game-state
+    assoc
+    :see-ranking-button
+    (this-as this
+      (.button
+        (.-add @game)
+        (* 0.75 (.-innerWidth js/window))
+        (* 0.2 (.-innerHeight js/window))
+        "see-ranking-button"
+        (fn []
+          (hide-game!))
+        this)))
+  (show-see-ranking-button!))
+
 (defn finish-game-when-puzzle-is-complete! [send-puzzle-complete-fn!]
   (when (and (currently-playing-game?)
              (puzzle-solved?)
              (not (:stage-clear-text @game-state)))
     (show-play-button!)
+    (show-see-ranking-button!)
     (show-congrat-message!)
-    (send-puzzle-complete-fn!)
+    (send-puzzle-complete-fn! (:play-time @game-state))
     (swap! game-state assoc :sprites-state {})))
 
 (defn- synchronize-puzzle-board [sprites-state]
@@ -102,7 +148,9 @@
                             :align "center"})))))
 
 (defn update-play-time-to-current-time [play-time]
-  (let [derefed-state @game-state]
+  (let [derefed-state @game-state
+        play-time-in-sec (/ play-time 1000)]
     (.setText
       (:play-time-text derefed-state)
-      (str (/ play-time 1000)))))
+      (str play-time-in-sec))
+    (swap! game-state assoc :play-time play-time-in-sec)))

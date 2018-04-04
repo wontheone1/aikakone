@@ -1,5 +1,6 @@
 (ns hello-world.core
-  (:require [clj-time.core :as t]
+  (:require [cheshire.core :as json]
+            [clj-time.core :as t]
             [clj-time.local :as l]
             [compojure.core :refer :all]
             [org.httpkit.server :as server]
@@ -21,6 +22,8 @@
   (def connected-uids                connected-uids))
 
 (def sprites-state (atom nil))
+
+(def ranking (atom []))
 
 (def game-start-time (atom nil))
 
@@ -61,6 +64,9 @@
     (do
       (reset! game-start-time nil)
       (reset! sprites-state nil)
+      (swap! ranking (fn [ranking]
+                       (sort (conj ranking ?data))))
+      (println @ranking)
       (send-data-to-all-except-message-sender client-id :aikakone/sprites-state {}))
 
     nil))
@@ -68,6 +74,7 @@
 (sente/start-chsk-router! ch-chsk handle-message!)
 
 (defroutes app
+           (GET  "/rankings" req (json/generate-string @ranking))
            (GET  "/chsk" req (ring-ajax-get-or-ws-handshake req))
            (POST "/chsk" req (ring-ajax-post                req)))
 

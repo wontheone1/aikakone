@@ -14,6 +14,10 @@
     (.-load @util/game)
     "play-button"
     "images/play-button.png")
+  (.image
+    (.-load @util/game)
+    "see-ranking-button"
+    "images/ranking.png")
   (.spritesheet
     (.-load @util/game)
     "puzzle"
@@ -76,10 +80,30 @@
     (randomly-execute-a-fn (fn [] (js/setTimeout (fn [] (flip-row! row-or-col)) 200)))
     (randomly-execute-a-fn (fn [] (js/setTimeout (fn [] (flip-col! row-or-col)) 200)))))
 
+(declare create-puzzle-board)
+
+(defn make-play-button! [websocket-message-send-functions]
+  (swap!
+    util/game-state
+    assoc
+    :play-button
+    (this-as this
+      (.button
+        (.-add @util/game)
+        10
+        10
+        "play-button"
+        (fn []
+          (util/destroy-stage-clear-text!)
+          (create-puzzle-board websocket-message-send-functions)
+          (js/setTimeout (:send-sprites-state-fn! websocket-message-send-functions) 300))
+        this))))
+
 (defn- create-puzzle-board [{:keys [send-sprites-state-fn!
                                     send-puzzle-complete-fn!
                                     send-start-timer-fn!]}]
-  (.setTo (.-scale (:play-button @util/game-state)) 0 0)
+  (util/hide-play-button!)
+  (util/hide-see-ranking-button!)
   (when (empty? (:sprites @util/game-state))
     (let [game-object-factory (.-add @util/game)
           left-margin (util/left-margin)
@@ -163,19 +187,8 @@
 (defn- create-create [websocket-message-send-functions]
   (fn []
     (when-not (:play-button @util/game-state)
-      (let [game-object-factory (.-add @util/game)
-            play-button (this-as this
-                          (.button
-                            game-object-factory
-                            10
-                            10
-                            "play-button"
-                            (fn []
-                              (util/destroy-stage-clear-text!)
-                              (create-puzzle-board websocket-message-send-functions)
-                              (js/setTimeout (:send-sprites-state-fn! websocket-message-send-functions) 300))
-                            this))]
-        (swap! util/game-state assoc :play-button play-button)))))
+      (make-play-button! websocket-message-send-functions)
+      (util/make-see-ranking-button!))))
 
 (defn- update [] )
 
@@ -186,7 +199,7 @@
             (.-innerWidth js/window)
             (.-innerHeight js/window)
             js/Phaser.Auto
-            ""
+            "canvas"
             ; ^ id of the DOM element to insert canvas. As we've left it blank it will simply be appended to body.
             (clj->js {:preload preload
                       :create  (create-create websocket-message-send-functions)
