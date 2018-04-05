@@ -41,7 +41,6 @@
 
 (defn- send-data-to-all-except-message-sender [client-id message-type data]
   (doseq [uid (:any @connected-uids)]
-    (println :uid uid)
     (when (not= client-id uid)
       (chsk-send! uid [message-type data]))))
 
@@ -66,8 +65,13 @@
       (reset! sprites-state nil)
       (swap! ranking (fn [ranking]
                        (sort (conj ranking ?data))))
-      (println @ranking)
       (send-data-to-all-except-message-sender client-id :aikakone/sprites-state {}))
+
+    :aikakone/reset
+    (do
+      (reset! game-start-time nil)
+      (reset! sprites-state nil)
+      (send-data-to-all-except-message-sender client-id :aikakone/reset nil))
 
     nil))
 
