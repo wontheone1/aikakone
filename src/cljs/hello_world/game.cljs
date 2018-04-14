@@ -39,9 +39,10 @@
     6))
 
 (defn- toggle-visibility-and-flipped-state! [col row]
-  (let [piece-scale (.-scale ((:sprites @util/game-state) [col row]))
+  (let [piece-flipped-state ((:sprites-state @util/game-state) [col row])
+        piece-scale (.-scale ((:sprites @util/game-state) [col row]))
         game-object-factory (.-add @util/game)]
-    (if (zero? (.-x piece-scale))
+    (if (= util/flipped-state piece-flipped-state)
       (do
         (swap!
           util/game-state
@@ -200,6 +201,8 @@
     (if (not (empty? initial-sprites-state))
       (util/synchronize-puzzle-board initial-sprites-state)
       (do
+        (swap! util/game-state assoc :sprites-state {})     ; prevent :sprites-state is nil when creating
+                                                            ; puzzle board for the first time
         (randomize-puzzle)
         (send-start-timer-fn!))))
   (util/show-play-time!))
