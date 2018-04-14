@@ -53,7 +53,7 @@
           (clj->js {:x (:piece-x-scale @util/game-state)
                     :y (:piece-y-scale @util/game-state)})
           500
-          "Linear"
+          js/Phaser.Easing.Linear.None
           true))
       (do
         (swap!
@@ -65,7 +65,7 @@
           (.tween game-object-factory piece-scale)
           (clj->js {:x 0 :y 0})
           500
-          "Linear"
+          js/Phaser.Easing.Linear.None
           true)))))
 
 (defn flip-row! [row]
