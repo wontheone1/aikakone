@@ -39,7 +39,8 @@
     6))
 
 (defn- toggle-visibility-and-flipped-state! [col row]
-  (let [piece-scale (.-scale ((:sprites @util/game-state) [col row]))]
+  (let [piece-scale (.-scale ((:sprites @util/game-state) [col row]))
+        game-object-factory (.-add @util/game)]
     (if (zero? (.-x piece-scale))
       (do
         (swap!
@@ -47,17 +48,25 @@
           assoc-in
           [:sprites-state [col row]]
           util/non-flipped-state)
-        (.setTo
-          piece-scale
-          (:piece-x-scale @util/game-state)
-          (:piece-y-scale @util/game-state)))
+        (.to
+          (.tween game-object-factory piece-scale)
+          (clj->js {:x (:piece-x-scale @util/game-state)
+                    :y (:piece-y-scale @util/game-state)})
+          500
+          "Linear"
+          true))
       (do
         (swap!
           util/game-state
           assoc-in
           [:sprites-state [col row]]
           util/flipped-state)
-        (.setTo piece-scale 0 0)))))
+        (.to
+          (.tween game-object-factory piece-scale)
+          (clj->js {:x 0 :y 0})
+          500
+          "Linear"
+          true)))))
 
 (defn flip-row! [row]
   (doseq [col (range util/row-col-num)]
