@@ -14,7 +14,8 @@
 
 (def game (atom nil))
 
-(defonce game-state (atom {:sprites             {}
+(defonce game-state (atom {:audio-on?           true
+                           :sprites             {}
                            :sprites-state       {}
                            :play-button         nil
                            :control-buttons     []
@@ -193,6 +194,24 @@
           (send-reset-fn))
         this)))
   (hide-reset-button!))
+
+(defn make-audio-button! []
+  (swap!
+    game-state
+    assoc
+    :audio-button
+    (this-as this
+      (.button
+        (.-add @game)
+        (* 0.85 (.-innerWidth js/window))
+        (* 0.5 (.-innerHeight js/window))
+        "audio-button"
+        (fn []
+          (swap! game-state
+                 update
+                 :audio-on?
+                 not))
+        this))))
 
 (defn destroy-stage-clear-text! []
   (when-let [stage-clear-text (:stage-clear-text @game-state)]

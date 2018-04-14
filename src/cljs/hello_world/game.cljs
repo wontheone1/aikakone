@@ -1,10 +1,16 @@
 (ns hello-world.game
-  (:require [hello-world.util :as util]))
+  (:require [hello-world.sound-effect :as sound]
+            [hello-world.util :as util]
+            ))
 
 (defn- randomly-execute-a-fn [f]
   (when (< (rand) 0.5) (f)))
 
 (defn- preload []
+  (.image
+    (.-load @util/game)
+    "audio-button"
+    "images/speaker.png")
   (.image
     (.-load @util/game)
     "reset-button"
@@ -138,6 +144,7 @@
               bottom-left-button
               (fn []
                 (when (util/currently-playing-game?)
+                  (sound/play-beep! (sound/frequencies-in-major-scale-4th-octave util/row-col-num))
                   (flip-diagonal-pieces!)
                   (send-sprites-state-fn!)
                   (util/finish-game-when-puzzle-is-complete!
@@ -155,6 +162,7 @@
               left-button
               (fn []
                 (when (util/currently-playing-game?)
+                  (sound/play-beep! (sound/frequencies-in-major-scale-4th-octave row))
                   (flip-row! row)
                   (send-sprites-state-fn!)
                   (util/finish-game-when-puzzle-is-complete!
@@ -172,6 +180,9 @@
               bottom-button
               (fn []
                 (when (util/currently-playing-game?)
+                  (sound/play-beep! (sound/frequencies-in-major-scale-4th-octave
+                                      (mod (+ 1 util/row-col-num col)
+                                           (count sound/frequencies-in-major-scale-4th-octave))))
                   (flip-col! col)
                   (send-sprites-state-fn!)
                   (util/finish-game-when-puzzle-is-complete!
@@ -189,7 +200,8 @@
     (when-not (:play-button @util/game-state)
       (make-play-button! websocket-message-send-functions)
       (util/make-see-ranking-button!)
-      (util/make-reset-button! (:send-reset-fn! websocket-message-send-functions)))))
+      (util/make-reset-button! (:send-reset-fn! websocket-message-send-functions))
+      (util/make-audio-button!))))
 
 (defn- game-update [] )
 
