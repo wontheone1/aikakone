@@ -162,7 +162,8 @@
 (defn- synchronize-puzzle-board [sprites-state]
   (when (currently-playing-game?)
     (swap! game-state assoc :sprites-state sprites-state)
-    (let [derefed-state @game-state
+    (let [game-object-factory (.-add @game)
+          derefed-state @game-state
           piece-x-scale (:piece-x-scale derefed-state)
           piece-y-scale (:piece-y-scale derefed-state)
           row-flips-applied (reduce
@@ -194,8 +195,19 @@
       (doseq [[[row col] sprite-flipped-state] diagonal-flip-applied]
         (let [piece-scale (.-scale (sprites [row col]))]
           (if (= false sprite-flipped-state)
-            (.setTo piece-scale piece-x-scale piece-y-scale)
-            (.setTo piece-scale 0 0)))))))
+            (.to
+              (.tween game-object-factory piece-scale)
+              (clj->js {:x (:piece-x-scale derefed-state)
+                        :y (:piece-y-scale derefed-state)})
+              500
+              js/Phaser.Easing.Linear.None
+              true)
+            (.to
+              (.tween game-object-factory piece-scale)
+              (clj->js {:x 0 :y 0})
+              500
+              js/Phaser.Easing.Linear.None
+              true)))))))
 
 (defn hide-all-puzzle-pieces! []
   (synchronize-puzzle-board
