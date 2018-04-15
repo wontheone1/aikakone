@@ -27,10 +27,6 @@
                            :see-ranking-button  nil
                            :stage-clear-text    nil}))
 
-(def flipped-state "FLIPPED")
-
-(def non-flipped-state "NON-FLIPPED")
-
 (def puzzle-image-width (atom nil))
 
 (def puzzle-image-height (atom nil))
@@ -67,7 +63,16 @@
          (nil? (:stage-clear-text dereffed-game-state)))))
 
 (defn- puzzle-solved? []
-  (every? #(= non-flipped-state (val %)) (:sprites-state @game-state)))
+  (let [sprites-state (:sprites-state @game-state)
+        row-flipped? (:row-flipped? sprites-state)
+        col-flipped? (:col-flipped? sprites-state)
+        diagonal-flipped? (:diagonal-flipped? sprites-state)]
+    (or (and (every? #(false? (val %)) row-flipped?)
+             (every? #(false? (val %)) col-flipped?)
+             (false? diagonal-flipped?))
+        (and (every? #(true? (val %)) row-flipped?)
+             (every? #(true? (val %)) col-flipped?)
+             (false? diagonal-flipped?)))))
 
 (defn- show-play-button! []
   (.setTo (.-scale (:play-button @game-state)) 1 1))
@@ -146,24 +151,63 @@
     (send-puzzle-complete-fn! (:play-time @game-state))
     (swap! game-state assoc :sprites-state {})))
 
+(def initial-sprites-state-per-piece
+  (reduce
+    #(assoc %1 %2 false)
+    {}
+    (for [row (range row-col-num)
+          col (range row-col-num)]
+      [row col])))
+
 (defn- synchronize-puzzle-board [sprites-state]
   (when (currently-playing-game?)
     (swap! game-state assoc :sprites-state sprites-state)
     (let [derefed-state @game-state
           piece-x-scale (:piece-x-scale derefed-state)
           piece-y-scale (:piece-y-scale derefed-state)
+          row-flips-applied (reduce
+                              (fn [sprites-state-in-modification [row flipped?]]
+                                (reduce
+                                  (fn [sprites-state col]
+                                    (update sprites-state [row col] (if flipped? not identity)))
+                                  sprites-state-in-modification
+                                  (range row-col-num)))
+                              initial-sprites-state-per-piece
+                              (:row-flipped? sprites-state))
+          col-flips-applied (reduce
+                              (fn [sprites-state-in-modification [col flipped?]]
+                                (reduce
+                                  (fn [sprites-state row]
+                                    (update sprites-state [row col] (if flipped? not identity)))
+                                  sprites-state-in-modification
+                                  (range row-col-num)))
+                              row-flips-applied
+                              (:col-flipped? sprites-state))
+          diagonal-flip-applied (reduce
+                                  (fn [sprites-state-in-modification row-col]
+                                    (update sprites-state-in-modification
+                                            [(- row-col-num 1 row-col) row-col]
+                                            (if (:diagonal-flipped? sprites-state) not identity)))
+                                  col-flips-applied
+                                  (range row-col-num))
           sprites (:sprites derefed-state)]
-      (doseq [[[row col] sprite-flipped-state] sprites-state]
+      (doseq [[[row col] sprite-flipped-state] diagonal-flip-applied]
         (let [piece-scale (.-scale (sprites [row col]))]
-          (if (= non-flipped-state sprite-flipped-state)
+          (if (= false sprite-flipped-state)
             (.setTo piece-scale piece-x-scale piece-y-scale)
             (.setTo piece-scale 0 0)))))))
 
 (defn hide-all-puzzle-pieces! []
   (synchronize-puzzle-board
-    (for [row (range row-col-num)
-          col (range row-col-num)]
-      [[row col] flipped-state]))
+    {:row-flipped?      (reduce
+                          #(assoc %1 %2 true)
+                          {}
+                          (range row-col-num))
+     :col-flipped?      (reduce
+                          #(assoc %1 %2 false)
+                          {}
+                          (range row-col-num))
+     :diagonal-flipped? false})
   (swap! game-state assoc :sprites-state nil))
 
 (defn hide-play-time! []

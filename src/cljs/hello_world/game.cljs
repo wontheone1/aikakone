@@ -38,55 +38,26 @@
     (util/get-button-height)
     6))
 
-(defn- toggle-visibility-and-flipped-state! [row col]
-  (let [piece-flipped-state ((:sprites-state @util/game-state) [row col])
-        piece-scale (.-scale ((:sprites @util/game-state) [row col]))
-        game-object-factory (.-add @util/game)]
-    (if (= util/flipped-state piece-flipped-state)
-      (do
-        (swap!
-          util/game-state
-          assoc-in
-          [:sprites-state [row col]]
-          util/non-flipped-state)
-        (.to
-          (.tween game-object-factory piece-scale)
-          (clj->js {:x (:piece-x-scale @util/game-state)
-                    :y (:piece-y-scale @util/game-state)})
-          500
-          js/Phaser.Easing.Linear.None
-          true))
-      (do
-        (swap!
-          util/game-state
-          assoc-in
-          [:sprites-state [row col]]
-          util/flipped-state)
-        (.to
-          (.tween game-object-factory piece-scale)
-          (clj->js {:x 0 :y 0})
-          500
-          js/Phaser.Easing.Linear.None
-          true)))))
-
 (defn flip-row! [row]
-  (doseq [col (range util/row-col-num)]
-    (toggle-visibility-and-flipped-state! row col)))
+  (swap! util/game-state update-in [:sprites-state :row-flipped? row] not))
 
 (defn flip-col! [col]
-  (doseq [row (range util/row-col-num)]
-    (toggle-visibility-and-flipped-state! row col)))
+  (swap! util/game-state update-in [:sprites-state :col-flipped? col] not))
 
 (defn flip-diagonal-pieces! []
-  (doseq [row (range util/row-col-num)
-          :let [col (- (dec util/row-col-num) row)]]
-    (toggle-visibility-and-flipped-state! row col)))
+  (swap! util/game-state update-in [:sprites-state :diagonal-flipped?] not))
 
 (defn- randomize-puzzle []
+  (let [non-flipped-row-or-col (reduce #(assoc %1 %2 false)
+                                       {}
+                                       (range util/row-col-num))]
+    (swap! util/game-state assoc :sprites-state {:diagonal-flipped? false
+                                                 :row-flipped?      non-flipped-row-or-col
+                                                 :col-flipped?      non-flipped-row-or-col}))
   (randomly-execute-a-fn flip-diagonal-pieces!)
   (doseq [row-or-col (range util/row-col-num)]
-    (randomly-execute-a-fn (fn [] (js/setTimeout (fn [] (flip-row! row-or-col)) 200)))
-    (randomly-execute-a-fn (fn [] (js/setTimeout (fn [] (flip-col! row-or-col)) 200)))))
+    (randomly-execute-a-fn (fn [] (flip-row! row-or-col)))
+    (randomly-execute-a-fn (fn [] (flip-col! row-or-col)))))
 
 (declare create-puzzle-board)
 
@@ -167,6 +138,7 @@
                 (when (util/currently-playing-game?)
                   (sound/play-beep! (sound/frequencies-in-major-scale-4th-octave util/row-col-num))
                   (flip-diagonal-pieces!)
+                  (util/synchronize-puzzle-board (:sprites-state @util/game-state))
                   (send-sprites-state-fn!)
                   (util/finish-game-when-puzzle-is-complete!
                     send-puzzle-complete-fn!))))))
@@ -185,6 +157,7 @@
                 (when (util/currently-playing-game?)
                   (sound/play-beep! (sound/frequencies-in-major-scale-4th-octave row))
                   (flip-row! row)
+                  (util/synchronize-puzzle-board (:sprites-state @util/game-state))
                   (send-sprites-state-fn!)
                   (util/finish-game-when-puzzle-is-complete!
                     send-puzzle-complete-fn!))))))
@@ -205,6 +178,7 @@
                                       (mod (+ 1 util/row-col-num col)
                                            (count sound/frequencies-in-major-scale-4th-octave))))
                   (flip-col! col)
+                  (util/synchronize-puzzle-board (:sprites-state @util/game-state))
                   (send-sprites-state-fn!)
                   (util/finish-game-when-puzzle-is-complete!
                     send-puzzle-complete-fn!)))))))))
@@ -215,6 +189,7 @@
         (swap! util/game-state assoc :sprites-state {})     ; prevent :sprites-state is nil when creating
                                                             ; puzzle board for the first time
         (randomize-puzzle)
+        (util/synchronize-puzzle-board (:sprites-state @util/game-state))
         (send-start-timer-fn!))))
   (util/show-play-time!))
 
