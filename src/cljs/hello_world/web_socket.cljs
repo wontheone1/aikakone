@@ -53,7 +53,7 @@
                              (game/create-puzzle-board {:send-sprites-state-fn!   send-sprites-state!
                                                         :send-puzzle-complete-fn! send-puzzle-complete!
                                                         :send-start-timer-fn!     send-start-timer!})
-                             (js/setTimeout send-sprites-state! 300))
+                             (send-sprites-state!))
 
       :aikakone/current-time (when (and (:play-time-text @util/game-state)
                                         (util/currently-playing-game?))
