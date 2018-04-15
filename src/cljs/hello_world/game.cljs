@@ -110,6 +110,16 @@
   (swap! util/game-state update :control-buttons conj control-button)
   control-button)
 
+(defn- create-puzzle-piece-and-store [{:keys [frame-id x-pos y-pos col row]}]
+  (let [piece (.sprite
+                (.-add @util/game)
+                x-pos
+                y-pos
+                "puzzle"
+                frame-id)]
+    (swap! util/game-state assoc-in [:sprites [col row]] piece)
+    (.setTo (.-scale piece) 0 0)))
+
 (defn- create-puzzle-board [{:keys [send-sprites-state-fn!
                                     send-puzzle-complete-fn!
                                     send-start-timer-fn!]}]
@@ -132,14 +142,11 @@
               :let [frame-id (+ (* util/row-col-num row) col)
                     x-pos (+ (* piece-width-height col) left-margin col)
                     y-pos (+ (* piece-width-height row) top-margin row)]]
-        (let [piece (.sprite
-                      game-object-factory
-                      x-pos
-                      y-pos
-                      "puzzle"
-                      frame-id)]
-          (swap! util/game-state assoc-in [:sprites [col row]] piece)
-          (.setTo (.-scale piece) 0 0))
+        (create-puzzle-piece-and-store {:frame-id frame-id
+                                        :x-pos    x-pos
+                                        :y-pos    y-pos
+                                        :col      col
+                                        :row      row})
         (when
           (and (zero? col) (= row (dec util/row-col-num)))
           (let [bottom-left-button (store-control-button-and-return-it
