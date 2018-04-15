@@ -108,6 +108,8 @@
 
 (defn- store-control-button-and-return-it [control-button]
   (swap! util/game-state update :control-buttons conj control-button)
+  (set! (.-x (.-anchor control-button)) 0.5)
+  (set! (.-y (.-anchor control-button)) 0.5)
   control-button)
 
 (defn- create-puzzle-piece-and-store [{:keys [frame-id x-pos y-pos col row]}]
@@ -118,7 +120,9 @@
                 "puzzle"
                 frame-id)]
     (swap! util/game-state assoc-in [:sprites [col row]] piece)
-    (.setTo (.-scale piece) 0 0)))
+    (.setTo (.-scale piece) 0 0)
+    (set! (.-x (.-anchor piece)) 0.5)
+    (set! (.-y (.-anchor piece)) 0.5)))
 
 (defn- create-puzzle-board [{:keys [send-sprites-state-fn!
                                     send-puzzle-complete-fn!
