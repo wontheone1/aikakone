@@ -3,9 +3,6 @@
             [hello-world.util :as util]
             ))
 
-(defn- randomly-execute-a-fn [f]
-  (when (< (rand) 0.5) (f)))
-
 (defn- preload []
   (.image
     (.-load @util/game)
@@ -46,18 +43,6 @@
 
 (defn flip-diagonal-pieces! []
   (swap! util/game-state update-in [:sprites-state :diagonal-flipped?] not))
-
-(defn- randomize-puzzle []
-  (let [non-flipped-row-or-col (reduce #(assoc %1 %2 false)
-                                       {}
-                                       (range util/row-col-num))]
-    (swap! util/game-state assoc :sprites-state {:diagonal-flipped? false
-                                                 :row-flipped?      non-flipped-row-or-col
-                                                 :col-flipped?      non-flipped-row-or-col}))
-  (randomly-execute-a-fn flip-diagonal-pieces!)
-  (doseq [row-or-col (range util/row-col-num)]
-    (randomly-execute-a-fn (fn [] (flip-row! row-or-col)))
-    (randomly-execute-a-fn (fn [] (flip-col! row-or-col)))))
 
 (declare create-puzzle-board)
 
@@ -182,15 +167,8 @@
                   (send-sprites-state-fn!)
                   (util/finish-game-when-puzzle-is-complete!
                     send-puzzle-complete-fn!)))))))))
-  (let [initial-sprites-state (:sprites-state @util/game-state)]
-    (if (not (empty? initial-sprites-state))
-      (util/synchronize-puzzle-board initial-sprites-state)
-      (do
-        (swap! util/game-state assoc :sprites-state {})     ; prevent :sprites-state is nil when creating
-                                                            ; puzzle board for the first time
-        (randomize-puzzle)
-        (util/synchronize-puzzle-board (:sprites-state @util/game-state))
-        (send-start-timer-fn!))))
+  (util/synchronize-puzzle-board (:sprites-state @util/game-state))
+  (send-start-timer-fn!)
   (util/show-play-time!))
 
 (defn- create-create [websocket-message-send-functions]
