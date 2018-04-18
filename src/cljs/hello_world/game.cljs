@@ -3,9 +3,6 @@
             [hello-world.util :as util]
             ))
 
-(defn- randomly-execute-a-fn [f]
-  (when (< (rand) 0.5) (f)))
-
 (defn- preload []
   (.image
     (.-load @util/game)
@@ -38,45 +35,14 @@
     (util/get-button-height)
     6))
 
-(defn- toggle-visibility-and-flipped-state! [col row]
-  (let [piece-scale (.-scale ((:sprites @util/game-state) [col row]))]
-    (if (zero? (.-x piece-scale))
-      (do
-        (swap!
-          util/game-state
-          assoc-in
-          [:sprites-state [col row]]
-          util/non-flipped-state)
-        (.setTo
-          piece-scale
-          (:piece-x-scale @util/game-state)
-          (:piece-y-scale @util/game-state)))
-      (do
-        (swap!
-          util/game-state
-          assoc-in
-          [:sprites-state [col row]]
-          util/flipped-state)
-        (.setTo piece-scale 0 0)))))
-
 (defn flip-row! [row]
-  (doseq [col (range util/row-col-num)]
-    (toggle-visibility-and-flipped-state! col row)))
+  (swap! util/game-state update-in [:sprites-state :row-flipped? row] not))
 
 (defn flip-col! [col]
-  (doseq [row (range util/row-col-num)]
-    (toggle-visibility-and-flipped-state! col row)))
+  (swap! util/game-state update-in [:sprites-state :col-flipped? col] not))
 
 (defn flip-diagonal-pieces! []
-  (doseq [row (range util/row-col-num)
-          :let [col (- (dec util/row-col-num) row)]]
-    (toggle-visibility-and-flipped-state! col row)))
-
-(defn- randomize-puzzle []
-  (randomly-execute-a-fn flip-diagonal-pieces!)
-  (doseq [row-or-col (range util/row-col-num)]
-    (randomly-execute-a-fn (fn [] (js/setTimeout (fn [] (flip-row! row-or-col)) 200)))
-    (randomly-execute-a-fn (fn [] (js/setTimeout (fn [] (flip-col! row-or-col)) 200)))))
+  (swap! util/game-state update-in [:sprites-state :diagonal-flipped?] not))
 
 (declare create-puzzle-board)
 
@@ -98,7 +64,21 @@
 
 (defn- store-control-button-and-return-it [control-button]
   (swap! util/game-state update :control-buttons conj control-button)
+  (set! (.-x (.-anchor control-button)) 0.5)
+  (set! (.-y (.-anchor control-button)) 0.5)
   control-button)
+
+(defn- create-puzzle-piece-and-store [{:keys [frame-id x-pos y-pos row col]}]
+  (let [piece (.sprite
+                (.-add @util/game)
+                x-pos
+                y-pos
+                "puzzle"
+                frame-id)]
+    (swap! util/game-state assoc-in [:sprites [row col]] piece)
+    (.setTo (.-scale piece) 0 0)
+    (set! (.-x (.-anchor piece)) 0.5)
+    (set! (.-y (.-anchor piece)) 0.5)))
 
 (defn- create-puzzle-board [{:keys [send-sprites-state-fn!
                                     send-puzzle-complete-fn!
@@ -122,14 +102,11 @@
               :let [frame-id (+ (* util/row-col-num row) col)
                     x-pos (+ (* piece-width-height col) left-margin col)
                     y-pos (+ (* piece-width-height row) top-margin row)]]
-        (let [piece (.sprite
-                      game-object-factory
-                      x-pos
-                      y-pos
-                      "puzzle"
-                      frame-id)]
-          (swap! util/game-state assoc-in [:sprites [col row]] piece)
-          (.setTo (.-scale piece) 0 0))
+        (create-puzzle-piece-and-store {:frame-id frame-id
+                                        :x-pos    x-pos
+                                        :y-pos    y-pos
+                                        :row      row
+                                        :col      col})
         (when
           (and (zero? col) (= row (dec util/row-col-num)))
           (let [bottom-left-button (store-control-button-and-return-it
@@ -146,6 +123,7 @@
                 (when (util/currently-playing-game?)
                   (sound/play-beep! (sound/frequencies-in-major-scale-4th-octave util/row-col-num))
                   (flip-diagonal-pieces!)
+                  (util/synchronize-puzzle-board (:sprites-state @util/game-state))
                   (send-sprites-state-fn!)
                   (util/finish-game-when-puzzle-is-complete!
                     send-puzzle-complete-fn!))))))
@@ -164,6 +142,7 @@
                 (when (util/currently-playing-game?)
                   (sound/play-beep! (sound/frequencies-in-major-scale-4th-octave row))
                   (flip-row! row)
+                  (util/synchronize-puzzle-board (:sprites-state @util/game-state))
                   (send-sprites-state-fn!)
                   (util/finish-game-when-puzzle-is-complete!
                     send-puzzle-complete-fn!))))))
@@ -184,15 +163,12 @@
                                       (mod (+ 1 util/row-col-num col)
                                            (count sound/frequencies-in-major-scale-4th-octave))))
                   (flip-col! col)
+                  (util/synchronize-puzzle-board (:sprites-state @util/game-state))
                   (send-sprites-state-fn!)
                   (util/finish-game-when-puzzle-is-complete!
                     send-puzzle-complete-fn!)))))))))
-  (let [initial-sprites-state (:sprites-state @util/game-state)]
-    (if (not (empty? initial-sprites-state))
-      (util/synchronize-puzzle-board initial-sprites-state)
-      (do
-        (randomize-puzzle)
-        (send-start-timer-fn!))))
+  (util/synchronize-puzzle-board (:sprites-state @util/game-state))
+  (send-start-timer-fn!)
   (util/show-play-time!))
 
 (defn- create-create [websocket-message-send-functions]
