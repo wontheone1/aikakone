@@ -15,7 +15,7 @@
   [ui/mui-theme-provider
    {:muiTheme (get-mui-theme {:palette {:textColor (color :blue200)}})}
    [ui/raised-button {:label    "Play game"
-                      :on-click util/show-game}]])
+                      :on-click util/show-game!}]])
 
 (defn ranking-dashboard []
   (go (let [response (<! (http/get "http://localhost:2222/rankings"))
@@ -51,7 +51,12 @@
         [:img {:src      "images/aikakone-intro.png"
                :width    "100%"
                :height   "100%"
-               :on-click util/show-game}]
+               :on-click util/show-puzzle-selection!}]
+
+        (= :puzzle-selection @(rf/subscribe [:screen]))
+        [:ul
+         (for [i (range 6)]
+           [:li [:a {:href "#" :on-click util/show-game!} (str i)]])]
 
         (= :ranking-dashboard @(rf/subscribe [:screen]))
         [ranking-dashboard]))))
