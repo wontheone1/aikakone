@@ -9,10 +9,10 @@
             [re-frame.core :as rf]
             ))
 
-(defn kirkko-image-src []
+(defn image-src-of [search-word]
   (go (let [response (<! (http/get "https://api.finna.fi/v1/search"
                                    {:with-credentials? false
-                                    :query-params      {"lookfor" "kirkko"}}))]
+                                    :query-params      {"lookfor" search-word}}))]
         (rf/dispatch [:set-finna-img (str "https://api.finna.fi" (-> (filter :images (get-in response [:body :records]))
                                                                      first
                                                                      :images
@@ -68,8 +68,20 @@
          [:ul
           [:li [:a {:href "#" :on-click util/show-game!} "default"]]
           [:li [:a {:href     "#"
-                    :on-click kirkko-image-src}
-                "kirkko"]]]]
+                    :on-click #(image-src-of "kirkko")}
+                "kirkko"]]
+          [:li [:a {:href     "#"
+                    :on-click #(image-src-of "miehet")}
+                "miehet"]]
+          [:li [:a {:href     "#"
+                    :on-click #(image-src-of "naiset")}
+                "naiset"]]
+          [:li [:a {:href     "#"
+                    :on-click #(image-src-of "sotilas")}
+                "sotilas"]]
+          [:li [:a {:href     "#"
+                    :on-click #(image-src-of "rauta")}
+                "rauta"]]]]
 
         (= :ranking-dashboard @(rf/subscribe [:screen]))
         [ranking-dashboard]))))
