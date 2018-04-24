@@ -1,10 +1,5 @@
 (ns hello-world.core
-  (:require-macros [cljs.core.async.macros :refer [go]])
-  (:require [cljsjs.material-ui]
-            [cljs-react-material-ui.core :refer [get-mui-theme color]]
-            [cljs-react-material-ui.reagent :as ui]
-            [cljs-http.client :as http]
-            [cljs.core.async :refer [<!]]
+  (:require [hello-world.components :as view]
             [hello-world.web-socket :as web-sck]
             [nightlight.repl-server]
             [hello-world.util :as util]
@@ -38,40 +33,9 @@
   (fn [db _]
     (:ranking db)))
 
-;- View Functions -
-
-(defn go-back-to-game-button []
-  [ui/mui-theme-provider
-   {:muiTheme (get-mui-theme {:palette {:textColor (color :blue200)}})}
-   [ui/raised-button {:label    "Play game"
-                      :on-click #(do
-                                   (util/show-game!))}]])
-
-(defn ranking-dashboard []
-  (when (= :ranking-dashboard @(rf/subscribe [:screen]))
-    (go (let [response (<! (http/get "http://localhost:2222/rankings"))
-              ranking (:body response)]
-          (rf/dispatch [:ranking (util/parse-json ranking)])))
-    (let [ranking @(rf/subscribe [:ranking])]
-      [:div
-       [go-back-to-game-button]
-       [ui/mui-theme-provider
-        {:muiTheme (get-mui-theme {:palette {:textColor (color :blue200)}})}
-        [ui/table
-         [ui/table-header {:displaySelectAll false :adjustForCheckbox false}
-          [ui/table-row
-           [ui/table-header-column "Ranking"]
-           [ui/table-header-column "Time Record"]]]
-         (apply conj
-                [ui/table-body {:displayRowCheckbox false}]
-                (for [rank (range (count ranking))]
-                  [ui/table-row
-                   [ui/table-row-column (inc rank)]
-                   [ui/table-row-column (ranking rank)]]))]]])))
-
 ; - Entry Point -
 
-(r/render [ranking-dashboard]
+(r/render [view/ranking-dashboard]
           (.getElementById js/document "app"))
 
 ; this is the game program's entry point
