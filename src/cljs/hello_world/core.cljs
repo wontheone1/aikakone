@@ -14,7 +14,7 @@
 (rf/reg-event-db
   :initialize
   (fn [_ _]
-    {:screen  :game
+    {:screen  :intro
      :ranking []}))
 
 (rf/reg-event-db

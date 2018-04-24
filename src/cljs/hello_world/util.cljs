@@ -112,6 +112,9 @@
         this)))
   (show-see-ranking-button!))
 
+(defn show-game []
+  (rf/dispatch [:screen-change :game]))
+
 (defn show-reset-button! []
   (.setTo (.-scale (:reset-button @game-state)) 0.1 0.1))
 
