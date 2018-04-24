@@ -1,5 +1,7 @@
 (ns hello-world.util
-  (:require [reagent.core :as r]))
+  (:require
+    [re-frame.core :as rf]
+    ))
 
 (enable-console-print!)
 
@@ -7,10 +9,6 @@
 
 (defn parse-json [json-string]
   (js->clj (.parse js/JSON json-string)))
-
-(defonce ranking (r/atom []))
-
-(defonce showing-ranking? (r/atom false))
 
 (def game (atom nil))
 
@@ -94,12 +92,12 @@
                      :align "center"}))))
 
 (defn show-game! []
-  (reset! showing-ranking? false)
+  (rf/dispatch [:screen-change :game])
   (let [canvas (.getElementById js/document "canvas")]
     (set! (.-display (.-style canvas)) "block")))
 
 (defn- hide-game! []
-  (reset! showing-ranking? true)
+  (rf/dispatch [:screen-change :ranking-dashboard])
   (let [canvas (.getElementById js/document "canvas")]
     (set! (.-display (.-style canvas)) "none")))
 

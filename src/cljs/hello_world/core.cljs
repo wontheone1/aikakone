@@ -11,9 +11,36 @@
             [nightlight.repl-server]
             [hello-world.util :as util]
             [reagent.core :as r]
+            [re-frame.core :as rf]
             ))
 
 (enable-console-print!)
+
+;- Event Handlers -
+
+(rf/reg-event-db
+  :ranking
+  (fn [db [_ ranking]]
+    (assoc db :ranking ranking)))
+
+(rf/reg-event-db
+  :screen-change
+  (fn [db [_ screen]]
+    (assoc db :screen screen)))
+
+;- Query  -
+
+(rf/reg-sub
+  :screen
+  (fn [db _]
+    (:screen db)))
+
+(rf/reg-sub
+  :ranking
+  (fn [db _]
+    (:ranking db)))
+
+;- View Functions -
 
 (defn go-back-to-game-button []
   [ui/mui-theme-provider
@@ -23,11 +50,11 @@
                                    (util/show-game!))}]])
 
 (defn ranking-dashboard []
-  (when @util/showing-ranking?
+  (when (= :ranking-dashboard @(rf/subscribe [:screen]))
     (go (let [response (<! (http/get "http://localhost:2222/rankings"))
               ranking (:body response)]
-          (reset! util/ranking (util/parse-json ranking))))
-    (let [ranking @util/ranking]
+          (rf/dispatch [:ranking (util/parse-json ranking)])))
+    (let [ranking @(rf/subscribe [:ranking])]
       [:div
        [go-back-to-game-button]
        [ui/mui-theme-provider
@@ -43,6 +70,8 @@
                   [ui/table-row
                    [ui/table-row-column (inc rank)]
                    [ui/table-row-column (ranking rank)]]))]]])))
+
+; - Entry Point -
 
 (r/render [ranking-dashboard]
           (.getElementById js/document "app"))
