@@ -12,6 +12,12 @@
 ;- Event Handlers -
 
 (rf/reg-event-db
+  :initialize
+  (fn [_ _]
+    {:screen  :game
+     :ranking []}))
+
+(rf/reg-event-db
   :ranking
   (fn [db [_ ranking]]
     (assoc db :ranking ranking)))
@@ -35,6 +41,7 @@
 
 ; - Entry Point -
 
+(rf/dispatch-sync [:initialize])
 (r/render [view/app]
           (.getElementById js/document "app"))
 
