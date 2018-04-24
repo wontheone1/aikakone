@@ -162,8 +162,6 @@
     (swap! game-state assoc :sprites-state sprites-state)
     (let [game-object-factory (.-add @game)
           derefed-state @game-state
-          piece-x-scale (:piece-x-scale derefed-state)
-          piece-y-scale (:piece-y-scale derefed-state)
           row-flips-applied (reduce
                               (fn [sprites-state-in-modification [row flipped?]]
                                 (reduce
