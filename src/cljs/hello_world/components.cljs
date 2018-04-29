@@ -49,17 +49,13 @@
                  [ui/table-row-column (inc rank)]
                  [ui/table-row-column (ranking rank)]]))]]]))
 
-(defn create-fn-to-start-game-with-image-src [image-src]
-  (fn []
-    (game/start-game!
-      image-src
-      {:chsk-send-fn!  web-socket/chsk-send!
-       :send-reset-fn! web-socket/send-reset!})
-    (util/show-game!)))
-
 (defn app []
   (if (= :game @(rf/subscribe [:screen]))
     (do (let [canvas (.getElementById js/document "canvas")]
+          (game/start-game!
+            @(rf/subscribe [:game-img])
+            {:chsk-send-fn!  web-socket/chsk-send!
+             :send-reset-fn! web-socket/send-reset!})
           (set! (.-display (.-style canvas)) "block"))
         [:div])
     (do
@@ -77,7 +73,9 @@
          [:img#gameImg {:src @(rf/subscribe [:game-img])}]
          [:ul
           [:li [:a
-                {:href "#" :on-click (create-fn-to-start-game-with-image-src "images/puzzle-image.jpg")}
+                {:href "#" :on-click #(do
+                                        (rf/dispatch [:set-game-img "images/puzzle-image.jpg"])
+                                        (util/show-game!))}
                 "default"]]
           [:li [:a {:href     "#"
                     :on-click #(image-src-of "kirkko")}
