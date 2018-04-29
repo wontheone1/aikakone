@@ -20,8 +20,6 @@
                            :play-time           0.0
                            :play-time-text      nil
                            :puzzle-width-height 0
-                           :piece-x-scale       0
-                           :piece-y-scale       0
                            :see-ranking-button  nil
                            :stage-clear-text    nil}))
 
@@ -142,6 +140,20 @@
     (send-puzzle-complete-fn! (:play-time @game-state))
     (swap! game-state assoc :sprites-state {})))
 
+(defn- get-puzzle-image-width []
+  (.. @game -cache (getImage "puzzle") -width))
+
+(defn- get-puzzle-image-height []
+  (.. @game -cache (getImage "puzzle") -height))
+
+(defn- get-piece-x-scale []
+  (/ (:puzzle-width-height @game-state)
+     (get-puzzle-image-width)))
+
+(defn- get-piece-y-scale []
+  (/ (:puzzle-width-height @game-state)
+     (get-puzzle-image-height)))
+
 (def initial-sprites-state-per-piece
   (reduce
     #(assoc %1 %2 false)
@@ -180,14 +192,16 @@
                                             (if (:diagonal-flipped? sprites-state) not identity)))
                                   col-flips-applied
                                   (range row-col-num))
-          sprites (:sprites derefed-state)]
+          sprites (:sprites derefed-state)
+          piece-x-scale (get-piece-x-scale)
+          piece-y-scale (get-piece-y-scale)]
       (doseq [[[row col] sprite-flipped-state] diagonal-flip-applied]
         (let [piece-scale (.-scale (sprites [row col]))]
           (if (= false sprite-flipped-state)
             (.. game-object-factory
                 (tween piece-scale)
-                (to (clj->js {:x (:piece-x-scale derefed-state)
-                              :y (:piece-y-scale derefed-state)})
+                (to (clj->js {:x piece-x-scale
+                              :y piece-y-scale})
                     500
                     js/Phaser.Easing.Linear.None
                     true))
