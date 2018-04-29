@@ -50,10 +50,8 @@
 
 (defn make-buttons-same-size-as-puzzle-piece! [control-button]
   (let [piece-width-height (get-piece-width-height (:puzzle-width-height @game-state))]
-    (.setTo
-      (.-scale control-button)
-      (/ piece-width-height (get-button-width))
-      (/ piece-width-height (get-button-height)))))
+    (.. control-button -scale (setTo (/ piece-width-height (get-button-width))
+                                     (/ piece-width-height (get-button-height))))))
 
 (defn- currently-playing-game? []
   (let [dereffed-game-state @game-state]
@@ -73,10 +71,10 @@
              (false? diagonal-flipped?)))))
 
 (defn- show-play-button! []
-  (.setTo (.-scale (:play-button @game-state)) 1 1))
+  (.. (:play-button @game-state) -scale (setTo 1 1)))
 
 (defn hide-play-button! []
-  (.setTo (.-scale (:play-button @game-state)) 0 0))
+  (.. (:play-button @game-state) -scale (setTo 0 0)))
 
 (defn- show-congrat-message! []
   (swap!
@@ -92,10 +90,10 @@
                      :align "center"}))))
 
 (defn- show-see-ranking-button! []
-  (.setTo (.-scale (:see-ranking-button @game-state)) 0.5 0.5))
+  (.. (:see-ranking-button @game-state) -scale (setTo 0.5 0.5)))
 
 (defn hide-see-ranking-button! []
-  (.setTo (.-scale (:see-ranking-button @game-state)) 0 0))
+  (.. (:see-ranking-button @game-state) -scale (setTo 0 0)))
 
 (defn make-see-ranking-button! []
   (swap!
@@ -103,13 +101,13 @@
     assoc
     :see-ranking-button
     (this-as this
-      (.button
-        (.-add @game)
-        (* 0.75 (.-innerWidth js/window))
-        (* 0.2 (.-innerHeight js/window))
-        "see-ranking-button"
-        #(rf/dispatch [:screen-change :ranking-dashboard])
-        this)))
+      (.. @game
+          -add
+          (button (* 0.75 (.-innerWidth js/window))
+                  (* 0.2 (.-innerHeight js/window))
+                  "see-ranking-button"
+                  #(rf/dispatch [:screen-change :ranking-dashboard])
+                  this))))
   (show-see-ranking-button!))
 
 (defn show-game! []
@@ -119,14 +117,14 @@
   (rf/dispatch [:screen-change :puzzle-selection]))
 
 (defn show-reset-button! []
-  (.setTo (.-scale (:reset-button @game-state)) 0.1 0.1))
+  (.. (:reset-button @game-state) -scale (setTo 0.1 0.1)))
 
 (defn hide-reset-button! []
-  (.setTo (.-scale (:reset-button @game-state)) 0 0))
+  (.. (:reset-button @game-state) -scale (setTo 0 0)))
 
 (defn- hide-control-buttons! []
   (doseq [control-button (:control-buttons @game-state)]
-    (.setTo (.-scale control-button) 0 0)))
+    (.. control-button -scale (setTo 0 0))))
 
 (defn- show-control-buttons! []
   (doseq [control-button (:control-buttons @game-state)]
@@ -186,19 +184,19 @@
       (doseq [[[row col] sprite-flipped-state] diagonal-flip-applied]
         (let [piece-scale (.-scale (sprites [row col]))]
           (if (= false sprite-flipped-state)
-            (.to
-              (.tween game-object-factory piece-scale)
-              (clj->js {:x (:piece-x-scale derefed-state)
-                        :y (:piece-y-scale derefed-state)})
-              500
-              js/Phaser.Easing.Linear.None
-              true)
-            (.to
-              (.tween game-object-factory piece-scale)
-              (clj->js {:x 0 :y 0})
-              500
-              js/Phaser.Easing.Linear.None
-              true)))))))
+            (.. game-object-factory
+                (tween piece-scale)
+                (to (clj->js {:x (:piece-x-scale derefed-state)
+                              :y (:piece-y-scale derefed-state)})
+                    500
+                    js/Phaser.Easing.Linear.None
+                    true))
+            (.. game-object-factory
+                (tween piece-scale)
+                (to (clj->js {:x 0 :y 0})
+                    500
+                    js/Phaser.Easing.Linear.None
+                    true))))))))
 
 (defn hide-all-puzzle-pieces! []
   (synchronize-puzzle-board!
@@ -231,15 +229,15 @@
     assoc
     :reset-button
     (this-as this
-      (.button
-        (.-add @game)
-        (* 0.85 (.-innerWidth js/window))
-        (* 0.3 (.-innerHeight js/window))
-        "reset-button"
-        (fn []
-          (reset-game!)
-          (send-reset-fn))
-        this)))
+      (.. @game
+          -add
+          (button (* 0.85 (.-innerWidth js/window))
+                  (* 0.3 (.-innerHeight js/window))
+                  "reset-button"
+                  (fn []
+                    (reset-game!)
+                    (send-reset-fn))
+                  this))))
   (hide-reset-button!))
 
 (defn make-audio-button! []
@@ -248,17 +246,17 @@
     assoc
     :audio-button
     (this-as this
-      (.button
-        (.-add @game)
-        (* 0.85 (.-innerWidth js/window))
-        (* 0.5 (.-innerHeight js/window))
-        "audio-button"
-        (fn []
-          (swap! game-state
-                 update
-                 :audio-on?
-                 not))
-        this))))
+      (.. @game
+          -add
+          (button (* 0.85 (.-innerWidth js/window))
+                  (* 0.5 (.-innerHeight js/window))
+                  "audio-button"
+                  (fn []
+                    (swap! game-state
+                           update
+                           :audio-on?
+                           not))
+                  this)))))
 
 (defn destroy-stage-clear-text! []
   (when-let [stage-clear-text (:stage-clear-text @game-state)]
@@ -270,13 +268,14 @@
     (swap! game-state
            assoc
            :play-time-text
-           (.text (.-add @game)
-                  (* (.-innerWidth js/window) 0.8)
-                  (/ (.-innerHeight js/window) 20)
-                  "0.000"
-                  (clj->js {:font  "60px Arial"
-                            :fill  "#ffffff"
-                            :align "center"})))))
+           (.. @game
+               -add
+               (text (* (.-innerWidth js/window) 0.8)
+                     (/ (.-innerHeight js/window) 20)
+                     "0.000"
+                     (clj->js {:font  "60px Arial"
+                               :fill  "#ffffff"
+                               :align "center"}))))))
 
 (defn update-play-time-to-current-time [play-time]
   (let [derefed-state @game-state
