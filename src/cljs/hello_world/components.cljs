@@ -11,7 +11,7 @@
             [re-frame.core :as rf]
             ))
 
-(defn image-src-of [search-word]
+(defn set-game-image! [search-word]
   (go (let [response (<! (http/get "https://api.finna.fi/v1/search"
                                    {:with-credentials? false
                                     :query-params      {"lookfor" search-word}}))]
@@ -79,27 +79,27 @@
                 "default"]]
           [:li [:a {:href     "#"
                     :on-click #(do
-                                 (image-src-of "kirkko")
+                                 (set-game-image! "kirkko")
                                  (util/show-game!))}
                 "kirkko"]]
           [:li [:a {:href     "#"
                     :on-click #(do
-                                 (image-src-of "miehet")
+                                 (set-game-image! "miehet")
                                  (util/show-game!))}
                 "miehet"]]
           [:li [:a {:href     "#"
                     :on-click #(do
-                                 (image-src-of "naiset")
+                                 (set-game-image! "naiset")
                                  (util/show-game!))}
                 "naiset"]]
           [:li [:a {:href     "#"
                     :on-click #(do
-                                 (image-src-of "sotilas")
+                                 (set-game-image! "sotilas")
                                  (util/show-game!))}
                 "sotilas"]]
           [:li [:a {:href     "#"
                     :on-click #(do
-                                 (image-src-of "rauta")
+                                 (set-game-image! "rauta")
                                  (util/show-game!))}
                 "rauta"]]]]
 
