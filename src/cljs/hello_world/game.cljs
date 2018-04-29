@@ -4,36 +4,37 @@
             ))
 
 (defn- preload []
-  (.image
-    (.-load @util/game)
-    "audio-button"
-    "images/speaker.png")
-  (.image
-    (.-load @util/game)
-    "reset-button"
-    "images/reset-button.jpg")
-  (.image
-    (.-load @util/game)
-    "play-button"
-    "images/play-button.png")
-  (.image
-    (.-load @util/game)
-    "see-ranking-button"
-    "images/ranking.png")
-  (.spritesheet
-    (.-load @util/game)
-    "puzzle"
-    "images/puzzle-image.jpg"
-    (util/get-piece-width-height @util/puzzle-image-width)
-    (util/get-piece-width-height @util/puzzle-image-height)
-    (* util/row-col-num util/row-col-num))
-  (.spritesheet
-    (.-load @util/game)
-    "flip-buttons"
-    "images/control-buttons.png"
-    (util/get-button-width)
-    (util/get-button-height)
-    6))
+  (let [phaser-loader (.-load @util/game)]
+    (.image
+      phaser-loader
+      "audio-button"
+      "images/speaker.png")
+    (.image
+      phaser-loader
+      "reset-button"
+      "images/reset-button.jpg")
+    (.image
+      phaser-loader
+      "play-button"
+      "images/play-button.png")
+    (.image
+      phaser-loader
+      "see-ranking-button"
+      "images/ranking.png")
+    (.spritesheet
+      phaser-loader
+      "puzzle"
+      "images/puzzle-image.jpg"
+      (util/get-piece-width-height @util/puzzle-image-width)
+      (util/get-piece-width-height @util/puzzle-image-height)
+      (* util/row-col-num util/row-col-num))
+    (.spritesheet
+      phaser-loader
+      "flip-buttons"
+      "images/control-buttons.png"
+      (util/get-button-width)
+      (util/get-button-height)
+      6)))
 
 (defn flip-row! [row]
   (swap! util/game-state update-in [:sprites-state :row-flipped? row] not))
