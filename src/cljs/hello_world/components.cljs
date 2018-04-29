@@ -50,7 +50,7 @@
                  [ui/table-row-column (ranking rank)]]))]]]))
 
 (defn app []
-  (if (= :game @(rf/subscribe [:screen]))
+  (if (string? @(rf/subscribe [:game-img]))
     (do (let [canvas (.getElementById js/document "canvas")]
           (game/start-game!
             @(rf/subscribe [:game-img])
@@ -78,19 +78,29 @@
                                         (util/show-game!))}
                 "default"]]
           [:li [:a {:href     "#"
-                    :on-click #(image-src-of "kirkko")}
+                    :on-click #(do
+                                 (image-src-of "kirkko")
+                                 (util/show-game!))}
                 "kirkko"]]
           [:li [:a {:href     "#"
-                    :on-click #(image-src-of "miehet")}
+                    :on-click #(do
+                                 (image-src-of "miehet")
+                                 (util/show-game!))}
                 "miehet"]]
           [:li [:a {:href     "#"
-                    :on-click #(image-src-of "naiset")}
+                    :on-click #(do
+                                 (image-src-of "naiset")
+                                 (util/show-game!))}
                 "naiset"]]
           [:li [:a {:href     "#"
-                    :on-click #(image-src-of "sotilas")}
+                    :on-click #(do
+                                 (image-src-of "sotilas")
+                                 (util/show-game!))}
                 "sotilas"]]
           [:li [:a {:href     "#"
-                    :on-click #(image-src-of "rauta")}
+                    :on-click #(do
+                                 (image-src-of "rauta")
+                                 (util/show-game!))}
                 "rauta"]]]]
 
         (= :ranking-dashboard @(rf/subscribe [:screen]))

@@ -193,12 +193,12 @@
         (fn []
           (reset! util/puzzle-image-width (.-width puzzle-img))
           (reset! util/puzzle-image-height (.-height puzzle-img))
-          (println "starting game")
+          (println (str "starting game with image from " image-src))
           (reset! util/game
                   (js/Phaser.Game.
                     (.-innerWidth js/window)
                     (.-innerHeight js/window)
-                    js/Phaser.Auto
+                    js/Phaser.Canvas
                     "canvas" ; id of the DOM element to insert canvas.
                     (clj->js {:preload (create-preload image-src)
                               :create  (create-create websocket-message-send-functions)
