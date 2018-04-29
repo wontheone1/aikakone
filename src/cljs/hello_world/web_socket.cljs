@@ -70,9 +70,7 @@
   (let [[?uid ?csrf-token ?handshake-data] ?data]
     (println "Handshake established")
     (swap! util/game-state assoc :uid ?uid)
-    (send-uid)
-    (game/start-game! {:chsk-send-fn!  chsk-send!
-                       :send-reset-fn! send-reset!})))
+    (send-uid)))
 
 (defn start-web-socket! []
   (sente/start-chsk-router! ch-chsk event-msg-handler))

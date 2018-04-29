@@ -5,7 +5,9 @@
             [cljs-react-material-ui.reagent :as ui]
             [cljs-http.client :as http]
             [cljs.core.async :refer [<!]]
+            [hello-world.game :as game]
             [hello-world.util :as util]
+            [hello-world.web-socket :as web-socket]
             [re-frame.core :as rf]
             ))
 
@@ -66,7 +68,14 @@
         [:div
          [:img#finnaImg {:src @(rf/subscribe [:finna-img])}]
          [:ul
-          [:li [:a {:href "#" :on-click util/show-game!} "default"]]
+          [:li [:a
+                {:href "#" :on-click (fn []
+                                       (game/start-game!
+                                         "images/puzzle-image.jpg"
+                                         {:chsk-send-fn!  web-socket/chsk-send!
+                                          :send-reset-fn! web-socket/send-reset!})
+                                       (util/show-game!))}
+                "default"]]
           [:li [:a {:href     "#"
                     :on-click #(image-src-of "kirkko")}
                 "kirkko"]]

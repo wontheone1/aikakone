@@ -3,38 +3,39 @@
             [hello-world.util :as util]
             ))
 
-(defn- preload []
-  (let [phaser-loader (.-load @util/game)]
-    (.image
-      phaser-loader
-      "audio-button"
-      "images/speaker.png")
-    (.image
-      phaser-loader
-      "reset-button"
-      "images/reset-button.jpg")
-    (.image
-      phaser-loader
-      "play-button"
-      "images/play-button.png")
-    (.image
-      phaser-loader
-      "see-ranking-button"
-      "images/ranking.png")
-    (.spritesheet
-      phaser-loader
-      "puzzle"
-      "images/puzzle-image.jpg"
-      (util/get-piece-width-height @util/puzzle-image-width)
-      (util/get-piece-width-height @util/puzzle-image-height)
-      (* util/row-col-num util/row-col-num))
-    (.spritesheet
-      phaser-loader
-      "flip-buttons"
-      "images/control-buttons.png"
-      (util/get-button-width)
-      (util/get-button-height)
-      6)))
+(defn- create-preload [image-src]
+  (fn []
+    (let [phaser-loader (.-load @util/game)]
+      (.image
+        phaser-loader
+        "audio-button"
+        "images/speaker.png")
+      (.image
+        phaser-loader
+        "reset-button"
+        "images/reset-button.jpg")
+      (.image
+        phaser-loader
+        "play-button"
+        "images/play-button.png")
+      (.image
+        phaser-loader
+        "see-ranking-button"
+        "images/ranking.png")
+      (.spritesheet
+        phaser-loader
+        "puzzle"
+        image-src
+        (util/get-piece-width-height @util/puzzle-image-width)
+        (util/get-piece-width-height @util/puzzle-image-height)
+        (* util/row-col-num util/row-col-num))
+      (.spritesheet
+        phaser-loader
+        "flip-buttons"
+        "images/control-buttons.png"
+        (util/get-button-width)
+        (util/get-button-height)
+        6))))
 
 (defn flip-row! [row]
   (swap! util/game-state update-in [:sprites-state :row-flipped? row] not))
@@ -180,7 +181,7 @@
 
 (defn- game-update [] )
 
-(defn- start-game! [websocket-message-send-functions]
+(defn- start-game! [image-src websocket-message-send-functions]
   (println "starting game")
   (reset! util/game
           (js/Phaser.Game.
@@ -189,6 +190,6 @@
             js/Phaser.Auto
             "canvas"
             ; ^ id of the DOM element to insert canvas. As we've left it blank it will simply be appended to body.
-            (clj->js {:preload preload
+            (clj->js {:preload (create-preload image-src)
                       :create  (create-create websocket-message-send-functions)
                       :update  game-update}))))
