@@ -182,13 +182,25 @@
 (defn- game-update [] )
 
 (defn- start-game! [image-src websocket-message-send-functions]
-  (println "starting game")
-  (reset! util/game
-          (js/Phaser.Game.
-            (.-innerWidth js/window)
-            (.-innerHeight js/window)
-            js/Phaser.Auto
-            "canvas" ; id of the DOM element to insert canvas.
-            (clj->js {:preload (create-preload image-src)
-                      :create  (create-create websocket-message-send-functions)
-                      :update  game-update}))))
+  (let [puzzle-img (js/Image.)]
+    ; finding out size of image. https://stackoverflow.com/a/626505/5802173
+    ; image loading is done asynchronously. The way to start the game after image is loaded is
+    ; we start the game in `onload` callback of the image. After loading buttons-img first,
+    ; start loading puzzle image then start the game.
+    (set!
+      (.-onload puzzle-img)
+      (clj->js
+        (fn []
+          (reset! util/puzzle-image-width (.-width puzzle-img))
+          (reset! util/puzzle-image-height (.-height puzzle-img))
+          (println "starting game")
+          (reset! util/game
+                  (js/Phaser.Game.
+                    (.-innerWidth js/window)
+                    (.-innerHeight js/window)
+                    js/Phaser.Auto
+                    "canvas" ; id of the DOM element to insert canvas.
+                    (clj->js {:preload (create-preload image-src)
+                              :create  (create-create websocket-message-send-functions)
+                              :update  game-update}))))))
+    (set! (.-src puzzle-img) image-src)))
