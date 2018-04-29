@@ -44,7 +44,7 @@
   (let [[event-id event-data] ?data]
     (case event-id
       :aikakone/sprites-state (do
-                                (util/synchronize-puzzle-board event-data)
+                                (util/synchronize-puzzle-board! event-data)
                                 (util/finish-game-when-puzzle-is-complete!
                                   send-puzzle-complete!))
 

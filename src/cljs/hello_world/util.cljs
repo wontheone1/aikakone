@@ -152,7 +152,7 @@
           col (range row-col-num)]
       [row col])))
 
-(defn- synchronize-puzzle-board [sprites-state]
+(defn- synchronize-puzzle-board! [sprites-state]
   (when (currently-playing-game?)
     (swap! game-state assoc :sprites-state sprites-state)
     (let [game-object-factory (.-add @game)
@@ -201,7 +201,7 @@
               true)))))))
 
 (defn hide-all-puzzle-pieces! []
-  (synchronize-puzzle-board
+  (synchronize-puzzle-board!
     {:row-flipped?      (reduce
                           #(assoc %1 %2 true)
                           {}
