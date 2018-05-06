@@ -29,8 +29,8 @@
 
 (rf/reg-event-db
   :set-game-img
-  (fn [db [_ screen]]
-    (assoc db :game-img screen)))
+  (fn [db [_ image-url]]
+    (assoc db :game-img image-url)))
 
 ;- Query  -
 
