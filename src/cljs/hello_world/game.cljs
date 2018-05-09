@@ -102,12 +102,7 @@
       (let [game-object-factory (.-add @util/game)
             left-margin (util/left-margin)
             top-margin (util/top-margin)
-            piece-width-height (util/get-piece-width-height (:puzzle-width-height @util/game-state))
-            set-on-click-callback! (fn [sprite callback-fn]
-                                     (set! (.-inputEnabled sprite) true)
-                                     (.add
-                                       (.-onInputDown (.-events sprite))
-                                       callback-fn))]
+            piece-width-height (util/get-piece-width-height (:puzzle-width-height @util/game-state))]
         (doseq [row (range util/row-col-num)
                 col (range util/row-col-num)
                 :let [frame-id (+ (* util/row-col-num row) col)
@@ -128,7 +123,7 @@
                                          "flip-buttons"
                                          5))]
               (util/make-buttons-same-size-as-puzzle-piece! bottom-left-button)
-              (set-on-click-callback!
+              (util/set-on-click-callback-for-sprite!
                 bottom-left-button
                 (fn []
                   (when (util/currently-playing-game?)
@@ -147,7 +142,7 @@
                                   "flip-buttons"
                                   row))]
               (util/make-buttons-same-size-as-puzzle-piece! left-button)
-              (set-on-click-callback!
+              (util/set-on-click-callback-for-sprite!
                 left-button
                 (fn []
                   (when (util/currently-playing-game?)
@@ -166,7 +161,7 @@
                                     "flip-buttons"
                                     col))]
               (util/make-buttons-same-size-as-puzzle-piece! bottom-button)
-              (set-on-click-callback!
+              (util/set-on-click-callback-for-sprite!
                 bottom-button
                 (fn []
                   (when (util/currently-playing-game?)
