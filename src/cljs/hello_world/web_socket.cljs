@@ -50,12 +50,12 @@
 
       :aikakone/game-start (do
                              (swap! util/game-state assoc :sprites-state event-data)
-                             (game/show-puzzle-board {:send-start-timer-fn! send-start-timer!})
+                             (game/show-puzzle-board! {:send-start-timer-fn! send-start-timer!})
                              (send-sprites-state!))
 
       :aikakone/current-time (when (and (:play-time-text @util/game-state)
                                         (util/currently-playing-game?))
-                               (util/update-play-time-to-current-time event-data))
+                               (util/update-play-time-to-current-time! event-data))
 
       :aikakone/reset (util/reset-game!)
 

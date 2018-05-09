@@ -297,7 +297,7 @@
                                :fill  "#ffffff"
                                :align "center"}))))))
 
-(defn update-play-time-to-current-time [play-time]
+(defn update-play-time-to-current-time! [play-time]
   (let [derefed-state @game-state
         play-time-in-sec (/ play-time 1000)]
     (.setText
