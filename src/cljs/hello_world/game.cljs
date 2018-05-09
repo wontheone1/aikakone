@@ -80,104 +80,104 @@
     (set! (.. piece -anchor -x) 0.5)
     (set! (.. piece -anchor -y) 0.5)))
 
-(defn- create-puzzle-board [{:keys [send-sprites-state-fn!
-                                    send-puzzle-complete-fn!
-                                    send-start-timer-fn!]}]
+(defn- show-puzzle-board [{:keys [send-start-timer-fn!]}]
   (util/show-reset-button!)
   (util/show-control-buttons!)
   (util/hide-play-button!)
   (util/hide-see-ranking-button!)
-  (when (empty? (:sprites @util/game-state))
-    (let [game-object-factory (.-add @util/game)
-          left-margin (util/left-margin)
-          top-margin (util/top-margin)
-          piece-width-height (util/get-piece-width-height (:puzzle-width-height @util/game-state))
-          set-on-click-callback! (fn [sprite callback-fn]
-                                   (set! (.-inputEnabled sprite) true)
-                                   (.add
-                                     (.-onInputDown (.-events sprite))
-                                     callback-fn))]
-      (doseq [row (range util/row-col-num)
-              col (range util/row-col-num)
-              :let [frame-id (+ (* util/row-col-num row) col)
-                    x-pos (+ (* piece-width-height col) left-margin col)
-                    y-pos (+ (* piece-width-height row) top-margin row)]]
-        (create-puzzle-piece-and-store {:frame-id frame-id
-                                        :x-pos    x-pos
-                                        :y-pos    y-pos
-                                        :row      row
-                                        :col      col})
-        (when
-          (and (zero? col) (= row (dec util/row-col-num)))
-          (let [bottom-left-button (store-control-button-and-return-it
-                                     (.sprite
-                                       game-object-factory
-                                       (- x-pos piece-width-height)
-                                       (+ y-pos piece-width-height)
-                                       "flip-buttons"
-                                       5))]
-            (util/make-buttons-same-size-as-puzzle-piece! bottom-left-button)
-            (set-on-click-callback!
-              bottom-left-button
-              (fn []
-                (when (util/currently-playing-game?)
-                  (sound/play-beep! (sound/frequencies-in-major-scale-4th-octave util/row-col-num))
-                  (flip-diagonal-pieces!)
-                  (util/synchronize-puzzle-board! (:sprites-state @util/game-state))
-                  (send-sprites-state-fn!)
-                  (util/finish-game-when-puzzle-is-complete!
-                    send-puzzle-complete-fn!))))))
-        (when (zero? col)
-          (let [left-button (store-control-button-and-return-it
-                              (.sprite
-                                game-object-factory
-                                (- x-pos piece-width-height)
-                                y-pos
-                                "flip-buttons"
-                                row))]
-            (util/make-buttons-same-size-as-puzzle-piece! left-button)
-            (set-on-click-callback!
-              left-button
-              (fn []
-                (when (util/currently-playing-game?)
-                  (sound/play-beep! (sound/frequencies-in-major-scale-4th-octave row))
-                  (flip-row! row)
-                  (util/synchronize-puzzle-board! (:sprites-state @util/game-state))
-                  (send-sprites-state-fn!)
-                  (util/finish-game-when-puzzle-is-complete!
-                    send-puzzle-complete-fn!))))))
-        (when (= row (dec util/row-col-num))
-          (let [bottom-button (store-control-button-and-return-it
-                                (.sprite
-                                  game-object-factory
-                                  x-pos
-                                  (+ y-pos piece-width-height)
-                                  "flip-buttons"
-                                  col))]
-            (util/make-buttons-same-size-as-puzzle-piece! bottom-button)
-            (set-on-click-callback!
-              bottom-button
-              (fn []
-                (when (util/currently-playing-game?)
-                  (sound/play-beep! (sound/frequencies-in-major-scale-4th-octave
-                                      (mod (+ 1 util/row-col-num col)
-                                           (count sound/frequencies-in-major-scale-4th-octave))))
-                  (flip-col! col)
-                  (util/synchronize-puzzle-board! (:sprites-state @util/game-state))
-                  (send-sprites-state-fn!)
-                  (util/finish-game-when-puzzle-is-complete!
-                    send-puzzle-complete-fn!)))))))))
   (util/synchronize-puzzle-board! (:sprites-state @util/game-state))
   (send-start-timer-fn!)
   (util/show-play-time!))
 
-(defn- create-create [websocket-message-send-functions]
+(defn- create-create [{:keys [send-sprites-state-fn!
+                              send-puzzle-complete-fn!]
+                       :as websocket-message-send-functions}]
   (fn []
     (when-not (:play-button @util/game-state)
       (make-play-button! websocket-message-send-functions)
       (util/make-see-ranking-button!)
       (util/make-reset-button! (:send-reset-fn! websocket-message-send-functions))
-      (util/make-audio-button!))))
+      (util/make-audio-button!))
+    (when (empty? (:sprites @util/game-state))
+      (let [game-object-factory (.-add @util/game)
+            left-margin (util/left-margin)
+            top-margin (util/top-margin)
+            piece-width-height (util/get-piece-width-height (:puzzle-width-height @util/game-state))
+            set-on-click-callback! (fn [sprite callback-fn]
+                                     (set! (.-inputEnabled sprite) true)
+                                     (.add
+                                       (.-onInputDown (.-events sprite))
+                                       callback-fn))]
+        (doseq [row (range util/row-col-num)
+                col (range util/row-col-num)
+                :let [frame-id (+ (* util/row-col-num row) col)
+                      x-pos (+ (* piece-width-height col) left-margin col)
+                      y-pos (+ (* piece-width-height row) top-margin row)]]
+          (create-puzzle-piece-and-store {:frame-id frame-id
+                                          :x-pos    x-pos
+                                          :y-pos    y-pos
+                                          :row      row
+                                          :col      col})
+          (when
+            (and (zero? col) (= row (dec util/row-col-num)))
+            (let [bottom-left-button (store-control-button-and-return-it
+                                       (.sprite
+                                         game-object-factory
+                                         (- x-pos piece-width-height)
+                                         (+ y-pos piece-width-height)
+                                         "flip-buttons"
+                                         5))]
+              (util/make-buttons-same-size-as-puzzle-piece! bottom-left-button)
+              (set-on-click-callback!
+                bottom-left-button
+                (fn []
+                  (when (util/currently-playing-game?)
+                    (sound/play-beep! (sound/frequencies-in-major-scale-4th-octave util/row-col-num))
+                    (flip-diagonal-pieces!)
+                    (util/synchronize-puzzle-board! (:sprites-state @util/game-state))
+                    (send-sprites-state-fn!)
+                    (util/finish-game-when-puzzle-is-complete!
+                      send-puzzle-complete-fn!))))))
+          (when (zero? col)
+            (let [left-button (store-control-button-and-return-it
+                                (.sprite
+                                  game-object-factory
+                                  (- x-pos piece-width-height)
+                                  y-pos
+                                  "flip-buttons"
+                                  row))]
+              (util/make-buttons-same-size-as-puzzle-piece! left-button)
+              (set-on-click-callback!
+                left-button
+                (fn []
+                  (when (util/currently-playing-game?)
+                    (sound/play-beep! (sound/frequencies-in-major-scale-4th-octave row))
+                    (flip-row! row)
+                    (util/synchronize-puzzle-board! (:sprites-state @util/game-state))
+                    (send-sprites-state-fn!)
+                    (util/finish-game-when-puzzle-is-complete!
+                      send-puzzle-complete-fn!))))))
+          (when (= row (dec util/row-col-num))
+            (let [bottom-button (store-control-button-and-return-it
+                                  (.sprite
+                                    game-object-factory
+                                    x-pos
+                                    (+ y-pos piece-width-height)
+                                    "flip-buttons"
+                                    col))]
+              (util/make-buttons-same-size-as-puzzle-piece! bottom-button)
+              (set-on-click-callback!
+                bottom-button
+                (fn []
+                  (when (util/currently-playing-game?)
+                    (sound/play-beep! (sound/frequencies-in-major-scale-4th-octave
+                                        (mod (+ 1 util/row-col-num col)
+                                             (count sound/frequencies-in-major-scale-4th-octave))))
+                    (flip-col! col)
+                    (util/synchronize-puzzle-board! (:sprites-state @util/game-state))
+                    (send-sprites-state-fn!)
+                    (util/finish-game-when-puzzle-is-complete!
+                      send-puzzle-complete-fn!)))))))))))
 
 (defn- game-update [] )
 
