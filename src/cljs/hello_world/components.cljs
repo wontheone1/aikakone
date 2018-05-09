@@ -49,6 +49,41 @@
                  [ui/table-row-column (inc rank)]
                  [ui/table-row-column (ranking rank)]]))]]]))
 
+(defn- puzzle-selection-view []
+  [:div
+   [:img#gameImg {:src @(rf/subscribe [:game-img])}]
+   [:ul
+    [:li [:a
+          {:href "#" :on-click #(do
+                                  (rf/dispatch [:set-game-img "images/puzzle-image.jpg"])
+                                  (util/show-game!))}
+          "default"]]
+    [:li [:a {:href     "#"
+              :on-click #(do
+                           (set-game-image! "kirkko")
+                           (util/show-game!))}
+          "kirkko"]]
+    [:li [:a {:href     "#"
+              :on-click #(do
+                           (set-game-image! "miehet")
+                           (util/show-game!))}
+          "miehet"]]
+    [:li [:a {:href     "#"
+              :on-click #(do
+                           (set-game-image! "naiset")
+                           (util/show-game!))}
+          "naiset"]]
+    [:li [:a {:href     "#"
+              :on-click #(do
+                           (set-game-image! "sotilas")
+                           (util/show-game!))}
+          "sotilas"]]
+    [:li [:a {:href     "#"
+              :on-click #(do
+                           (set-game-image! "rauta")
+                           (util/show-game!))}
+          "rauta"]]]])
+
 (defn app []
   (if (and (= :game @(rf/subscribe [:screen]))
            (string? @(rf/subscribe [:game-img])))
@@ -72,39 +107,7 @@
                :on-click util/show-puzzle-selection!}]
 
         (= :puzzle-selection @(rf/subscribe [:screen]))
-        [:div
-         [:img#gameImg {:src @(rf/subscribe [:game-img])}]
-         [:ul
-          [:li [:a
-                {:href "#" :on-click #(do
-                                        (rf/dispatch [:set-game-img "images/puzzle-image.jpg"])
-                                        (util/show-game!))}
-                "default"]]
-          [:li [:a {:href     "#"
-                    :on-click #(do
-                                 (set-game-image! "kirkko")
-                                 (util/show-game!))}
-                "kirkko"]]
-          [:li [:a {:href     "#"
-                    :on-click #(do
-                                 (set-game-image! "miehet")
-                                 (util/show-game!))}
-                "miehet"]]
-          [:li [:a {:href     "#"
-                    :on-click #(do
-                                 (set-game-image! "naiset")
-                                 (util/show-game!))}
-                "naiset"]]
-          [:li [:a {:href     "#"
-                    :on-click #(do
-                                 (set-game-image! "sotilas")
-                                 (util/show-game!))}
-                "sotilas"]]
-          [:li [:a {:href     "#"
-                    :on-click #(do
-                                 (set-game-image! "rauta")
-                                 (util/show-game!))}
-                "rauta"]]]]
+        [puzzle-selection-view]
 
         (= :ranking-dashboard @(rf/subscribe [:screen]))
         [ranking-dashboard]))))
