@@ -67,6 +67,7 @@
 
 (defn- store-control-button-and-return-it! [control-button]
   (swap! util/game-state update :control-buttons conj control-button)
+  (.. control-button -scale (setTo 0 0))
   (set! (.. control-button -anchor -x) 0.5)
   (set! (.. control-button -anchor -y) 0.5)
   control-button)
@@ -122,7 +123,6 @@
                                          (+ y-pos piece-width-height)
                                          "flip-buttons"
                                          5))]
-              (util/make-buttons-same-size-as-puzzle-piece! bottom-left-button)
               (util/set-on-click-callback-for-sprite!
                 bottom-left-button
                 (fn []
@@ -141,7 +141,6 @@
                                   y-pos
                                   "flip-buttons"
                                   row))]
-              (util/make-buttons-same-size-as-puzzle-piece! left-button)
               (util/set-on-click-callback-for-sprite!
                 left-button
                 (fn []
@@ -160,7 +159,6 @@
                                     (+ y-pos piece-width-height)
                                     "flip-buttons"
                                     col))]
-              (util/make-buttons-same-size-as-puzzle-piece! bottom-button)
               (util/set-on-click-callback-for-sprite!
                 bottom-button
                 (fn []
