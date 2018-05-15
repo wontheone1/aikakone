@@ -44,20 +44,18 @@
   (let [[event-id event-data] ?data]
     (case event-id
       :aikakone/sprites-state (do
-                                (util/synchronize-puzzle-board event-data)
+                                (util/synchronize-puzzle-board! event-data)
                                 (util/finish-game-when-puzzle-is-complete!
                                   send-puzzle-complete!))
 
       :aikakone/game-start (do
                              (swap! util/game-state assoc :sprites-state event-data)
-                             (game/create-puzzle-board {:send-sprites-state-fn!   send-sprites-state!
-                                                        :send-puzzle-complete-fn! send-puzzle-complete!
-                                                        :send-start-timer-fn!     send-start-timer!})
+                             (game/show-puzzle-board! {:send-start-timer-fn! send-start-timer!})
                              (send-sprites-state!))
 
       :aikakone/current-time (when (and (:play-time-text @util/game-state)
                                         (util/currently-playing-game?))
-                               (util/update-play-time-to-current-time event-data))
+                               (util/update-play-time-to-current-time! event-data))
 
       :aikakone/reset (util/reset-game!)
 
@@ -70,9 +68,7 @@
   (let [[?uid ?csrf-token ?handshake-data] ?data]
     (println "Handshake established")
     (swap! util/game-state assoc :uid ?uid)
-    (send-uid)
-    (game/start-game! {:chsk-send-fn!  chsk-send!
-                       :send-reset-fn! send-reset!})))
+    (send-uid)))
 
 (defn start-web-socket! []
   (sente/start-chsk-router! ch-chsk event-msg-handler))
