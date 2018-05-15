@@ -53,11 +53,6 @@
   [:div
    [:img#gameImg {:src @(rf/subscribe [:game-img])}]
    [:ul
-    [:li [:a
-          {:href "#" :on-click #(do
-                                  (rf/dispatch [:set-game-img "images/puzzle-image.jpg"])
-                                  (util/show-game!))}
-          "default"]]
     [:li [:a {:href     "#"
               :on-click #(do
                            (set-game-image! "kirkko")
