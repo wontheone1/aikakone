@@ -51,7 +51,6 @@
 
 (defn- puzzle-selection-view []
   [:div
-   [:img#gameImg {:src @(rf/subscribe [:game-img])}]
    [:ul
     [:li [:a {:href     "#"
               :on-click #(do
