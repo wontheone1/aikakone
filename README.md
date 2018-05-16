@@ -1,6 +1,10 @@
+# Aikakone
+
 ## Introduction
 
-A play-cljs game in which ... well, that part is up to you.
+Puzzle game using finna api. This game consists of frontend and backend part.
+Originally both parts were developed in this repo but backend part got separated to
+[its own repo](https://github.com/wontheone1/aikakone-backend) now.
 Do `boot run` to develop and `boot build` to compile a release version.
 
 * whenever any boot task is run(e.g. `boot run`) `project.clj` is generated automatically
