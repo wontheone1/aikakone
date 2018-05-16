@@ -53,6 +53,7 @@
   (let [search-word->game-img-url @(rf/subscribe [:search-word->game-img-url])
         game-img @(rf/subscribe [:game-img])]
     (if (and (= :game @(rf/subscribe [:screen]))
+             (= (count util/search-words) (count search-word->game-img-url))
              (when search-word->game-img-url
                (string? (search-word->game-img-url game-img))))
       (do
