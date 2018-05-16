@@ -47,17 +47,25 @@
           :width  "100%"
           :height "100%"}]
    (into [:ul]
-         (map (fn [search-word]
-                [:li [:a {:href     "#"
-                          :on-click #(util/show-game! search-word)}
-                      search-word]])
-              util/search-words))])
+         (map (fn [{:keys [search-word position-in-puzzle-selection-view]}]
+                [:img
+                 {:id       search-word
+                  :style    {:position "absolute"
+                             :z-index  "1"
+                             :left     (:left position-in-puzzle-selection-view)
+                             :top      (:top position-in-puzzle-selection-view)}
+                  :src      (when-let [search-word->game-img-url @(rf/subscribe [:search-word->game-img-url])]
+                              (search-word->game-img-url search-word ""))
+                  :width    "20%"
+                  :height   "26%"
+                  :on-click #(util/show-game! search-word)}])
+              util/puzzle-images))])
 
 (defn app []
   (let [search-word->game-img-url @(rf/subscribe [:search-word->game-img-url])
         game-img @(rf/subscribe [:game-img])]
     (if (and (= :game @(rf/subscribe [:screen]))
-             (= (count util/search-words) (count search-word->game-img-url))
+             (= (count util/puzzle-images) (count search-word->game-img-url))
              (when search-word->game-img-url
                (string? (search-word->game-img-url game-img))))
       (do
