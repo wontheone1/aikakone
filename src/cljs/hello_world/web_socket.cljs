@@ -8,7 +8,7 @@
   [protocol chsk-host chsk-path type]
   (let [protocol (case type :ajax protocol
                             :ws   (if (= protocol "https:") "wss:" "ws:"))]
-    (str protocol "//" "localhost:2222" chsk-path)))
+    (str protocol "//" util/backend-host chsk-path)))
 
 (with-redefs
   [sente/get-chsk-url get-chsk-url]

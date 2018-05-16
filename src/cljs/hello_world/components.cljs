@@ -20,7 +20,7 @@
                       :on-click #(rf/dispatch [:screen-change :game])}]])
 
 (defn ranking-dashboard []
-  (go (let [response (<! (http/get "http://localhost:2222/rankings"))
+  (go (let [response (<! (http/get (str util/protocol-to-backend "://" util/backend-host "/rankings")))
             ranking (:body response)]
         (rf/dispatch [:ranking (util/parse-json ranking)])))
   (let [ranking @(rf/subscribe [:ranking])]

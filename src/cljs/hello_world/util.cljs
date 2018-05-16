@@ -5,6 +5,12 @@
 
 (enable-console-print!)
 
+(def protocol-to-backend
+  "http")
+
+(def backend-host
+  "localhost:2222")
+
 (def puzzle-images
   [{:search-word "tori" :position-in-puzzle-selection-view {:left "18.5%" :top "13.7%"}}
    {:search-word "Mannerheimintie" :position-in-puzzle-selection-view {:left "39.3%" :top "13.7%"}}
