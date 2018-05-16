@@ -55,15 +55,16 @@
     (if (and (= :game @(rf/subscribe [:screen]))
              (when search-word->game-img-url
                (string? (search-word->game-img-url game-img))))
-      (do (let [canvas (.getElementById js/document "canvas")]
-            (game/start-game!
-              (search-word->game-img-url game-img)
-              {:chsk-send-fn!            web-socket/chsk-send!
-               :send-sprites-state-fn!   web-socket/send-sprites-state!
-               :send-puzzle-complete-fn! web-socket/send-puzzle-complete!
-               :send-reset-fn!           web-socket/send-reset!})
-            (set! (.-display (.-style canvas)) "block"))
-          [:div])
+      (do
+        (let [canvas (.getElementById js/document "canvas")]
+          (game/start-game!
+            (search-word->game-img-url game-img)
+            {:chsk-send-fn!            web-socket/chsk-send!
+             :send-sprites-state-fn!   web-socket/send-sprites-state!
+             :send-puzzle-complete-fn! web-socket/send-puzzle-complete!
+             :send-reset-fn!           web-socket/send-reset!})
+          (set! (.-display (.-style canvas)) "block"))
+        [:div])
       (do
         (let [canvas (.getElementById js/document "canvas")]
           (set! (.-display (.-style canvas)) "none"))
