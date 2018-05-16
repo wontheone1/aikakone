@@ -42,6 +42,10 @@
 
 (defn- puzzle-selection-view []
   [:div
+   [:img {:style  {:position "absolute"}
+          :src    "images/puzzle-selection-bg.png"
+          :width  "100%"
+          :height "100%"}]
    (into [:ul]
          (map (fn [search-word]
                 [:li [:a {:href     "#"
