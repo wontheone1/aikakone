@@ -1,5 +1,8 @@
 (ns hello-world.core
-  (:require [hello-world.components :as view]
+  (:require-macros [cljs.core.async.macros :refer [go]])
+  (:require [cljs.core.async :refer [<!]]
+            [cljs-http.client :as http]
+            [hello-world.components :as view]
             [hello-world.web-socket :as web-sck]
             [nightlight.repl-server]
             [hello-world.util :as util]
@@ -9,11 +12,25 @@
 
 (enable-console-print!)
 
+(defn add-game-image-url! [search-word]
+  (go (let [response (<! (http/get "https://api.finna.fi/v1/search"
+                                   {:with-credentials? false
+                                    :query-params      {"lookfor" search-word}}))]
+        (rf/dispatch [:add-game-img-url
+                      search-word
+                      (str "https://api.finna.fi"
+                           (-> (filter :images (get-in response [:body :records]))
+                               first
+                               :images
+                               first))]))))
+
 ;- Event Handlers -
 
 (rf/reg-event-db
   :initialize
   (fn [_ _]
+    (doseq [search-word ["kirkko" "miehet" "naiset" "sotilas" "rauta"]]
+      (add-game-image-url! search-word))
     {:screen  :intro
      :ranking []}))
 

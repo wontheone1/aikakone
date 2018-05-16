@@ -11,18 +11,6 @@
             [re-frame.core :as rf]
             ))
 
-(defn add-game-image-url! [search-word]
-  (go (let [response (<! (http/get "https://api.finna.fi/v1/search"
-                                   {:with-credentials? false
-                                    :query-params      {"lookfor" search-word}}))]
-        (rf/dispatch [:add-game-img-url
-                      search-word
-                      (str "https://api.finna.fi"
-                           (-> (filter :images (get-in response [:body :records]))
-                               first
-                               :images
-                               first))]))))
-
 ;- View Functions -
 
 (defn go-back-to-game-button []
@@ -56,29 +44,19 @@
   [:div
    [:ul
     [:li [:a {:href     "#"
-              :on-click #(do
-                           (add-game-image-url! "kirkko")
-                           (util/show-game! "kirkko"))}
+              :on-click #(util/show-game! "kirkko")}
           "kirkko"]]
     [:li [:a {:href     "#"
-              :on-click #(do
-                           (add-game-image-url! "miehet")
-                           (util/show-game! "miehet"))}
+              :on-click #(util/show-game! "miehet")}
           "miehet"]]
     [:li [:a {:href     "#"
-              :on-click #(do
-                           (add-game-image-url! "naiset")
-                           (util/show-game! "naiset"))}
+              :on-click #(util/show-game! "naiset")}
           "naiset"]]
     [:li [:a {:href     "#"
-              :on-click #(do
-                           (add-game-image-url! "sotilas")
-                           (util/show-game! "sotilas"))}
+              :on-click #(util/show-game! "sotilas")}
           "sotilas"]]
     [:li [:a {:href     "#"
-              :on-click #(do
-                           (add-game-image-url! "rauta")
-                           (util/show-game! "rauta"))}
+              :on-click #(util/show-game! "rauta")}
           "rauta"]]]])
 
 (defn app []
