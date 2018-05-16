@@ -42,22 +42,12 @@
 
 (defn- puzzle-selection-view []
   [:div
-   [:ul
-    [:li [:a {:href     "#"
-              :on-click #(util/show-game! "kirkko")}
-          "kirkko"]]
-    [:li [:a {:href     "#"
-              :on-click #(util/show-game! "miehet")}
-          "miehet"]]
-    [:li [:a {:href     "#"
-              :on-click #(util/show-game! "naiset")}
-          "naiset"]]
-    [:li [:a {:href     "#"
-              :on-click #(util/show-game! "sotilas")}
-          "sotilas"]]
-    [:li [:a {:href     "#"
-              :on-click #(util/show-game! "rauta")}
-          "rauta"]]]])
+   (into [:ul]
+         (map (fn [search-word]
+                [:li [:a {:href     "#"
+                          :on-click #(util/show-game! search-word)}
+                      search-word]])
+              ["kirkko" "miehet" "naiset" "sotilas" "rauta"]))])
 
 (defn app []
   (let [search-word->game-img-url @(rf/subscribe [:search-word->game-img-url])
