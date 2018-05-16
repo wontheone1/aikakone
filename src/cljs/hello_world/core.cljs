@@ -29,7 +29,7 @@
 (rf/reg-event-db
   :initialize
   (fn [_ _]
-    (doseq [search-word util/search-words]
+    (doseq [{:keys [search-word]} util/puzzle-images]
       (add-game-image-url! search-word))
     {:screen  :intro
      :ranking []}))

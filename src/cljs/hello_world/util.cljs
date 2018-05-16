@@ -5,7 +5,12 @@
 
 (enable-console-print!)
 
-(def search-words ["kirkko" "miehet" "naiset" "sotilas" "rauta"])
+(def puzzle-images
+  [{:search-word "kirkko" :position-in-puzzle-selection-view {:left "18.5%" :top "13.7%"}}
+   {:search-word "miehet" :position-in-puzzle-selection-view {:left "39%" :top "13.7%"}}
+   {:search-word "naiset" :position-in-puzzle-selection-view {:left "60%" :top "13.7%"}}
+   {:search-word "sotilas" :position-in-puzzle-selection-view {:left "18.5%" :top "43.8%"}}
+   {:search-word "rauta" :position-in-puzzle-selection-view {:left "39%" :top "43.8%"}}])
 
 (def row-col-num 5)
 
