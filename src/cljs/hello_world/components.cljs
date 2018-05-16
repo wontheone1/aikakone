@@ -11,14 +11,17 @@
             [re-frame.core :as rf]
             ))
 
-(defn set-game-image! [search-word]
+(defn add-game-image-url! [search-word]
   (go (let [response (<! (http/get "https://api.finna.fi/v1/search"
                                    {:with-credentials? false
                                     :query-params      {"lookfor" search-word}}))]
-        (rf/dispatch [:set-game-img (str "https://api.finna.fi" (-> (filter :images (get-in response [:body :records]))
-                                                                     first
-                                                                     :images
-                                                                     first))]))))
+        (rf/dispatch [:add-game-img-url
+                      search-word
+                      (str "https://api.finna.fi"
+                           (-> (filter :images (get-in response [:body :records]))
+                               first
+                               :images
+                               first))]))))
 
 ;- View Functions -
 
@@ -54,54 +57,57 @@
    [:ul
     [:li [:a {:href     "#"
               :on-click #(do
-                           (set-game-image! "kirkko")
-                           (util/show-game!))}
+                           (add-game-image-url! "kirkko")
+                           (util/show-game! "kirkko"))}
           "kirkko"]]
     [:li [:a {:href     "#"
               :on-click #(do
-                           (set-game-image! "miehet")
-                           (util/show-game!))}
+                           (add-game-image-url! "miehet")
+                           (util/show-game! "miehet"))}
           "miehet"]]
     [:li [:a {:href     "#"
               :on-click #(do
-                           (set-game-image! "naiset")
-                           (util/show-game!))}
+                           (add-game-image-url! "naiset")
+                           (util/show-game! "naiset"))}
           "naiset"]]
     [:li [:a {:href     "#"
               :on-click #(do
-                           (set-game-image! "sotilas")
-                           (util/show-game!))}
+                           (add-game-image-url! "sotilas")
+                           (util/show-game! "sotilas"))}
           "sotilas"]]
     [:li [:a {:href     "#"
               :on-click #(do
-                           (set-game-image! "rauta")
-                           (util/show-game!))}
+                           (add-game-image-url! "rauta")
+                           (util/show-game! "rauta"))}
           "rauta"]]]])
 
 (defn app []
-  (if (and (= :game @(rf/subscribe [:screen]))
-           (string? @(rf/subscribe [:game-img])))
-    (do (let [canvas (.getElementById js/document "canvas")]
-          (game/start-game!
-            @(rf/subscribe [:game-img])
-            {:chsk-send-fn!            web-socket/chsk-send!
-             :send-sprites-state-fn!   web-socket/send-sprites-state!
-             :send-puzzle-complete-fn! web-socket/send-puzzle-complete!
-             :send-reset-fn!           web-socket/send-reset!})
-          (set! (.-display (.-style canvas)) "block"))
-        [:div])
-    (do
-      (let [canvas (.getElementById js/document "canvas")]
-        (set! (.-display (.-style canvas)) "none"))
-      (cond
-        (= :intro @(rf/subscribe [:screen]))
-        [:img {:src      "images/aikakone-intro.png"
-               :width    "100%"
-               :height   "100%"
-               :on-click util/show-puzzle-selection!}]
+  (let [search-word->game-img-url @(rf/subscribe [:search-word->game-img-url])
+        game-img @(rf/subscribe [:game-img])]
+    (if (and (= :game @(rf/subscribe [:screen]))
+             (when search-word->game-img-url
+               (string? (search-word->game-img-url game-img))))
+      (do (let [canvas (.getElementById js/document "canvas")]
+            (game/start-game!
+              (search-word->game-img-url game-img)
+              {:chsk-send-fn!            web-socket/chsk-send!
+               :send-sprites-state-fn!   web-socket/send-sprites-state!
+               :send-puzzle-complete-fn! web-socket/send-puzzle-complete!
+               :send-reset-fn!           web-socket/send-reset!})
+            (set! (.-display (.-style canvas)) "block"))
+          [:div])
+      (do
+        (let [canvas (.getElementById js/document "canvas")]
+          (set! (.-display (.-style canvas)) "none"))
+        (cond
+          (= :intro @(rf/subscribe [:screen]))
+          [:img {:src      "images/aikakone-intro.png"
+                 :width    "100%"
+                 :height   "100%"
+                 :on-click util/show-puzzle-selection!}]
 
-        (= :puzzle-selection @(rf/subscribe [:screen]))
-        [puzzle-selection-view]
+          (= :puzzle-selection @(rf/subscribe [:screen]))
+          [puzzle-selection-view]
 
-        (= :ranking-dashboard @(rf/subscribe [:screen]))
-        [ranking-dashboard]))))
+          (= :ranking-dashboard @(rf/subscribe [:screen]))
+          [ranking-dashboard])))))

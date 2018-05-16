@@ -29,8 +29,13 @@
 
 (rf/reg-event-db
   :set-game-img
-  (fn [db [_ image-url]]
-    (assoc db :game-img image-url)))
+  (fn [db [_ search-word]]
+    (assoc db :game-img search-word)))
+
+(rf/reg-event-db
+  :add-game-img-url
+  (fn [db [_ search-word image-url]]
+    (update db :search-word->game-img-url assoc search-word image-url)))
 
 ;- Query  -
 
@@ -48,6 +53,11 @@
   :game-img
   (fn [db _]
     (:game-img db)))
+
+(rf/reg-sub
+  :search-word->game-img-url
+  (fn [db _]
+    (:search-word->game-img-url db)))
 
 ; - Entry Point -
 
