@@ -47,7 +47,7 @@
                 [:li [:a {:href     "#"
                           :on-click #(util/show-game! search-word)}
                       search-word]])
-              ["kirkko" "miehet" "naiset" "sotilas" "rauta"]))])
+              util/search-words))])
 
 (defn app []
   (let [search-word->game-img-url @(rf/subscribe [:search-word->game-img-url])

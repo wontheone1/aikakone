@@ -29,7 +29,7 @@
 (rf/reg-event-db
   :initialize
   (fn [_ _]
-    (doseq [search-word ["kirkko" "miehet" "naiset" "sotilas" "rauta"]]
+    (doseq [search-word util/search-words]
       (add-game-image-url! search-word))
     {:screen  :intro
      :ranking []}))

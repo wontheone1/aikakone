@@ -5,6 +5,8 @@
 
 (enable-console-print!)
 
+(def search-words ["kirkko" "miehet" "naiset" "sotilas" "rauta"])
+
 (def row-col-num 5)
 
 (defn parse-json [json-string]
