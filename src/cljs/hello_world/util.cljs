@@ -6,11 +6,14 @@
 (enable-console-print!)
 
 (def puzzle-images
-  [{:search-word "kirkko" :position-in-puzzle-selection-view {:left "18.5%" :top "13.7%"}}
-   {:search-word "miehet" :position-in-puzzle-selection-view {:left "39%" :top "13.7%"}}
-   {:search-word "naiset" :position-in-puzzle-selection-view {:left "60%" :top "13.7%"}}
-   {:search-word "sotilas" :position-in-puzzle-selection-view {:left "18.5%" :top "43.8%"}}
-   {:search-word "rauta" :position-in-puzzle-selection-view {:left "39%" :top "43.8%"}}])
+  [{:search-word "tori" :position-in-puzzle-selection-view {:left "18.5%" :top "13.7%"}}
+   {:search-word "Mannerheimintie" :position-in-puzzle-selection-view {:left "39.3%" :top "13.7%"}}
+   {:search-word "Lapinlahdenkatu" :position-in-puzzle-selection-view {:left "60%" :top "13.7%"}}
+   {:search-word "kamppi" :position-in-puzzle-selection-view {:left "18.5%" :top "43.8%"}}
+   {:search-word "tuomiokirkko" :position-in-puzzle-selection-view {:left "39.3%" :top "43.8%"}}
+   {:search-word "mustikka" :position-in-puzzle-selection-view {:left "60%" :top "43.8%"}}
+   {:search-word "Rovaniemi" :position-in-puzzle-selection-view {:left "18.5%" :top "73.2%"}}
+   {:search-word "suomenlinna" :position-in-puzzle-selection-view {:left "60%" :top "73.2%"}}])
 
 (def row-col-num 5)
 

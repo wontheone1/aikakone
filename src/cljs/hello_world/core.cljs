@@ -20,7 +20,7 @@
                       search-word
                       (str "https://api.finna.fi"
                            (-> (filter :images (get-in response [:body :records]))
-                               first
+                               second
                                :images
                                first))]))))
 
