@@ -18,3 +18,4 @@ Particularly [Hye Soo Park](https://github.com/flyjwayur), created the following
 
 * [Intro image](https://github.com/wontheone1/aikakone/blob/finna-api/resources/images/aikakone-intro.png)
 * [Intro image](https://github.com/wontheone1/aikakone/blob/finna-api/resources/images/puzzle-selection-bg.png)
+* [Intro image](https://github.com/wontheone1/aikakone/blob/finna-api/resources/images/control-buttons.png)
