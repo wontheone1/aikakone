@@ -8,6 +8,10 @@
     (let [phaser-loader (.-load @util/game)]
       (.image
         phaser-loader
+        "puzzle-background"
+        "images/puzzle-play-bg.png")
+      (.image
+        phaser-loader
         "audio-button"
         "images/speaker.png")
       (.image
@@ -90,10 +94,15 @@
   (send-start-timer-fn!)
   (util/show-play-time!))
 
+(defn- render-background []
+  (set! (.. @util/game -stage -backgroundColor) "#f6f4f3")
+  (.. @util/game -add (image 0 0 "puzzle-background")))
+
 (defn- create-create [{:keys [send-sprites-state-fn!
                               send-puzzle-complete-fn!]
                        :as websocket-message-send-functions}]
   (fn []
+    (render-background)
     (when-not (:play-button @util/game-state)
       (make-play-button! websocket-message-send-functions)
       (util/make-see-ranking-button!)
