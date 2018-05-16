@@ -82,7 +82,7 @@
              (false? diagonal-flipped?)))))
 
 (defn- show-play-button! []
-  (.. ^js/Phaser.Button (:play-button @game-state) -scale (setTo 1 1)))
+  (.. ^js/Phaser.Button (:play-button @game-state) -scale (setTo 0.4 0.4)))
 
 (defn hide-play-button! []
   (.. ^js/Phaser.Button (:play-button @game-state) -scale (setTo 0 0)))

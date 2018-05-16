@@ -71,7 +71,8 @@
             (fn []
               (chsk-send-fn! [:aikakone/game-start])
               (util/destroy-stage-clear-text!))
-            this)))))
+            this))))
+  (util/show-play-button!))
 
 (defn- store-control-button-and-return-it! [^js/Phaser.Sprite control-button]
   (swap! util/game-state update :control-buttons conj control-button)
