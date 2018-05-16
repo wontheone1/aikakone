@@ -83,10 +83,15 @@
           (set! (.-display (.-style canvas)) "none"))
         (cond
           (= :intro @(rf/subscribe [:screen]))
-          [:img {:src      "images/aikakone-intro.png"
-                 :width    "100%"
-                 :height   "100%"
-                 :on-click util/show-puzzle-selection!}]
+          [:div
+           [:img {:style    {:position         "absolute"
+                             :background-color "white"
+                             :z-index          "2"}
+                  :src      "images/aikakone-intro.png"
+                  :width    "100%"
+                  :height   "100%"
+                  :on-click util/show-puzzle-selection!}]
+           [puzzle-selection-view]]
 
           (= :puzzle-selection @(rf/subscribe [:screen]))
           [puzzle-selection-view]
