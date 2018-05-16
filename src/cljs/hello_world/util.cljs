@@ -42,10 +42,10 @@
 (def button-sprite-sheet-height (atom nil))
 
 (defn- get-button-width []
-  (/ @button-sprite-sheet-width 3))
+  (/ @button-sprite-sheet-width 2))
 
 (defn- get-button-height []
-  (/ @button-sprite-sheet-height 2))
+  (/ @button-sprite-sheet-height 3))
 
 (defn- left-margin []
   (/ (- (.-innerWidth js/window) (:puzzle-width-height @game-state)) 2))
