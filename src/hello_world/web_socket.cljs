@@ -1,5 +1,6 @@
 (ns hello-world.web-socket
   (:require [taoensso.sente :as sente :refer (cb-success?)]
+            [hello-world.config :as config]
             [hello-world.util :as util]
             [hello-world.game :as game]))
 
@@ -8,7 +9,7 @@
   [protocol chsk-host chsk-path type]
   (let [protocol (case type :ajax protocol
                             :ws   (if (= protocol "https:") "wss:" "ws:"))]
-    (str protocol "//" util/backend-host chsk-path)))
+    (str protocol "//" config/backend-host chsk-path)))
 
 (with-redefs
   [sente/get-chsk-url get-chsk-url]

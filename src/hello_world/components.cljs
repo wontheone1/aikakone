@@ -5,6 +5,7 @@
             [cljs-react-material-ui.reagent :as ui]
             [cljs-http.client :as http]
             [cljs.core.async :refer [<!]]
+            [hello-world.config :as config]
             [hello-world.game :as game]
             [hello-world.util :as util]
             [hello-world.web-socket :as web-socket]
@@ -20,7 +21,7 @@
                       :on-click #(rf/dispatch [:screen-change :game])}]])
 
 (defn ranking-dashboard []
-  (go (let [response (<! (http/get (str util/protocol-to-backend "://" util/backend-host "/rankings")))
+  (go (let [response (<! (http/get (str config/protocol-to-backend "://" config/backend-host "/rankings")))
             ranking (:body response)]
         (rf/dispatch [:ranking (util/parse-json ranking)])))
   (let [ranking @(rf/subscribe [:ranking])]

@@ -45,6 +45,7 @@
   )
 
 (deftask run []
+  (set-env! :source-paths #(conj % "dev"))
   (comp
     (serve :dir "target/public")
     (watch)
@@ -54,4 +55,8 @@
     (nightlight :port 4000 :url "http://localhost:3000")))
 
 (deftask build []
-  (comp (cljs :optimizations :advanced) (target)))
+  (set-env! :source-paths #(conj % "prod"))
+  (comp
+    (cljs
+      :optimizations :advanced)
+    (target)))
