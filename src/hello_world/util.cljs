@@ -79,17 +79,17 @@
              (false? diagonal-flipped?)))))
 
 (defn- show-play-button! []
-  (.. (:play-button @game-state) -scale (setTo 1 1)))
+  (.. ^js/Phaser.Button (:play-button @game-state) -scale (setTo 1 1)))
 
 (defn hide-play-button! []
-  (.. (:play-button @game-state) -scale (setTo 0 0)))
+  (.. ^js/Phaser.Button (:play-button @game-state) -scale (setTo 0 0)))
 
 (defn- show-congrat-message! []
   (swap!
     game-state
     assoc
     :stage-clear-text
-    (.text (.-add @game)
+    (.text (.-add ^js/Phaser.Game @game)
            (/ (.-innerWidth js/window) 5)
            (/ (.-innerHeight js/window) 20)
            "Congrats!\n You cleared the puzzle!"
@@ -109,7 +109,7 @@
     assoc
     :see-ranking-button
     (this-as this
-      (.. @game
+      (.. ^js/Phaser.Game @game
           -add
           (button (* 0.75 (.-innerWidth js/window))
                   (* 0.2 (.-innerHeight js/window))
@@ -118,7 +118,7 @@
                   this))))
   (show-see-ranking-button!))
 
-(defn set-on-click-callback-for-sprite! [sprite callback-fn]
+(defn set-on-click-callback-for-sprite! [^js/Phaser.Sprite sprite callback-fn]
   (set! (.-inputEnabled sprite) true)
   (.add
     (.-onInputDown (.-events sprite))
@@ -132,10 +132,10 @@
   (rf/dispatch [:screen-change :puzzle-selection]))
 
 (defn show-reset-button! []
-  (.. (:reset-button @game-state) -scale (setTo 0.1 0.1)))
+  (.. ^js/Phaser.Button (:reset-button @game-state) -scale (setTo 0.1 0.1)))
 
 (defn hide-reset-button! []
-  (.. (:reset-button @game-state) -scale (setTo 0 0)))
+  (.. ^js/Phaser.Button (:reset-button @game-state) -scale (setTo 0 0)))
 
 (defn- hide-control-buttons! []
   (doseq [control-button (:control-buttons @game-state)]
@@ -158,10 +158,10 @@
     (swap! game-state assoc :sprites-state {})))
 
 (defn- get-puzzle-image-width []
-  (.. @game -cache (getImage "puzzle") -width))
+  (.. ^js/Phaser.Game @game -cache (getImage "puzzle") -width))
 
 (defn- get-puzzle-image-height []
-  (.. @game -cache (getImage "puzzle") -height))
+  (.. ^js/Phaser.Game @game -cache (getImage "puzzle") -height))
 
 (defn- get-piece-x-scale []
   (/ (:puzzle-width-height @game-state)
@@ -182,7 +182,7 @@
 (defn- synchronize-puzzle-board! [sprites-state]
   (when (currently-playing-game?)
     (swap! game-state assoc :sprites-state sprites-state)
-    (let [game-object-factory (.-add @game)
+    (let [game-object-factory (.-add ^js/Phaser.Game @game)
           derefed-state @game-state
           row-flips-applied (reduce
                               (fn [sprites-state-in-modification [row flipped?]]
@@ -260,7 +260,7 @@
     assoc
     :reset-button
     (this-as this
-      (.. @game
+      (.. ^js/Phaser.Game @game
           -add
           (button (* 0.85 (.-innerWidth js/window))
                   (* 0.3 (.-innerHeight js/window))
@@ -277,7 +277,7 @@
     assoc
     :audio-button
     (this-as this
-      (.. @game
+      (.. ^js/Phaser.Game @game
           -add
           (button (* 0.85 (.-innerWidth js/window))
                   (* 0.5 (.-innerHeight js/window))
@@ -290,7 +290,7 @@
                   this)))))
 
 (defn destroy-stage-clear-text! []
-  (when-let [stage-clear-text (:stage-clear-text @game-state)]
+  (when-let [stage-clear-text ^js/Phaser.Text (:stage-clear-text @game-state)]
     (.destroy stage-clear-text))
   (swap! game-state assoc :stage-clear-text nil))
 
@@ -299,7 +299,7 @@
     (swap! game-state
            assoc
            :play-time-text
-           (.. @game
+           (.. ^js/Phaser.Game @game
                -add
                (text (* (.-innerWidth js/window) 0.8)
                      (/ (.-innerHeight js/window) 20)
@@ -312,6 +312,6 @@
   (let [derefed-state @game-state
         play-time-in-sec (/ play-time 1000)]
     (.setText
-      (:play-time-text derefed-state)
+      ^js/Phaser.Text (:play-time-text derefed-state)
       (str play-time-in-sec))
     (swap! game-state assoc :play-time play-time-in-sec)))

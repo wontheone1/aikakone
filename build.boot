@@ -58,5 +58,6 @@
   (set-env! :source-paths #(conj % "prod"))
   (comp
     (cljs
-      :optimizations :advanced)
+      :optimizations :advanced
+      :compiler-options {:infer-externs true})
     (target)))
