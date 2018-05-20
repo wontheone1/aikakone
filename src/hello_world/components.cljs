@@ -70,32 +70,29 @@
              (when search-word->game-img-url
                (string? (search-word->game-img-url game-img))))
       (do
-        (let [canvas (.getElementById js/document "canvas")]
-          (game/start-game!
-            (search-word->game-img-url game-img)
-            {:chsk-send-fn!            web-socket/chsk-send!
-             :send-sprites-state-fn!   web-socket/send-sprites-state!
-             :send-puzzle-complete-fn! web-socket/send-puzzle-complete!
-             :send-reset-fn!           web-socket/send-reset!})
-          (set! (.-display (.-style canvas)) "block"))
-        [:div])
-      (do
-        (let [canvas (.getElementById js/document "canvas")]
-          (set! (.-display (.-style canvas)) "none"))
-        (cond
-          (= :intro @(rf/subscribe [:screen]))
-          [:div
-           [:img {:style    {:position         "absolute"
-                             :background-color "white"
-                             :z-index          "2"}
-                  :src      "images/aikakone-intro.png"
-                  :width    "100%"
-                  :height   "100%"
-                  :on-click util/show-puzzle-selection!}]
-           [puzzle-selection-view]]
+        (swap! util/game-state merge util/initial-game-state)
+        (js/setTimeout #(game/start-game!
+                          (search-word->game-img-url game-img)
+                          {:chsk-send-fn!            web-socket/chsk-send!
+                           :send-sprites-state-fn!   web-socket/send-sprites-state!
+                           :send-puzzle-complete-fn! web-socket/send-puzzle-complete!
+                           :send-reset-fn!           web-socket/send-reset!})
+                       500)
+        [:div#canvas])
+      (cond
+        (= :intro @(rf/subscribe [:screen]))
+        [:div
+         [:img {:style    {:position         "absolute"
+                           :background-color "white"
+                           :z-index          "2"}
+                :src      "images/aikakone-intro.png"
+                :width    "100%"
+                :height   "100%"
+                :on-click util/show-puzzle-selection!}]
+         [puzzle-selection-view]]
 
-          (= :puzzle-selection @(rf/subscribe [:screen]))
-          [puzzle-selection-view]
+        (= :puzzle-selection @(rf/subscribe [:screen]))
+        [puzzle-selection-view]
 
-          (= :ranking-dashboard @(rf/subscribe [:screen]))
-          [ranking-dashboard])))))
+        (= :ranking-dashboard @(rf/subscribe [:screen]))
+        [ranking-dashboard]))))
