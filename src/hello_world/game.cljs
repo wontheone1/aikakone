@@ -12,6 +12,10 @@
         "images/puzzle-play-bg.png")
       (.image
         phaser-loader
+        "puzzle-selection-button"
+        "images/puzzle-selection-button.png")
+      (.image
+        phaser-loader
         "audio-button"
         "images/speaker.png")
       (.image
@@ -107,7 +111,8 @@
       (make-play-button! websocket-message-send-functions)
       (util/make-see-ranking-button!)
       (util/make-reset-button! (:send-reset-fn! websocket-message-send-functions))
-      (util/make-audio-button!))
+      (util/make-audio-button!)
+      (util/make-puzzle-selection-button!))
     (when (empty? (:sprites @util/game-state))
       (let [game-object-factory (.-add ^js/Phaser.Game @util/game)
             left-margin (util/left-margin)

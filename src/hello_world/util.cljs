@@ -22,16 +22,19 @@
 
 (def game (atom nil))
 
-(defonce game-state (atom {:audio-on?           false
-                           :sprites             {}
-                           :sprites-state       {}
-                           :play-button         nil
-                           :control-buttons     []
-                           :play-time           0.0
-                           :play-time-text      nil
-                           :puzzle-width-height 0
-                           :see-ranking-button  nil
-                           :stage-clear-text    nil}))
+(def initial-game-state
+  {:audio-on?               false
+   :sprites                 {}
+   :sprites-state           {}
+   :play-button             nil
+   :control-buttons         []
+   :play-time               0.0
+   :play-time-text          nil
+   :puzzle-selection-button nil
+   :see-ranking-button      nil
+   :stage-clear-text        nil})
+
+(defonce game-state (atom initial-game-state))
 
 (def puzzle-image-width (atom nil))
 
@@ -117,6 +120,20 @@
                   #(rf/dispatch [:screen-change :ranking-dashboard])
                   this))))
   (show-see-ranking-button!))
+
+(defn make-puzzle-selection-button! []
+  (swap!
+    game-state
+    assoc
+    :puzzle-selection-button
+    (this-as this
+      (.. ^js/Phaser.Game @game
+          -add
+          (button (* 0.75 (.-innerWidth js/window))
+                  (* 0.5 (.-innerHeight js/window))
+                  "puzzle-selection-button"
+                  #(rf/dispatch [:screen-change :puzzle-selection])
+                  this)))))
 
 (defn set-on-click-callback-for-sprite! [^js/Phaser.Sprite sprite callback-fn]
   (set! (.-inputEnabled sprite) true)
