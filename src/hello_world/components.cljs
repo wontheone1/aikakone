@@ -62,6 +62,9 @@
                   :on-click #(util/show-game! search-word)}])
               util/puzzle-images))])
 
+(defn game-screen []
+  [:div#canvas])
+
 (defn app []
   (let [search-word->game-img-url @(rf/subscribe [:search-word->game-img-url])
         game-img @(rf/subscribe [:game-img])]
@@ -78,7 +81,7 @@
                            :send-puzzle-complete-fn! web-socket/send-puzzle-complete!
                            :send-reset-fn!           web-socket/send-reset!})
                        500)
-        [:div#canvas])
+        [game-screen])
       (cond
         (= :intro @(rf/subscribe [:screen]))
         [:div
