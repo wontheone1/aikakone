@@ -10,6 +10,7 @@
             [hello-world.util :as util]
             [hello-world.web-socket :as web-socket]
             [re-frame.core :as rf]
+            [reagent.core :as r]
             ))
 
 ;- View Functions -
@@ -62,8 +63,15 @@
                   :on-click #(util/show-game! search-word)}])
               util/puzzle-images))])
 
-(defn game-screen []
-  [:div#canvas])
+(defn game-screen [search-word->game-img-url game-img]
+  (r/create-class
+    {:component-did-mount #(game/start-game!
+                             (search-word->game-img-url game-img)
+                             {:chsk-send-fn!            web-socket/chsk-send!
+                              :send-sprites-state-fn!   web-socket/send-sprites-state!
+                              :send-puzzle-complete-fn! web-socket/send-puzzle-complete!
+                              :send-reset-fn!           web-socket/send-reset!})
+     :render              (fn [this] [:div#canvas])}))
 
 (defn app []
   (let [search-word->game-img-url @(rf/subscribe [:search-word->game-img-url])
@@ -74,14 +82,7 @@
                (string? (search-word->game-img-url game-img))))
       (do
         (swap! util/game-state merge util/initial-game-state)
-        (js/setTimeout #(game/start-game!
-                          (search-word->game-img-url game-img)
-                          {:chsk-send-fn!            web-socket/chsk-send!
-                           :send-sprites-state-fn!   web-socket/send-sprites-state!
-                           :send-puzzle-complete-fn! web-socket/send-puzzle-complete!
-                           :send-reset-fn!           web-socket/send-reset!})
-                       500)
-        [game-screen])
+        [game-screen search-word->game-img-url game-img])
       (cond
         (= :intro @(rf/subscribe [:screen]))
         [:div
