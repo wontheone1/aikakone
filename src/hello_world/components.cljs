@@ -48,6 +48,12 @@
           :src    "images/puzzle-selection-bg.png"
           :width  "100%"
           :height "100%"}]
+   [:img {:style  {:position "absolute"
+                   :z-index  "2"
+                   :right    "3%"
+                   :bottom   "25%"
+                   :width    "16%"}
+          :src    "images/speech-bubble.png"}]
    (into [:ul]
          (map (fn [{:keys [search-word position-in-puzzle-selection-view]}]
                 [:img
@@ -87,7 +93,7 @@
         (= :intro @(rf/subscribe [:screen]))
         [:div
          [:img {:style    {:position                  "fixed"
-                           :z-index                   "3"
+                           :z-index                   "4"
                            :width                     "20%"
                            :height                    "20%"
                            :right                     "50%"
@@ -99,7 +105,7 @@
                 :on-click util/show-puzzle-selection!}]
          [:img {:style    {:position         "absolute"
                            :background-color "white"
-                           :z-index          "2"}
+                           :z-index          "3"}
                 :src      "images/aikakone-intro.png"
                 :width    "100%"
                 :height   "100%"
