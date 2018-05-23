@@ -116,7 +116,9 @@
            "Congrats!\n You cleared the puzzle!"
            (clj->js {:font  "60px Arial"
                      :fill  "#ffffff"
-                     :align "center"}))))
+                     :align "center"})))
+  (.setShadow
+    ^js/Phaser.Text (:stage-clear-text @game-state) 3 3 "rgba(0,0,0,0.5)" 5))
 
 (defn- show-see-ranking-button! []
   (.. (:see-ranking-button @game-state) -scale (setTo 0.5 0.5)))
