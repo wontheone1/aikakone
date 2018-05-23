@@ -59,10 +59,28 @@
 (defn get-piece-width-height [puzzle-width-height]
   (/ puzzle-width-height row-col-num))
 
-(defn make-buttons-same-size-as-puzzle-piece! [control-button]
-  (let [piece-width-height (get-piece-width-height (:puzzle-width-height @game-state))]
-    (.. control-button -scale (setTo (/ piece-width-height (get-button-width))
-                                     (/ piece-width-height (get-button-height))))))
+(defn get-scale-for-same-size-as-piece []
+  (/ (get-piece-width-height (:puzzle-width-height @game-state))
+     (get-button-height)))
+
+(defn show-control-button-and-tween-scale! [control-button]
+  (let [control-button-scale (get-scale-for-same-size-as-piece)]
+    (.. control-button
+        -scale
+        (setTo (* 0.90 (get-scale-for-same-size-as-piece))
+               (* 0.90 (get-scale-for-same-size-as-piece))))
+    (..  ^js/Phaser.Game @game
+         -add
+         (tween (.-scale control-button))
+         (to (clj->js {:x control-button-scale
+                       :y control-button-scale})              ; properties
+             1000                                             ; duration
+             js/Phaser.Easing.Linear.None                     ; ease
+             true                                             ; autoStart
+             0                                                ; delay
+             -1                                               ; repeat
+             true))                                           ; yoyo
+    ))
 
 (defn- currently-playing-game? []
   (let [dereffed-game-state @game-state]
@@ -96,9 +114,11 @@
            (/ (.-innerWidth js/window) 5)
            (/ (.-innerHeight js/window) 20)
            "Congrats!\n You cleared the puzzle!"
-           (clj->js {:font  "60px Arial"
-                     :fill  "#ffffff"
-                     :align "center"}))))
+           (clj->js {:font  "70px Arial"
+                     :fill  "#FFDAB9"
+                     :align "center"})))
+  (.setShadow
+    ^js/Phaser.Text (:stage-clear-text @game-state) 3 3 "rgba(0,0,0,0.5)" 5))
 
 (defn- show-see-ranking-button! []
   (.. (:see-ranking-button @game-state) -scale (setTo 0.5 0.5)))
@@ -160,7 +180,7 @@
 
 (defn- show-control-buttons! []
   (doseq [control-button (:control-buttons @game-state)]
-    (make-buttons-same-size-as-puzzle-piece! control-button)))
+    (show-control-button-and-tween-scale! control-button)))
 
 (defn finish-game-when-puzzle-is-complete! [send-puzzle-complete-fn!]
   (when (and (currently-playing-game?)
