@@ -58,10 +58,11 @@
          (map (fn [{:keys [search-word position-in-puzzle-selection-view]}]
                 [:img
                  {:id       search-word
-                  :style    {:position "absolute"
-                             :z-index  "1"
-                             :left     (:left position-in-puzzle-selection-view)
-                             :top      (:top position-in-puzzle-selection-view)}
+                  :style    {:position   "absolute"
+                             :z-index    "1"
+                             :box-shadow "7px 7px 5px grey"
+                             :left       (:left position-in-puzzle-selection-view)
+                             :top        (:top position-in-puzzle-selection-view)}
                   :src      (when-let [search-word->game-img-url @(rf/subscribe [:search-word->game-img-url])]
                               (search-word->game-img-url search-word ""))
                   :width    "20%"
