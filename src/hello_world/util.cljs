@@ -114,8 +114,8 @@
            (/ (.-innerWidth js/window) 5)
            (/ (.-innerHeight js/window) 20)
            "Congrats!\n You cleared the puzzle!"
-           (clj->js {:font  "60px Arial"
-                     :fill  "#ffffff"
+           (clj->js {:font  "70px Arial"
+                     :fill  "#FFDAB9"
                      :align "center"})))
   (.setShadow
     ^js/Phaser.Text (:stage-clear-text @game-state) 3 3 "rgba(0,0,0,0.5)" 5))
