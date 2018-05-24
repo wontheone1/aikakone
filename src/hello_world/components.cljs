@@ -27,8 +27,9 @@
 
 (defn go-back-to-game-button []
   [ui/mui-theme-provider
-   {:muiTheme (get-mui-theme {:palette {:textColor (color :blue200)}})}
+   {:muiTheme (get-mui-theme (aget js/MaterialUIStyles "DarkRawTheme"))}
    [ui/raised-button {:label    "Play game"
+                      :size     "large"
                       :on-click #(rf/dispatch [:screen-change :game])}]])
 
 (defn ranking-dashboard []
