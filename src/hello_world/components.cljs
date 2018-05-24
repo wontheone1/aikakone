@@ -32,7 +32,9 @@
             ranking (:body response)]
         (rf/dispatch [:ranking (util/parse-json ranking)])))
   (let [ranking @(rf/subscribe [:ranking])]
-    [:div
+    [:div {:style {:background-image "url(\"images/ranking-board-bg.png\")"
+                   :width            "100%"
+                   :height           "100%"}}
      [ui/mui-theme-provider
       {:muiTheme (get-mui-theme {:palette {:textColor (color :blue200)}})}
       [ui/table
