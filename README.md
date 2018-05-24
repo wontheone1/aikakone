@@ -13,6 +13,10 @@ Do `boot run` to develop and `boot build` to compile a release version.
 * go to (localhost:4000) to edit project on browser (although cursive is much more powerful)
 * run `boot check` to find out if your code can be improved
 
+# Deployment
+
+Run `./deploy.sh` from project root to deploy to the github io page
+
 ## Copy rights
 
 For the images used in this game,
