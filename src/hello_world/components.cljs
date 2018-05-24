@@ -78,7 +78,7 @@
                               :send-sprites-state-fn!   web-socket/send-sprites-state!
                               :send-puzzle-complete-fn! web-socket/send-puzzle-complete!
                               :send-reset-fn!           web-socket/send-reset!})
-     :reagent-render      (fn [this] [:div#canvas])}))
+     :reagent-render      (fn [] [:div#canvas])}))
 
 (defn app []
   (let [search-word->game-img-url @(rf/subscribe [:search-word->game-img-url])
