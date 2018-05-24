@@ -33,7 +33,6 @@
         (rf/dispatch [:ranking (util/parse-json ranking)])))
   (let [ranking @(rf/subscribe [:ranking])]
     [:div
-     [go-back-to-game-button]
      [ui/mui-theme-provider
       {:muiTheme (get-mui-theme {:palette {:textColor (color :blue200)}})}
       [ui/table
@@ -46,7 +45,10 @@
               (for [rank (range (count ranking))]
                 [ui/table-row
                  [ui/table-row-column table-body-style (inc rank)]
-                 [ui/table-row-column table-body-style (ranking rank)]]))]]]))
+                 [ui/table-row-column table-body-style (ranking rank)]]))]]
+     [:div {:style {:display         "flex"
+                    :justify-content "flex-end"}}
+      [go-back-to-game-button]]]))
 
 (defn- puzzle-selection-view []
   [:div
