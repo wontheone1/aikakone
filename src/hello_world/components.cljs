@@ -13,12 +13,23 @@
             [reagent.core :as r]
             ))
 
+(def table-header-style
+  {:style {:font-size        "3em"
+           :font-weight      "700"
+           :color            "#fff"
+           :background-color "rgba(238, 108, 77, 0.7)"}})
+
+(def table-body-style
+  {:style {:font-size "2em"
+           :color     "#696969"}})
+
 ;- View Functions -
 
 (defn go-back-to-game-button []
   [ui/mui-theme-provider
-   {:muiTheme (get-mui-theme {:palette {:textColor (color :blue200)}})}
+   {:muiTheme (get-mui-theme (aget js/MaterialUIStyles "DarkRawTheme"))}
    [ui/raised-button {:label    "Play game"
+                      :size     "large"
                       :on-click #(rf/dispatch [:screen-change :game])}]])
 
 (defn ranking-dashboard []
@@ -26,21 +37,25 @@
             ranking (:body response)]
         (rf/dispatch [:ranking (util/parse-json ranking)])))
   (let [ranking @(rf/subscribe [:ranking])]
-    [:div
-     [go-back-to-game-button]
+    [:div {:style {:background-image "url(\"images/ranking-board-bg.png\")"
+                   :width            "100%"
+                   :height           "100%"}}
      [ui/mui-theme-provider
-      {:muiTheme (get-mui-theme {:palette {:textColor (color :blue200)}})}
-      [ui/table
+      {:muiTheme (get-mui-theme {:palette {:text-color (color :grey600)}})}
+      [ui/table {:style {:background-color "rgba(255, 255, 255, 0.5)"}}
        [ui/table-header {:displaySelectAll false :adjustForCheckbox false}
         [ui/table-row
-         [ui/table-header-column "Ranking"]
-         [ui/table-header-column "Time Record"]]]
+         [ui/table-header-column table-header-style "Ranking"]
+         [ui/table-header-column table-header-style "Time Record"]]]
        (apply conj
               [ui/table-body {:displayRowCheckbox false}]
               (for [rank (range (count ranking))]
                 [ui/table-row
-                 [ui/table-row-column (inc rank)]
-                 [ui/table-row-column (ranking rank)]]))]]]))
+                 [ui/table-row-column table-body-style (inc rank)]
+                 [ui/table-row-column table-body-style (ranking rank)]]))]]
+     [:div {:style {:display         "flex"
+                    :justify-content "flex-end"}}
+      [go-back-to-game-button]]]))
 
 (defn- puzzle-selection-view []
   [:div
@@ -78,7 +93,7 @@
                               :send-sprites-state-fn!   web-socket/send-sprites-state!
                               :send-puzzle-complete-fn! web-socket/send-puzzle-complete!
                               :send-reset-fn!           web-socket/send-reset!})
-     :render              (fn [this] [:div#canvas])}))
+     :reagent-render      (fn [] [:div#canvas])}))
 
 (defn app []
   (let [search-word->game-img-url @(rf/subscribe [:search-word->game-img-url])
@@ -104,17 +119,17 @@
                            :animation-direction       "alternate"}
                 :src      "images/touch-anywhere.png"
                 :on-click util/show-puzzle-selection!}]
-         [:img {:style    {:position         "absolute"
-                           :background-color "white"
-                           :z-index          "3"}
-                :src      "images/aikakone-intro.png"
-                :width    "100%"
-                :height   "100%"
-                :on-click util/show-puzzle-selection!}]
-         [puzzle-selection-view]]
+         [:img.background {:style    {:position         "absolute"
+                                      :background-color "white"
+                                      :z-index          "3"}
+                           :src      "images/aikakone-intro.png"
+                           :on-click util/show-puzzle-selection!}]
+         [:div {:style {:display "none"}}
+          [puzzle-selection-view]]]
 
         (= :puzzle-selection @(rf/subscribe [:screen]))
-        [puzzle-selection-view]
+        [:div {:style {:display "block"}}
+         [puzzle-selection-view]]
 
         (= :ranking-dashboard @(rf/subscribe [:screen]))
         [ranking-dashboard]))))
