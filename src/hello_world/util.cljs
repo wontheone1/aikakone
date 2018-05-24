@@ -67,8 +67,8 @@
   (let [control-button-scale (get-scale-for-same-size-as-piece)]
     (.. control-button
         -scale
-        (setTo (* 0.90 (get-scale-for-same-size-as-piece))
-               (* 0.90 (get-scale-for-same-size-as-piece))))
+        (setTo (* 0.90 control-button-scale)
+               (* 0.90 control-button-scale)))
     (..  ^js/Phaser.Game @game
          -add
          (tween (.-scale control-button))
