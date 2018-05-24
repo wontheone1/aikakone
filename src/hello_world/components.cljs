@@ -13,6 +13,12 @@
             [reagent.core :as r]
             ))
 
+(def table-header-style
+  {:style {:font-size "3em"}})
+
+(def table-body-style
+  {:style {:font-size "2em"}})
+
 ;- View Functions -
 
 (defn go-back-to-game-button []
@@ -33,14 +39,14 @@
       [ui/table
        [ui/table-header {:displaySelectAll false :adjustForCheckbox false}
         [ui/table-row
-         [ui/table-header-column "Ranking"]
-         [ui/table-header-column "Time Record"]]]
+         [ui/table-header-column table-header-style "Ranking"]
+         [ui/table-header-column table-header-style "Time Record"]]]
        (apply conj
               [ui/table-body {:displayRowCheckbox false}]
               (for [rank (range (count ranking))]
                 [ui/table-row
-                 [ui/table-row-column (inc rank)]
-                 [ui/table-row-column (ranking rank)]]))]]]))
+                 [ui/table-row-column table-body-style (inc rank)]
+                 [ui/table-row-column table-body-style (ranking rank)]]))]]]))
 
 (defn- puzzle-selection-view []
   [:div
