@@ -14,10 +14,14 @@
             ))
 
 (def table-header-style
-  {:style {:font-size "3em"}})
+  {:style {:font-size        "3em"
+           :font-weight      "700"
+           :color            "#fff"
+           :background-color "rgba(238, 108, 77, 0.7)"}})
 
 (def table-body-style
-  {:style {:font-size "2em"}})
+  {:style {:font-size "2em"
+           :color     "#696969"}})
 
 ;- View Functions -
 
@@ -36,8 +40,8 @@
                    :width            "100%"
                    :height           "100%"}}
      [ui/mui-theme-provider
-      {:muiTheme (get-mui-theme {:palette {:textColor (color :blue200)}})}
-      [ui/table
+      {:muiTheme (get-mui-theme {:palette {:text-color (color :grey600)}})}
+      [ui/table {:style {:background-color "rgba(255, 255, 255, 0.5)"}}
        [ui/table-header {:displaySelectAll false :adjustForCheckbox false}
         [ui/table-row
          [ui/table-header-column table-header-style "Ranking"]
