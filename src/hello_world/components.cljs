@@ -104,17 +104,17 @@
                            :animation-direction       "alternate"}
                 :src      "images/touch-anywhere.png"
                 :on-click util/show-puzzle-selection!}]
-         [:img {:style    {:position         "absolute"
-                           :background-color "white"
-                           :z-index          "3"}
-                :src      "images/aikakone-intro.png"
-                :width    "100%"
-                :height   "100%"
-                :on-click util/show-puzzle-selection!}]
-         [puzzle-selection-view]]
+         [:img.background {:style    {:position         "absolute"
+                                      :background-color "white"
+                                      :z-index          "3"}
+                           :src      "images/aikakone-intro.png"
+                           :on-click util/show-puzzle-selection!}]
+         [:div {:style {:display "none"}}
+          [puzzle-selection-view]]]
 
         (= :puzzle-selection @(rf/subscribe [:screen]))
-        [puzzle-selection-view]
+        [:div {:style {:display "block"}}
+         [puzzle-selection-view]]
 
         (= :ranking-dashboard @(rf/subscribe [:screen]))
         [ranking-dashboard]))))
