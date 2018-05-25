@@ -30,6 +30,7 @@
    :control-buttons         []
    :play-time               0.0
    :play-time-text          nil
+   :puzzle-width-height     0
    :puzzle-selection-button nil
    :see-ranking-button      nil
    :stage-clear-text        nil})

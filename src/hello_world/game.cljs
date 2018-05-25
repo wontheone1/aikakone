@@ -194,6 +194,8 @@
     ; image loading is done asynchronously. The way to start the game after image is loaded is
     ; we start the game in `onload` callback of the image. After loading buttons-img first,
     ; start loading puzzle image then start the game.
+    (swap! util/game-state assoc :puzzle-width-height (int (* 0.7 (min (.-innerWidth js/window)
+                                                                       (.-innerHeight js/window)))))
     (set!
       (.-onload puzzle-img)
       (clj->js
