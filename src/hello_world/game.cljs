@@ -73,7 +73,7 @@
             "play-button"
             (fn []
               (chsk-send-fn! [:aikakone/game-start])
-              (util/destroy-stage-clear-text!))
+              (util/hide-stage-clear-text!))
             this)))))
 
 (defn- store-control-button-and-return-it! [^js/Phaser.Sprite control-button]
@@ -111,6 +111,10 @@
   (fn []
     (render-background)
     (when-not (:play-button @util/game-state)
+      (util/make-play-time!)
+      (util/hide-play-time!)
+      (util/make-congrat-message!)
+      (util/hide-stage-clear-text!)
       (make-play-button! websocket-message-send-functions)
       (util/make-see-ranking-button!)
       (util/make-reset-button! (:send-reset-fn! websocket-message-send-functions))

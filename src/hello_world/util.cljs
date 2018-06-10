@@ -88,7 +88,7 @@
 (defn- currently-playing-game? []
   (let [dereffed-game-state @game-state]
     (and (not (empty? (:sprites-state dereffed-game-state)))
-         (nil? (:stage-clear-text dereffed-game-state)))))
+         (not (.-visible (:stage-clear-text dereffed-game-state))))))
 
 (defn- puzzle-solved? []
   (let [sprites-state (:sprites-state @game-state)
@@ -108,7 +108,7 @@
 (defn hide-play-button! []
   (.. ^js/Phaser.Button (:play-button @game-state) -scale (setTo 0 0)))
 
-(defn- show-congrat-message! []
+(defn make-congrat-message! []
   (swap!
     game-state
     assoc
@@ -122,6 +122,9 @@
                      :align "center"})))
   (.setShadow
     ^js/Phaser.Text (:stage-clear-text @game-state) 3 3 "rgba(0,0,0,0.5)" 5))
+
+(defn show-congrat-message! []
+  (set! (.-visible (:stage-clear-text @game-state)) true))
 
 (defn- show-see-ranking-button! []
   (.. (:see-ranking-button @game-state) -scale (setTo 0.5 0.5)))
@@ -191,7 +194,7 @@
 (defn finish-game-when-puzzle-is-complete! [send-puzzle-complete-fn!]
   (when (and (currently-playing-game?)
              (puzzle-solved?)
-             (not (:stage-clear-text @game-state)))
+             (not (.-visible (:stage-clear-text @game-state))))
     (hide-reset-button!)
     (hide-control-buttons!)
     (show-play-button!)
@@ -286,9 +289,7 @@
   (swap! game-state assoc :sprites-state nil))
 
 (defn hide-play-time! []
-  (when-let [play-time-text (:play-time-text @game-state)]
-    (.destroy play-time-text))
-  (swap! game-state assoc :play-time-text nil))
+  (set! (.-visible (:play-time-text @game-state)) false))
 
 (defn reset-game! []
   (hide-all-puzzle-pieces!)
@@ -332,12 +333,10 @@
                            not))
                   this)))))
 
-(defn destroy-stage-clear-text! []
-  (when-let [stage-clear-text ^js/Phaser.Text (:stage-clear-text @game-state)]
-    (.destroy stage-clear-text))
-  (swap! game-state assoc :stage-clear-text nil))
+(defn hide-stage-clear-text! []
+  (set! (.-visible (:stage-clear-text @game-state)) false))
 
-(defn show-play-time! []
+(defn make-play-time! []
   (when-not (:play-time-text @game-state)
     (swap! game-state
            assoc
@@ -350,6 +349,9 @@
                      (clj->js {:font  "60px Arial"
                                :fill  "#ffffff"
                                :align "center"}))))))
+
+(defn show-play-time! []
+  (set! (.-visible (:play-time-text @game-state)) true))
 
 (defn update-play-time-to-current-time! [play-time]
   (let [derefed-state @game-state
