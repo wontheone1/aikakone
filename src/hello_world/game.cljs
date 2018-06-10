@@ -5,6 +5,9 @@
 
 (defn- create-preload [image-src]
   (fn []
+    (set! (.. @util/game -scale -scaleMode) js/Phaser.ScaleManager.SHOW_ALL)
+    (set! (.. @util/game -scale -pageAlignHorizontally) true)
+    (set! (.. @util/game -scale -pageAlignVertically) true)
     (let [phaser-loader (.-load ^js/Phaser.Game @util/game)]
       (.image
         phaser-loader
