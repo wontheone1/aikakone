@@ -110,16 +110,6 @@
                        :as websocket-message-send-functions}]
   (fn []
     (render-background)
-    (when-not (:play-button @util/game-state)
-      (util/make-play-time!)
-      (util/hide-play-time!)
-      (util/make-congrat-message!)
-      (util/hide-stage-clear-text!)
-      (make-play-button! websocket-message-send-functions)
-      (util/make-see-ranking-button!)
-      (util/make-reset-button! (:send-reset-fn! websocket-message-send-functions))
-      (util/make-audio-button!)
-      (util/make-puzzle-selection-button!))
     (when (empty? (:sprites @util/game-state))
       (let [game-object-factory (.-add ^js/Phaser.Game @util/game)
             left-margin (util/left-margin)
@@ -191,8 +181,18 @@
                     (util/synchronize-puzzle-board! (:sprites-state @util/game-state))
                     (send-sprites-state-fn!)
                     (util/finish-game-when-puzzle-is-complete!
-                      send-puzzle-complete-fn!))))))
-          (util/position-ui-elements!))))))
+                      send-puzzle-complete-fn!)))))))))
+    (when-not (:play-button @util/game-state)
+      (util/make-play-time!)
+      (util/hide-play-time!)
+      (util/make-congrat-message!)
+      (util/hide-stage-clear-text!)
+      (make-play-button! websocket-message-send-functions)
+      (util/make-see-ranking-button!)
+      (util/make-reset-button! (:send-reset-fn! websocket-message-send-functions))
+      (util/make-audio-button!)
+      (util/make-puzzle-selection-button!))
+    (util/position-ui-elements!)))
 
 (defn- game-update [] )
 
