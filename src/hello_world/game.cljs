@@ -191,7 +191,8 @@
                     (util/synchronize-puzzle-board! (:sprites-state @util/game-state))
                     (send-sprites-state-fn!)
                     (util/finish-game-when-puzzle-is-complete!
-                      send-puzzle-complete-fn!)))))))))))
+                      send-puzzle-complete-fn!))))))
+          (util/position-ui-elements!))))))
 
 (defn- game-update [] )
 
