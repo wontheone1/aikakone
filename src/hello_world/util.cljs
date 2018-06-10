@@ -381,7 +381,7 @@
           (* 0.85 window-inner-width))
     (set! (.-y (:audio-button derefed-state))
           (* 0.5 window-inner-height))
-    (set! (.-y (:puzzle-selection-button derefed-state))
+    (set! (.-x (:puzzle-selection-button derefed-state))
           (* 0.75 window-inner-width))
     (set! (.-y (:puzzle-selection-button derefed-state))
           (* 0.5 window-inner-height))
