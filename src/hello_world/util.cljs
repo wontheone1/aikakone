@@ -361,7 +361,7 @@
       (str play-time-in-sec))
     (swap! game-state assoc :play-time play-time-in-sec)))
 
-(defn position-ui-elements! []
+(defn- position-ui-elements-for-landscape-mode! []
   (let [derefed-state @game-state
         window-inner-width (.-innerWidth js/window)
         window-inner-height (.-innerHeight js/window)]
@@ -369,27 +369,80 @@
           10)
     (set! (.-y (:play-button derefed-state))
           10)
+
     (set! (.-x (:see-ranking-button derefed-state))
           (* 0.75 window-inner-width))
     (set! (.-y (:see-ranking-button derefed-state))
           (* 0.2 window-inner-height))
+
     (set! (.-x (:reset-button derefed-state))
           (* 0.85 window-inner-width))
     (set! (.-y (:reset-button derefed-state))
           (* 0.3 window-inner-height))
+
     (set! (.-x (:audio-button derefed-state))
           (* 0.85 window-inner-width))
     (set! (.-y (:audio-button derefed-state))
-          (* 0.5 window-inner-height))
+          (* 0.8 window-inner-height))
+
     (set! (.-x (:puzzle-selection-button derefed-state))
           (* 0.75 window-inner-width))
     (set! (.-y (:puzzle-selection-button derefed-state))
           (* 0.5 window-inner-height))
+
     (set! (.-x (:play-time-text derefed-state))
           (* window-inner-width 0.8))
     (set! (.-y (:play-time-text derefed-state))
           (/ window-inner-height 20))
+
     (set! (.-x (:stage-clear-text derefed-state))
           (/ window-inner-width 5))
     (set! (.-y (:stage-clear-text derefed-state))
           (/ window-inner-height 20))))
+
+(defn- position-ui-elements-for-portrait-mode! []
+  (let [derefed-state @game-state
+        window-inner-width (.-innerWidth js/window)
+        window-inner-height (.-innerHeight js/window)]
+    (set! (.-x (:play-button derefed-state))
+          (* 0.5 window-inner-width))
+    (set! (.-y (:play-button derefed-state))
+          (* 0.5 window-inner-height))
+
+    (set! (.-x (:see-ranking-button derefed-state))
+          (* 0.65 window-inner-width))
+    (set! (.-y (:see-ranking-button derefed-state))
+          (* 0.85 window-inner-height))
+
+    (set! (.-x (:reset-button derefed-state))
+          (* 0.55 window-inner-width))
+    (set! (.-y (:reset-button derefed-state))
+          (* 0.85 window-inner-height))
+
+    (set! (.-x (:audio-button derefed-state))
+          (* 0.45 window-inner-width))
+    (set! (.-y (:audio-button derefed-state))
+          (* 0.85 window-inner-height))
+
+    (set! (.-x (:puzzle-selection-button derefed-state))
+          (* 0.20 window-inner-width))
+    (set! (.-y (:puzzle-selection-button derefed-state))
+          (* 0.85 window-inner-height))
+
+    (set! (.-x (:play-time-text derefed-state))
+          (* window-inner-width 0.8))
+    (set! (.-y (:play-time-text derefed-state))
+          (/ window-inner-height 20))
+
+    (set! (.-x (:stage-clear-text derefed-state))
+          (/ window-inner-width 5))
+    (set! (.-y (:stage-clear-text derefed-state))
+          (/ window-inner-height 20))))
+
+(defn position-ui-elements! []
+  (let [window-inner-width (.-innerWidth js/window)
+        window-inner-height (.-innerHeight js/window)
+        is-landscape (< (/ window-inner-height window-inner-width) 1.3)]
+    (if is-landscape
+      (position-ui-elements-for-landscape-mode!)
+      (position-ui-elements-for-portrait-mode!))))
