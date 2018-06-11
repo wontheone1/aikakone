@@ -27,7 +27,7 @@
    :sprites                 {}
    :sprites-state           {}
    :play-button             nil
-   :control-buttons         []
+   :control-buttons         {}
    :control-button-tweens   []
    :play-time               0.0
    :play-time-text          nil
@@ -184,11 +184,11 @@
   (doseq [control-button-tween (:control-button-tweens @game-state)]
     (.stop control-button-tween))
   (swap! game-state assoc :control-button-tweens [])
-  (doseq [control-button (:control-buttons @game-state)]
+  (doseq [[_ control-button] (:control-buttons @game-state)]
     (.. control-button -scale (setTo 0 0))))
 
 (defn- show-control-buttons! []
-  (doseq [control-button (:control-buttons @game-state)]
+  (doseq [[_ control-button] (:control-buttons @game-state)]
     (show-control-button-and-tween-scale! control-button)))
 
 (defn finish-game-when-puzzle-is-complete! [send-puzzle-complete-fn!]
@@ -361,6 +361,45 @@
       (str play-time-in-sec))
     (swap! game-state assoc :play-time play-time-in-sec)))
 
+(defn- reposition-puzzle-piece! [{:keys [x-pos y-pos row col]}]
+  (let [piece (get-in @game-state [:sprites [row col]])]
+    (when piece
+      (set! (.-x piece) x-pos)
+      (set! (.-y piece) y-pos))))
+
+(defn- reposition-control-button! [row col x-pos y-pos piece-width-height]
+  ; bottom left
+  (when
+    (and (zero? col) (= row (dec row-col-num)))
+    (let [control-button ((@game-state :control-buttons) :bottom-left)]
+      (when control-button
+        (set! (.-x control-button) (- x-pos piece-width-height))
+        (set! (.-y control-button) (+ y-pos piece-width-height)))))
+  ; left buttons
+  (when (zero? col)
+    (let [control-button ((@game-state :control-buttons) [:left row])]
+      (when control-button
+        (set! (.-x control-button) (- x-pos piece-width-height))
+        (set! (.-y control-button) y-pos))))
+  ; bottom buttons
+  (when (= row (dec row-col-num))
+    (let [control-button ((@game-state :control-buttons) [:bottom col])]
+      (when control-button
+        (set! (.-x control-button) x-pos)
+        (set! (.-y control-button) (+ y-pos piece-width-height))))))
+
+(defn- position-controls-and-puzzle-pieces! []
+  (doseq [row (range row-col-num)
+          col (range row-col-num)
+          :let [piece-width-height (get-piece-width-height (:puzzle-width-height @game-state))
+                x-pos (+ (* piece-width-height col) (left-margin) col)
+                y-pos (+ (* piece-width-height row) (top-margin) row)]]
+    (reposition-puzzle-piece! {:x-pos x-pos
+                               :y-pos y-pos
+                               :row   row
+                               :col   col})
+    (reposition-control-button! row col x-pos y-pos piece-width-height)))
+
 (defn- position-ui-elements-for-landscape-mode! []
   (let [derefed-state @game-state
         window-inner-width (.-innerWidth js/window)
@@ -443,6 +482,7 @@
   (let [window-inner-width (.-innerWidth js/window)
         window-inner-height (.-innerHeight js/window)
         is-landscape (< (/ window-inner-height window-inner-width) 1.3)]
+    (position-controls-and-puzzle-pieces!)
     (if is-landscape
       (position-ui-elements-for-landscape-mode!)
       (position-ui-elements-for-portrait-mode!))))
