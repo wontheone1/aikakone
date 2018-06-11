@@ -198,6 +198,10 @@
 (defn- game-update [] )
 
 (defn- on-resize []
+  (util/set-puzzle-width-height-in-relation-to-window-size!)
+  (util/hide-control-buttons!)
+  (util/show-control-buttons!)
+  (util/synchronize-puzzle-board! (:sprites-state @util/game-state))
   (util/position-ui-elements!))
 
 (defn- start-game! [image-src websocket-message-send-functions]
@@ -206,8 +210,7 @@
     ; image loading is done asynchronously. The way to start the game after image is loaded is
     ; we start the game in `onload` callback of the image. After loading buttons-img first,
     ; start loading puzzle image then start the game.
-    (swap! util/game-state assoc :puzzle-width-height (int (* 0.7 (min (.-innerWidth js/window)
-                                                                       (.-innerHeight js/window)))))
+    (util/set-puzzle-width-height-in-relation-to-window-size!)
     (set!
       (.-onload puzzle-img)
       (clj->js
