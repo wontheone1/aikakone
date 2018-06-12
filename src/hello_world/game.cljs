@@ -206,8 +206,7 @@
   (when (util/currently-playing-game?)
     (util/hide-control-buttons!)
     (util/show-control-buttons!))
-  (when (util/currently-playing-game?)
-    (util/synchronize-puzzle-board! (:sprites-state @util/game-state)))
+  (util/synchronize-puzzle-board! (:sprites-state @util/game-state))
   (util/position-ui-elements!))
 
 (defn- start-game! [image-src websocket-message-send-functions]
