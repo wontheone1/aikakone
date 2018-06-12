@@ -95,7 +95,8 @@
   (util/show-control-buttons!)
   (util/hide-play-button!)
   (util/hide-see-ranking-button!)
-  (util/synchronize-puzzle-board! (:sprites-state @util/game-state))
+  (when (util/currently-playing-game?)
+    (util/synchronize-puzzle-board! (:sprites-state @util/game-state)))
   (send-start-timer-fn!)
   (util/show-play-time!))
 
@@ -139,7 +140,8 @@
                   (when (util/currently-playing-game?)
                     (sound/play-beep! (sound/frequencies-in-major-scale-4th-octave util/row-col-num))
                     (flip-diagonal-pieces!)
-                    (util/synchronize-puzzle-board! (:sprites-state @util/game-state))
+                    (when (util/currently-playing-game?)
+                      (util/synchronize-puzzle-board! (:sprites-state @util/game-state)))
                     (send-sprites-state-fn!)
                     (util/finish-game-when-puzzle-is-complete!
                       send-puzzle-complete-fn!))))))
@@ -158,7 +160,8 @@
                   (when (util/currently-playing-game?)
                     (sound/play-beep! (sound/frequencies-in-major-scale-4th-octave row))
                     (flip-row! row)
-                    (util/synchronize-puzzle-board! (:sprites-state @util/game-state))
+                    (when (util/currently-playing-game?)
+                      (util/synchronize-puzzle-board! (:sprites-state @util/game-state)))
                     (send-sprites-state-fn!)
                     (util/finish-game-when-puzzle-is-complete!
                       send-puzzle-complete-fn!))))))
@@ -179,7 +182,8 @@
                                         (mod (+ 1 util/row-col-num col)
                                              (count sound/frequencies-in-major-scale-4th-octave))))
                     (flip-col! col)
-                    (util/synchronize-puzzle-board! (:sprites-state @util/game-state))
+                    (when (util/currently-playing-game?)
+                      (util/synchronize-puzzle-board! (:sprites-state @util/game-state)))
                     (send-sprites-state-fn!)
                     (util/finish-game-when-puzzle-is-complete!
                       send-puzzle-complete-fn!)))))))))
@@ -202,7 +206,8 @@
   (when (util/currently-playing-game?)
     (util/hide-control-buttons!)
     (util/show-control-buttons!))
-  (util/synchronize-puzzle-board! (:sprites-state @util/game-state))
+  (when (util/currently-playing-game?)
+    (util/synchronize-puzzle-board! (:sprites-state @util/game-state)))
   (util/position-ui-elements!))
 
 (defn- start-game! [image-src websocket-message-send-functions]
