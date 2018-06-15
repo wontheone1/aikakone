@@ -104,6 +104,15 @@
   (set! (.. ^js/Phaser.Game @util/game -stage -backgroundColor) "#f6f4f3")
   (.. ^js/Phaser.Game @util/game -add (image 0 0 "puzzle-background")))
 
+(defn- on-resize []
+  (util/set-puzzle-width-height-in-relation-to-window-size!)
+  (when (util/currently-playing-game?)
+    (util/hide-control-buttons!)
+    (util/show-control-buttons!))
+  (when-not (= :before-started (:game-play-state @util/game-state))
+    (util/synchronize-puzzle-board! (:sprites-state @util/game-state)))
+  (util/position-ui-elements!))
+
 (defn- create-create [{:keys [send-sprites-state-fn!
                               send-puzzle-complete-fn!]
                        :as websocket-message-send-functions}]
@@ -197,18 +206,9 @@
       (util/make-reset-button! (:send-reset-fn! websocket-message-send-functions))
       (util/make-audio-button!)
       (util/make-puzzle-selection-button!))
-    (util/position-ui-elements!)))
+    (on-resize)))
 
 (defn- game-update [] )
-
-(defn- on-resize []
-  (util/set-puzzle-width-height-in-relation-to-window-size!)
-  (when (util/currently-playing-game?)
-    (util/hide-control-buttons!)
-    (util/show-control-buttons!))
-  (when-not (= :before-started (:game-play-state @util/game-state))
-    (util/synchronize-puzzle-board! (:sprites-state @util/game-state)))
-  (util/position-ui-elements!))
 
 (defn- start-game! [image-src websocket-message-send-functions]
   (let [puzzle-img (js/Image.)]
