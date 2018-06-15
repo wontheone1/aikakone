@@ -24,6 +24,7 @@
 
 (def initial-game-state
   {:audio-on?               false
+   :game-play-state         :before-started
    :sprites                 {}
    :sprites-state           {}
    :play-button             nil
@@ -37,6 +38,9 @@
    :stage-clear-text        nil})
 
 (defonce game-state (atom initial-game-state))
+
+(defn set-game-play-state! [play-state]
+  (swap! game-state assoc :game-play-state play-state))
 
 (defn set-puzzle-width-height-in-relation-to-window-size! []
   (swap! game-state assoc :puzzle-width-height (int (* 0.7 (min (.-innerWidth js/window)
@@ -90,9 +94,7 @@
     ))
 
 (defn- currently-playing-game? []
-  (let [dereffed-game-state @game-state]
-    (and (not (empty? (:sprites-state dereffed-game-state)))
-         (not (.-visible (:stage-clear-text dereffed-game-state))))))
+  (= (:game-play-state @game-state) :playing))
 
 (defn- puzzle-solved? []
   (let [sprites-state (:sprites-state @game-state)
@@ -199,6 +201,7 @@
   (when (and (currently-playing-game?)
              (puzzle-solved?)
              (not (.-visible (:stage-clear-text @game-state))))
+    (set-game-play-state! :solved)
     (hide-reset-button!)
     (hide-control-buttons!)
     (show-play-button!)
@@ -299,6 +302,7 @@
   (hide-all-puzzle-pieces!)
   (hide-control-buttons!)
   (hide-play-time!)
+  (set-game-play-state! :before-started)
   (show-play-button!)
   (show-see-ranking-button!))
 
