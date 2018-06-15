@@ -23,6 +23,9 @@
   {:style {:font-size "2em"
            :color     "#696969"}})
 
+(def backend-url
+  (str config/protocol-to-backend "://" config/backend-host))
+
 ;- View Functions -
 
 (defn go-back-to-game-button []
@@ -33,7 +36,7 @@
                       :on-click #(rf/dispatch [:screen-change :game])}]])
 
 (defn ranking-dashboard []
-  (go (let [response (<! (http/get (str config/protocol-to-backend "://" config/backend-host "/rankings")))
+  (go (let [response (<! (http/get (str backend-url "/rankings")))
             ranking (:body response)]
         (rf/dispatch [:ranking (util/parse-json ranking)])))
   (let [ranking @(rf/subscribe [:ranking])]
