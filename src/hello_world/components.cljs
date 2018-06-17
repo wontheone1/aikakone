@@ -23,6 +23,13 @@
   {:style {:font-size "2em"
            :color     "#696969"}})
 
+(def backend-url
+  (str config/protocol-to-backend "://" config/backend-host))
+
+(defn- check-backend-health []
+  (go (let [response (<! (http/get (str backend-url "/health")))]
+        (println :backend-health-check-success (:body response)))))
+
 ;- View Functions -
 
 (defn go-back-to-game-button []
@@ -33,7 +40,7 @@
                       :on-click #(rf/dispatch [:screen-change :game])}]])
 
 (defn ranking-dashboard []
-  (go (let [response (<! (http/get (str config/protocol-to-backend "://" config/backend-host "/rankings")))
+  (go (let [response (<! (http/get (str backend-url "/rankings")))
             ranking (:body response)]
         (rf/dispatch [:ranking (util/parse-json ranking)])))
   (let [ranking @(rf/subscribe [:ranking])]
@@ -107,25 +114,27 @@
         [game-screen search-word->game-img-url game-img])
       (cond
         (= :intro @(rf/subscribe [:screen]))
-        [:div
-         [:img {:style    {:position                  "fixed"
-                           :z-index                   "4"
-                           :width                     "20%"
-                           :height                    "20%"
-                           :right                     "50%"
-                           :animation-name            "touchAnywhere"
-                           :animation-duration        "2s"
-                           :animation-iteration-count "infinite"
-                           :animation-direction       "alternate"}
-                :src      "images/touch-anywhere.png"
-                :on-click util/show-puzzle-selection!}]
-         [:img.background {:style    {:position         "absolute"
-                                      :background-color "white"
-                                      :z-index          "3"}
-                           :src      "images/aikakone-intro.png"
-                           :on-click util/show-puzzle-selection!}]
-         [:div {:style {:display "none"}}
-          [puzzle-selection-view]]]
+        (do
+          (check-backend-health)
+          [:div
+           [:img {:style    {:position                  "fixed"
+                             :z-index                   "4"
+                             :width                     "20%"
+                             :height                    "20%"
+                             :right                     "50%"
+                             :animation-name            "touchAnywhere"
+                             :animation-duration        "2s"
+                             :animation-iteration-count "infinite"
+                             :animation-direction       "alternate"}
+                  :src      "images/touch-anywhere.png"
+                  :on-click util/show-puzzle-selection!}]
+           [:img.background {:style    {:position         "absolute"
+                                        :background-color "white"
+                                        :z-index          "3"}
+                             :src      "images/aikakone-intro.png"
+                             :on-click util/show-puzzle-selection!}]
+           [:div {:style {:display "none"}}
+            [puzzle-selection-view]]])
 
         (= :puzzle-selection @(rf/subscribe [:screen]))
         [:div {:style {:display "block"}}

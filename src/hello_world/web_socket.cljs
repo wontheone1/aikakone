@@ -45,12 +45,14 @@
   (let [[event-id event-data] ?data]
     (case event-id
       :aikakone/sprites-state (do
-                                (util/synchronize-puzzle-board! event-data)
+                                (when (util/currently-playing-game?)
+                                  (util/synchronize-puzzle-board! event-data))
                                 (util/finish-game-when-puzzle-is-complete!
                                   send-puzzle-complete!))
 
       :aikakone/game-start (do
                              (swap! util/game-state assoc :sprites-state event-data)
+                             (util/set-game-play-state! :playing)
                              (game/show-puzzle-board! {:send-start-timer-fn! send-start-timer!})
                              (send-sprites-state!))
 

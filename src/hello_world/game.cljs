@@ -5,6 +5,7 @@
 
 (defn- create-preload [image-src]
   (fn []
+    (set! (.. @util/game -scale -scaleMode) js/Phaser.ScaleManager.RESIZE)
     (let [phaser-loader (.-load ^js/Phaser.Game @util/game)]
       (.image
         phaser-loader
@@ -70,11 +71,11 @@
             "play-button"
             (fn []
               (chsk-send-fn! [:aikakone/game-start])
-              (util/destroy-stage-clear-text!))
+              (util/hide-stage-clear-text!))
             this)))))
 
-(defn- store-control-button-and-return-it! [^js/Phaser.Sprite control-button]
-  (swap! util/game-state update :control-buttons conj control-button)
+(defn- store-control-button-and-return-it! [key-for-control-button ^js/Phaser.Sprite control-button]
+  (swap! util/game-state assoc-in [:control-buttons key-for-control-button] control-button)
   (.. control-button -scale (setTo 0 0))
   (set! (.. control-button -anchor -x) 0.5)
   (set! (.. control-button -anchor -y) 0.5)
@@ -94,7 +95,8 @@
   (util/show-control-buttons!)
   (util/hide-play-button!)
   (util/hide-see-ranking-button!)
-  (util/synchronize-puzzle-board! (:sprites-state @util/game-state))
+  (when (util/currently-playing-game?)
+    (util/synchronize-puzzle-board! (:sprites-state @util/game-state)))
   (send-start-timer-fn!)
   (util/show-play-time!))
 
@@ -102,17 +104,20 @@
   (set! (.. ^js/Phaser.Game @util/game -stage -backgroundColor) "#f6f4f3")
   (.. ^js/Phaser.Game @util/game -add (image 0 0 "puzzle-background")))
 
+(defn- on-resize []
+  (util/set-puzzle-width-height-in-relation-to-window-size!)
+  (when (util/currently-playing-game?)
+    (util/hide-control-buttons!)
+    (util/show-control-buttons!))
+  (when-not (= :before-started (:game-play-state @util/game-state))
+    (util/synchronize-puzzle-board! (:sprites-state @util/game-state)))
+  (util/position-ui-elements!))
+
 (defn- create-create [{:keys [send-sprites-state-fn!
                               send-puzzle-complete-fn!]
                        :as websocket-message-send-functions}]
   (fn []
     (render-background)
-    (when-not (:play-button @util/game-state)
-      (make-play-button! websocket-message-send-functions)
-      (util/make-see-ranking-button!)
-      (util/make-reset-button! (:send-reset-fn! websocket-message-send-functions))
-      (util/make-audio-button!)
-      (util/make-puzzle-selection-button!))
     (when (empty? (:sprites @util/game-state))
       (let [game-object-factory (.-add ^js/Phaser.Game @util/game)
             left-margin (util/left-margin)
@@ -131,6 +136,7 @@
           (when
             (and (zero? col) (= row (dec util/row-col-num)))
             (let [bottom-left-button (store-control-button-and-return-it!
+                                       :bottom-left
                                        (.sprite
                                          game-object-factory
                                          (- x-pos piece-width-height)
@@ -143,12 +149,14 @@
                   (when (util/currently-playing-game?)
                     (sound/play-beep! (sound/frequencies-in-major-scale-4th-octave util/row-col-num))
                     (flip-diagonal-pieces!)
-                    (util/synchronize-puzzle-board! (:sprites-state @util/game-state))
+                    (when (util/currently-playing-game?)
+                      (util/synchronize-puzzle-board! (:sprites-state @util/game-state)))
                     (send-sprites-state-fn!)
                     (util/finish-game-when-puzzle-is-complete!
                       send-puzzle-complete-fn!))))))
           (when (zero? col)
             (let [left-button (store-control-button-and-return-it!
+                                [:left row]
                                 (.sprite
                                   game-object-factory
                                   (- x-pos piece-width-height)
@@ -161,12 +169,14 @@
                   (when (util/currently-playing-game?)
                     (sound/play-beep! (sound/frequencies-in-major-scale-4th-octave row))
                     (flip-row! row)
-                    (util/synchronize-puzzle-board! (:sprites-state @util/game-state))
+                    (when (util/currently-playing-game?)
+                      (util/synchronize-puzzle-board! (:sprites-state @util/game-state)))
                     (send-sprites-state-fn!)
                     (util/finish-game-when-puzzle-is-complete!
                       send-puzzle-complete-fn!))))))
           (when (= row (dec util/row-col-num))
             (let [bottom-button (store-control-button-and-return-it!
+                                  [:bottom col]
                                   (.sprite
                                     game-object-factory
                                     x-pos
@@ -181,10 +191,22 @@
                                         (mod (+ 1 util/row-col-num col)
                                              (count sound/frequencies-in-major-scale-4th-octave))))
                     (flip-col! col)
-                    (util/synchronize-puzzle-board! (:sprites-state @util/game-state))
+                    (when (util/currently-playing-game?)
+                      (util/synchronize-puzzle-board! (:sprites-state @util/game-state)))
                     (send-sprites-state-fn!)
                     (util/finish-game-when-puzzle-is-complete!
-                      send-puzzle-complete-fn!)))))))))))
+                      send-puzzle-complete-fn!)))))))))
+    (when-not (:play-button @util/game-state)
+      (util/make-play-time!)
+      (util/hide-play-time!)
+      (util/make-congrat-message!)
+      (util/hide-stage-clear-text!)
+      (make-play-button! websocket-message-send-functions)
+      (util/make-see-ranking-button!)
+      (util/make-reset-button! (:send-reset-fn! websocket-message-send-functions))
+      (util/make-audio-button!)
+      (util/make-puzzle-selection-button!))
+    (on-resize)))
 
 (defn- game-update [] )
 
@@ -194,8 +216,7 @@
     ; image loading is done asynchronously. The way to start the game after image is loaded is
     ; we start the game in `onload` callback of the image. After loading buttons-img first,
     ; start loading puzzle image then start the game.
-    (swap! util/game-state assoc :puzzle-width-height (int (* 0.7 (min (.-innerWidth js/window)
-                                                                       (.-innerHeight js/window)))))
+    (util/set-puzzle-width-height-in-relation-to-window-size!)
     (set!
       (.-onload puzzle-img)
       (clj->js
@@ -211,5 +232,6 @@
                     "canvas" ; id of the DOM element to insert canvas.
                     (clj->js {:preload (create-preload image-src)
                               :create  (create-create websocket-message-send-functions)
-                              :update  game-update}))))))
+                              :update  game-update
+                              :resize  on-resize}))))))
     (set! (.-src puzzle-img) image-src)))
