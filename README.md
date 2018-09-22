@@ -1,5 +1,7 @@
 # Aikakone
 
+Try the game on https://wontheone1.github.io/aikakone/
+
 ## Introduction
 
 Puzzle game using finna api. This game consists of frontend and backend part.
